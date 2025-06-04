@@ -45,7 +45,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div>
+                                    {{-- <div>
                                         <div class="col"><label>Thương hiệu:</label></div>
                                         <div class="col">
                                             <select name="brand" id="brands">
@@ -54,7 +54,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="form-group-product">
                                     <div class="col">
@@ -72,7 +72,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-groups" id="category-specification">
+                            {{-- <div class="form-groups" id="category-specification">
                                 @foreach ($danhSachThongTinKyThuat as $index => $thongTinKyThuat)
                                     <div class=" form-group-product">
                                         <div class="col">
@@ -86,9 +86,9 @@
                                         </div>
                                     </div>
                                 @endforeach
-                                {{-- Hiển thị xong --}}
+                                 Hiển thị xong 
 
-                            </div>
+                            </div> --}}
                             <div class="row">
                                 <p>Thêm các biến thể</p>
                                 <div>
@@ -146,7 +146,7 @@
             name = name.trim();
             if (name === "") {
                 issetSpan.style.color = "red";
-                issetSpan.textContent = "Tên sản phẩm không được bỏ trống";
+                issetSpan.textContent = "Tên món ăn không được bỏ trống";
             } else {
                 $.ajax({
                     method: "POST",
@@ -159,10 +159,10 @@
 
                     if (data == 0) {
                         issetSpan.style.color = "green";
-                        issetSpan.textContent = "Tên sản phẩm hợp lệ!";
+                        issetSpan.textContent = "Tên món ăn hợp lệ!";
                     } else {
                         issetSpan.style.color = "red";
-                        issetSpan.textContent = "Tên sản phẩm đã tồn tại!";
+                        issetSpan.textContent = "Tên món ăn đã tồn tại!";
                     }
                 })
             }
@@ -191,37 +191,37 @@
     </script>
 
     <script>
-        function addVariant(btn) {
-            btn.dataset.index++;
-            const variants = document.getElementById('variants');
-            const variant = `<div>
-                            <p> Biến thể ${Number(btn.dataset.index)+1}</p>
-                            <span>
-                                Màu sắc
-                                <input type="text" name="variants[${Number(btn.dataset.index)}][color]" required>
-                            </span>
-                            <span>
-                                Dung lượng
-                                <input type="text" name="variants[${Number(btn.dataset.index)}][internal_memory]" required>
-                            </span>
-                            <span>
-                                Giá
-                                <input type="number" min="0" name="variants[${Number(btn.dataset.index)}][price]" required>
-                            </span>
-                            <div>
-                                <span>
-                                    Số lượng
-                                    <input type="number" min="0" name="variants[${Number(btn.dataset.index)}][stock]" required>
-                                </span>
-                                <span>
-                                    Hình ảnh
-                                    <input type="file" name="variants[${Number(btn.dataset.index)}][image_variant]" required>
-                                </span>
-                            </div>
+        // function addVariant(btn) {
+        //     btn.dataset.index++;
+        //     const variants = document.getElementById('variants');
+        //     const variant = `<div>
+        //                     <p> Biến thể ${Number(btn.dataset.index)+1}</p>
+        //                     <span>
+        //                         Màu sắc
+        //                         <input type="text" name="variants[${Number(btn.dataset.index)}][color]" required>
+        //                     </span>
+        //                     <span>
+        //                         Dung lượng
+        //                         <input type="text" name="variants[${Number(btn.dataset.index)}][internal_memory]" required>
+        //                     </span>
+        //                     <span>
+        //                         Giá
+        //                         <input type="number" min="0" name="variants[${Number(btn.dataset.index)}][price]" required>
+        //                     </span>
+        //                     <div>
+        //                         <span>
+        //                             Số lượng
+        //                             <input type="number" min="0" name="variants[${Number(btn.dataset.index)}][stock]" required>
+        //                         </span>
+        //                         <span>
+        //                             Hình ảnh
+        //                             <input type="file" name="variants[${Number(btn.dataset.index)}][image_variant]" required>
+        //                         </span>
+        //                     </div>
 
-                        </div>`;
-            variants.insertAdjacentHTML('beforeend', variant);
-        }
+        //                 </div>`;
+        //     variants.insertAdjacentHTML('beforeend', variant);
+        // }
     </script>
     <script>
         function loadBrandAndCategorySpe(category) {
@@ -289,7 +289,7 @@
     <script>
             const input = document.getElementById("name");
             input.addEventListener("invalid", function () {
-            input.setCustomValidity("Vui lòng nhập tên sản phẩm vào đây!");
+            input.setCustomValidity("Vui lòng nhập tên món ăn vào đây!");
             input.addEventListener("input", function () {
             input.setCustomValidity("");
         });

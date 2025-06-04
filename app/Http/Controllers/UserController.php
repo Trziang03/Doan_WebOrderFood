@@ -73,6 +73,10 @@ class UserController extends Controller
     {
         return view('user.pages.contact');
     }
+    
+    public function search(){
+        return view('user.pages.search');
+    }
 
     public function DangKy(Request $request)
     {

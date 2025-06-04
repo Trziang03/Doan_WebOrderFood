@@ -18,7 +18,7 @@
                             @endforeach
                         </div>
                     </div>
-                    <div class="product_search product_search_list_branch">
+                    {{-- <div class="product_search product_search_list_branch">
                         <p>Thương hiệu<i class="fas fa-sort-down"></i></p>
                         <div class="product_search_list_branch_popup">
                             @foreach ($danhSachDanhMuc as $danhMuc)
@@ -28,7 +28,7 @@
                                 @endforeach
                             @endforeach
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="product_search product_search_list_price">
                         <p>Mức giá</p>
                         <div class="product_search_list_price_popup">
@@ -61,7 +61,7 @@
                                         <li class = "price">{{ number_format($item->price, 0, ',', '.') }}<sup>đ</sup></li>
                                         <li>{{ $item->rating }} <i class="fas fa-star"></i></li>
                                         <li>
-                                            <button onclick="buyNowSearch({{$item->variants}})">Mua ngay</button>
+                                            <button onclick="buyNowSearch({{$item->variants}})">Thêm vào giỏ hàng</button>
                                         </li>
                                     </ul>
                                 </div>
@@ -99,17 +99,18 @@
                             quantity,
                             _token:'{{csrf_token()}}'
                         }
-                    }).done((data) => {
-                        if(data.success===1){
-                            window.location.href = data.url;
-                        }else{
-                            alertify.alert('Vui lòng đăng nhập để mua ngay');
-                        }
+                    })
+                    // .done((data) => {
+                    //     if(data.success===1){
+                    //         window.location.href = data.url;
+                    //     }else{
+                    //         alertify.alert('Vui lòng đăng nhập để mua ngay');
+                    //     }
 
-                    })
-                    .fail((data)=>{
-                        console.log(data);
-                    })
+                    // })
+                    // .fail((data)=>{
+                    //     console.log(data);
+                    // })
 
                 }
             })

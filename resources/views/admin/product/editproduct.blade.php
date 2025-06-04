@@ -49,18 +49,18 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div class="col"><label>Thương hiệu:</label></div>
-                                        <div class="col">
-                                            <select name="brand" id="brands">
-                                                @foreach ($danhSachThuongHieu as $thuongHieu)
-                                                    <option value="{{ $thuongHieu->id }}"
-                                                        @if ($sanPham->brand_id == $thuongHieu->id) {{ 'selected' }} @endif>
-                                                        {{ $thuongHieu->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
+                                        {{-- <div>
+                                            <div class="col"><label>Thương hiệu:</label></div>
+                                            <div class="col">
+                                                <select name="brand" id="brands">
+                                                    @foreach ($danhSachThuongHieu as $thuongHieu)
+                                                        <option value="{{ $thuongHieu->id }}"
+                                                            @if ($sanPham->brand_id == $thuongHieu->id) {{ 'selected' }} @endif>
+                                                            {{ $thuongHieu->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div> --}}
                                 </div>
                                 <div class="form-group-product">
                                     <div class="col">
@@ -86,7 +86,7 @@
                                     @endfor
                                 </div>
                             </div>
-                            <div class="form-groups" id="category-specification">
+                            {{-- <div class="form-groups" id="category-specification">
                                 @foreach ($sanPham->product_specification as $index => $specification)
                                     <div class=" form-group-product">
                                         <div class="col">
@@ -100,7 +100,7 @@
                                         </div>
                                     </div>
                                 @endforeach
-                            </div>
+                            </div> --}}
                             @csrf
                             @method('put')
                             <div class="btn-goback button-product">

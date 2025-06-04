@@ -25,6 +25,7 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/', "index")->name('user.index');
     Route::get('seach/{slug}/{id?}', "TimKiemSanPhamFH")->name('timkiemsanpham');
     Route::get('seach', "TimKiemTheoTuKhoa")->name('timkiemtheotukhoa');
+    Route::get('/search', "search")->name('user.search');
     Route::post('/dangky', "DangKy")->name('dangky');
     Route::post('/dangnhap', "DangNhap")->name('dangnhap');
     Route::get('/logout', "Logout")->name('logout');

@@ -40,13 +40,12 @@
         <div class="navbar_item_first">
             <div style="width:190px">
                 <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
-                        style="width:100%;height:40px;margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
+                        style="width:100%;height:55px;margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
                         alt="Lỗi hiển thị"></a>
             </div>
             <ul style="padding-left:0">
-                <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                <li>Menu<i class="" style="margin-left:5px" href=""></i>
-                </li>
+                <li><a href="{{ route('user.index') }}">Trang chủ</a></li>  
+                <li><a href="{{route('user.search')}}">Menu</a></li>
             </ul>
         </div>
         <div class="navbar_item_second">
@@ -57,7 +56,7 @@
                 <label for="checkbox_hidden"><i class="fas fa-times"></i></label>
                 <ul>
                     <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                    <li id="show__category">Danh mục<i class="fas fa-angle-down" style="margin-left:20px"></i></li>
+                    <li id="show__category">Menu<i class="fas fa-angle-down" style="margin-left:20px"></i></li>
                     @foreach ($danhSachDanhMuc as $category)
                         <li class="popup__category__ml__tl"><a
                                 href="{{ route('timkiemsanpham', ['slug' => $category->slug]) }}">{{ $category->name }}</a>

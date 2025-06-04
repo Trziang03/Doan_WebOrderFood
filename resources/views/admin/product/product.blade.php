@@ -20,15 +20,14 @@
         </div>
         <select onchange="findProduct(this)">
             <option value="all">Tất cả</option>
-            <option value="dien-thoai">Điện thoại</option>
-            <option value="laptop">Laptop</option>
+            <option value="banh-trang">Bánh Tráng</option>
+            <option value="nuoc-giai-khat">Nước giải khát</option>
         </select>
         <table>
             <thead>
                 <tr>
                     <th style="width: 48px;">ID</th>
                     <th>Tên sản phẩm</th>
-                    <th style="width: 55px;">Variants</th>
                     <th style="width: 48px;">Sửa</th>
                     <th style="width: 48px;">Ẩn</th>
                 </tr>
@@ -40,9 +39,9 @@
                     <tr id="product-{{ $sanPham->id }}">
                         <td style="text-align: center;"> {{ $sanPham->id }}</td>
                         <td>{{ $sanPham->name }}</td>
-                        <td style="text-align: center;"> <a
+                        {{-- <td style="text-align: center;"> <a
                                 href="{{ route('admin.product_variant.index', [$sanPham->id]) }}"> <i
-                                    class="fa-solid fa-code"></i></a> </td>
+                                    class="fa-solid fa-code"></i></a> </td> --}}
                         <td style="text-align: center;"><a
                                 href="{{ route('product.edit', ['product' => $sanPham->id]) }}"><i
                                     class="fa-regular fa-pen-to-square"></i></a>

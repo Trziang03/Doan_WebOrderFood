@@ -65,9 +65,13 @@
         </div>
     </div>
     <div class="footer_bottom">
-        <p>Địa chỉ: {{ $lienKetWebsite->address }} - Số điện thoại: {{ $lienKetWebsite->phone }} -
-            Email : {{ $lienKetWebsite->email }}</p>
-        <p>Chịu trách nhiệm nội dung bởi Nguyễn Trường Giang, Trần Thiện Hữu Dũng</p>
-        <p>©2025 - Bản quyền thuộc về {{ $lienKetWebsite->name }}</p>
+        <section id="lienhe" class="intro">
+            <h2>Liên Hệ Với Gidu Food</h2>
+            <p>📍 Địa chỉ: 65 Huỳnh Thúc Kháng, P.Bến Nghé, Q.1, Tp.HCM</p>
+            <p>📞 Hotline: 0909 123 456</p>
+            <p>📧 Email: lienhe@gidufood.vn</p>
+            <p>Chịu trách nhiệm nội dung bởi Nguyễn Trường Giang, Trần Thiện Hữu Dũng</p>
+            <p>©2025 - Bản quyền thuộc về GiDu Food</p>
+          </section>
     </div>
 </footer>
