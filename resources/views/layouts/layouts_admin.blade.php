@@ -20,7 +20,7 @@
     <link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon">
     @yield('css')
 
-    <title>@yield('title') - Sinh viên nghiêm túc</title>
+    <title>@yield('title') - GiDu Food</title>
 </head>
 
 <body>

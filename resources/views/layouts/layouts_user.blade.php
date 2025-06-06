@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user_min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user_min_two.css') }}">
-    <title>@yield('title', 'Trang chủ') - Sinh Viên Nghiêm Túc</title>
+    <title>@yield('title', 'Trang chủ') - GiDu Food</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>

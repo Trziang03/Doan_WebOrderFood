@@ -21,7 +21,7 @@
         }
 
     @endphp
-    <div style="background-color: rgb(241, 240, 241);">
+    {{-- <div style="background-color: rgb(241, 240, 241);">
         <div class="container_css product_detail_top_url">
             <ul>
 
@@ -36,7 +36,7 @@
                 @endif
             </ul>
         </div>
-    </div>
+    </div> --}}
     <!-- Chi tiết sản phẩm -->
     <section class="container_css" style="padding:10px;">
         <div class="product_detail">
@@ -54,16 +54,16 @@
                                 $index++;
                             @endphp
                         @endforeach
-                        @foreach ($danhSachAnhVariant as $anh)
+                        {{-- @foreach ($danhSachAnhVariant as $anh)
                             <div class="carousel-item" id="{{ $anh->id }}">
                                 <img src="{{ asset('images/' . $anh->image) }}" class="d-block" alt="Lỗi hiển thị">
                             </div>
                             @php
                                 $index++;
                             @endphp
-                        @endforeach
+                        @endforeach --}}
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                    {{-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
                         data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
@@ -72,9 +72,9 @@
                         data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
-                    </button>
+                    </button> --}}
                 </div>
-                <div class="product_detail_left_img" style="border-radius: 5px;">
+                {{-- <div class="product_detail_left_img" style="border-radius: 5px;">
                     @php
                         $index_2 = 0;
                     @endphp
@@ -99,10 +99,10 @@
                             $index_2++;
                         @endphp
                     @endforeach
-                </div>
+                </div> --}}
             </div>
             <div class="product_detail_right">
-                <div class="product_detail_right_interact">
+                {{-- <div class="product_detail_right_interact">
                     @auth
                         @if (Auth::user()->role == 'KH')
                             <p id="button_like"
@@ -114,16 +114,16 @@
                     @endauth
                     <p><i class="fas fa-thumbs-up"></i><span id="number_like">{{ $luotThichSanPham }}</span> lượt thích</p>
                     <p><i class="fas fa-eye"></i>{{ $thongTinSanPham->views }}</p>
-                </div>
+                </div> --}}
                 <h4>{{ $thongTinSanPham->name }}</h4>
                 @if (isset($mauSanPham[0]))
                     <div class="product_detail_right_price">
                         <p>Giá bán: <Span> <span
                                     id="price">{{ number_format($mauSanPham[0]->price, 0, ',', '.') }}</span>
                                 <sup>đ</sup></Span></p>
-                        <h5 id="status">{{ $mauSanPham[0]->stock > 0 ? '(Còn hàng)' : '(Hết hàng)' }}</h5>
+                        {{-- <h5 id="status">{{ $mauSanPham[0]->stock > 0 ? '(Còn hàng)' : '(Hết hàng)' }}</h5> --}}
                     </div>
-                    <h5 style="margin-bottom: 0; font-weight: 100; color: #a7a7a7;">Dung lượng</h5>
+                    <h5 style="margin-bottom: 0; font-weight: 100; color: #a7a7a7;">Size</h5>
                     <div class="product_detail_right_ram">
                         @foreach ($danhSachBoNho as $index => $boNho)
                             <button class="{{ $index == 0 ? 'color_active' : '' }}"
@@ -133,12 +133,12 @@
                             </button>
                         @endforeach
                     </div>
-                    <h5 style="margin-top:10px; font-weight: 100;color:#a7a7a7">Màu sắc</h5>
+                    <h5 style="margin-top:10px; font-weight: 100;color:#a7a7a7">Topping</h5>
                     <div class="product_detail_right_color" id="product_detail_right_color">
                         @foreach ($mauSanPham as $index => $mau)
                             <button class="{{ $index == 0 ? 'color_active' : '' }}"
                                 onclick="LayThongTinSanPhamTheoMau('{{ $slug }}','{{ $mau->internal_memory }}','{{ $mau->color }}',this)">
-                                <img src="{{ asset('images/' . $mau->image) }}" alt="Lỗi hiển thị">
+                                {{-- <img src="{{ asset('images/' . $mau->image) }}" alt="Lỗi hiển thị"> --}}
                                 <span>
                                     <p>{{ $mau->color }}</p>
                                     <span> {{ number_format($mau->price, 0, ',', '.') }}<sup>đ</sup></span>
@@ -147,7 +147,7 @@
                         @endforeach
                     </div>
                     <div class="product_detail_right_quantity">
-                        <p>Cửa hàng hiện có <span id="stock">{{ $mauSanPham[0]->stock }}</span> sản phẩm</p>
+                        {{-- <p>Cửa hàng hiện có <span id="stock">{{ $mauSanPham[0]->stock }}</span> sản phẩm</p> --}}
                         <div>
                             <button id="button_minus_value" data-id="{{ $mauSanPham[0]->id }}"
                                 onclick="minus(this.dataset.id)"><i class="fas fa-minus"></i></button>

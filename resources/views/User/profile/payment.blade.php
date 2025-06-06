@@ -99,7 +99,7 @@
                                 <sup>đ</sup>
                             </p>
                         </div>
-                        <div>
+                        {{-- <div>
                             <p>Phí vận chuyển </p>
                             <p>--</p>
                         </div>
@@ -107,7 +107,7 @@
                             <p>Giảm giá</p>
                             <p><span id="discount">0</span><sup>đ</sup></p>
                             <input type="hidden" name="voucher" id="voucher">
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="total_price">
                         <p>Tổng cộng </p>
