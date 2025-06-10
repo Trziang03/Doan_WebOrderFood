@@ -11,7 +11,7 @@
                         <div id="variant-{{ $item['variant_info']->id }}" class="shopping_cart_item">
                             <div class="cart_item_img">
                                 <a href="{{route('detail',['slug'=>$item['product_info']->slug])}}"><img src="{{ asset('images/' . $item['variant_info']->image) }}"
-                                        alt=""></a>
+                                        alt="Lỗi hiển thị"></a>
                             </div>
                             <div class="cart_item_info">
                                 <div class="cart_item_info_top">

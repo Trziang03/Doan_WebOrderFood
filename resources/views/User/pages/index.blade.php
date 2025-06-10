@@ -6,45 +6,45 @@
         <div class="main_slideshow_left">
             <div id="carouselExampleControls" class="carousel carousel-success slide" data-bs-ride="carousel">
                 <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active btn-border-radius"
                         aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"class="btn-border-radius"
                         aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" class="btn-border-radius"
                         aria-label="Slide 3"></button>
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
-                        aria-label="Slide 4"></button>
+                    {{-- <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
+                        aria-label="Slide 4"></button> --}}
                 </div>
                 <div class="carousel-inner">
                     <div class="carousel-item active">
                         <a href="{{ route('timkiemsanpham', ['slug' => 'laptop', 'id' => 'Asus']) }}"><img
-                                src="images/banner-tra-sua.jpg" class="d-block w-100" style="" alt="Lỗi hiển thị"></a>
+                                src="images/banner-tra-sua-7.jpg" class="d-block w-100" style="" alt="Lỗi hiển thị"></a>
                     </div>
                     {{-- {{ route('timkiemsanpham', ['slug' => 'laptop', 'id' => 'Asus']) }} --}}
                     <div class="carousel-item">
                         <a href=""><img
-                                src="images/banner-tra-sua-5.jpg" class="d-block w-100" style=""
+                                src="images/banner-tra-sua-9.jpg" class="d-block w-100" style=""
                                 alt="Lỗi hiển thị"></a>
                                 {{-- {{ route('timkiemsanpham', ['slug' => 'dien-thoai', 'id' => 'Apple']) }} --}}
                     </div>
                     <div class="carousel-item">
                         <a href=""><img
-                                src="images/banner-tra-sua-6.jpg" class="d-block w-100" style=""
+                                src="images/banner-tra-sua-8.jpg" class="d-block w-100" style=""
                                 alt="Lỗi hiển thị"></a>
                                 {{-- {{ route('timkiemsanpham', ['slug' => 'dien-thoai', 'id' => 'Samsung']) }} --}}
                     </div>
-                    <div class="carousel-item">
-                        <a href=""><img src="images/banner-tra-sua-7.jpg"
+                    {{-- <div class="carousel-item">
+                        <a href=""><img src="images/banner-tra-sua-10.jpg"
                                 class="d-block w-100" style="" alt="Lỗi hiển thị"></a>
-                                {{-- {{ route('timkiemsanpham', ['slug' => 'laptop']) }} --}}
-                    </div>
+                    </div> --}}
+                        {{-- {{ route('timkiemsanpham', ['slug' => 'laptop']) }} --}}
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                <button class="carousel-control-prev btn-border-radius" type="button" data-bs-target="#carouselExampleControls"
                     data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                <button class="carousel-control-next btn-border-radius" type="button" data-bs-target="#carouselExampleControls"
                     data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
@@ -82,7 +82,7 @@
         </div>
     </section> --}}
     <!-- Sản phẩm bán chạy -->
-    <section class="container_css product_best_seller">
+    {{-- <section class="container_css product_best_seller">
         <h4>MÓN ĂN NỔI BẬT</h4>
         <div id="carouselExampleIntervals" class="carousel slide carousel-dark" data-bs-ride="carousel">
             <div class="carousel-inner">
@@ -105,10 +105,10 @@
                                         <li>{{ number_format($danhSachBanChay[$i]->price, 0, ',', '.') }}<sup>đ</sup>
                                         </li>
                                         <li>{{ $danhSachBanChay[$i]->rating }} <i class="fas fa-star"></i></li>
-                                        <li>
-                                            <button onclick="buyNow({{ $danhSachBanChay[$i]->variants }})">Mua
-                                                ngay</button>
-                                        </li>
+                                            <li>
+                                                <button onclick="buyNow({{ $danhSachBanChay[$i]->variants }})">Mua
+                                                    ngay</button>
+                                            </li>
                                     </ul>
                                 </div>
                             </div>
@@ -155,7 +155,7 @@
             @else
         </div>
         @endif
-</section>
+    </section> --}}
 
 <!-- Điện thoại mới nhất -->
 {{-- <section class="container_css product_best_seller">

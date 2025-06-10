@@ -19,6 +19,17 @@ a{
 p{
     margin-bottom: 0;
 }
+
+div{
+    border-radius: 10px;
+}
+img{  
+    border-radius: 10px;
+
+}
+.btn-border-radius{
+    border-radius: 10px;
+}
 .cskh {
     position: fixed;
     top: 70%;
@@ -179,7 +190,7 @@ p{
 .navbar-bottom > .navbar_item_second > ul > li:first-child form button{
     color: black;
     border: none;
-    padding: 9.6px 15px;
+    padding: 9.6px 14px;
     background-color: white;
     cursor: pointer;
     border-top-right-radius: 20px;
@@ -279,7 +290,7 @@ p{
 .navbar_item_second .navbar_hidden_mb_tl{
     display: block;
     position: fixed;
-    background-color: rgb(196, 218, 210);
+    background-color: rgb(255, 255, 255);
     left: 0;
     top: 0;
     right: 0;

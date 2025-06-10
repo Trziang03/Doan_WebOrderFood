@@ -32,12 +32,11 @@
                     <div class="product_search product_search_list_price">
                         <p>Mức giá</p>
                         <div class="product_search_list_price_popup">
-                            <button id ="seachall"onclick="SeachProduct(undefined,undefined,undefined,this)" class="active_price">Tất cả</button>
-                            <button onclick="SeachProduct(0,2000000,undefined,this)">Dưới 2 triệu</button>
-                            <button onclick="SeachProduct(2000000,4000000,undefined,this)">Từ 2 đến 4 triệu</button>
-                            <button onclick="SeachProduct(4000000,8000000,undefined,this)">Từ 4 đến 8 triệu</button>
-                            <button onclick="SeachProduct(8000000,15000000,undefined,this)">Từ 8 đến 15 triệu</button>
-                            <button onclick="SeachProduct(15000000,undefined,undefined,this)">Trên 15 triệu</button>
+                            <button id ="seachall"onclick="SeachProduct(undefined,undefined,undefined,this)" class="active_price btn-border-radius">Tất cả</button>
+                            <button class="btn-border-radius" onclick="SeachProduct(0,10000,undefined,this)"> 10000đ</button>
+                            <button class="btn-border-radius" onclick="SeachProduct(10000,20000,undefined,this)">Từ 10000 - 20000đ</button>
+                            <button class="btn-border-radius" onclick="SeachProduct(20000,40000,undefined,this)">Từ 20000 - 40000đ</button>
+
                             {{-- <div>
                                 <p>Hoặc nhập mức giá phù hợp</p>
                                 <div class="price_about">
@@ -61,7 +60,7 @@
                                         <li class = "price">{{ number_format($item->price, 0, ',', '.') }}<sup>đ</sup></li>
                                         <li>{{ $item->rating }} <i class="fas fa-star"></i></li>
                                         <li>
-                                            <button onclick="buyNowSearch({{$item->variants}})">Thêm vào giỏ hàng</button>
+                                            <button class="btn-border-radius" onclick="buyNowSearch({{$item->variants}})">Thêm vào giỏ</button>
                                         </li>
                                     </ul>
                                 </div>

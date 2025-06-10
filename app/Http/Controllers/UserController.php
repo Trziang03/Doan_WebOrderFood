@@ -26,17 +26,20 @@ class UserController extends Controller
     public function index()
     {
         $thuongHieu = Brand::index();
-        $danhSachDTHot = ProductUser::LayThongTinSanPham('Điện Thoại');
-        $danhSachLapTopMoi = ProductUser::LayThongTinSanPham('Laptop');
+        $danhSachDTHot = ProductUser::LayThongTinSanPham('Bánh Tráng');
+        $danhSachLapTopMoi = ProductUser::LayThongTinSanPham('Đồ uống các loại');
         $danhSachBanChay = ProductUser::SanPhamBanChay();
         return View('User.pages.index')->with([
             "thuongHieu" => $thuongHieu,
             "danhSachDTHot" => $danhSachDTHot,
             "danhSachLapTopMoi" => $danhSachLapTopMoi,
             "danhSachBanChay" => $danhSachBanChay
-        ]);
+      ]);
     }
-
+    public function search(){
+        $products =DB::table('Products')->where('status', 1)->get();
+        return view('user.pages.search',compact('products'));
+    }
     public function TimKiemSanPhamFH($slug, $id = null)
     {
         $danhSachSanPham = ProductUser::TimKiemSanPham($slug, $id);
@@ -74,9 +77,7 @@ class UserController extends Controller
         return view('user.pages.contact');
     }
     
-    public function search(){
-        return view('user.pages.search');
-    }
+    
 
     public function DangKy(Request $request)
     {
@@ -174,11 +175,11 @@ class UserController extends Controller
 
             'slug'=>$slug,
             "danhSachAnh"=>$danhSachAnh,
-            "danhSachAnhVariant"=>$product->product_variants,
+            // "danhSachAnhVariant"=>$product->product_variants,
             "danhSachBoNho"=>$danhSachBoNho,
             "thongTinSanPham"=>$thongTinSanPham[0],
-            "thongSoKiThuatSanPham"=>$thongSoKiThuatSanPham,
-            "luotThichSanPham"=>$luotThichSanPham,
+            //"thongSoKiThuatSanPham"=>$thongSoKiThuatSanPham,
+            //"luotThichSanPham"=>$luotThichSanPham,
             "mauSanPham"=>$mauSanPham,
             "sanPhamTuongTu"=>$arr,
             "danhSachDanhGia"=>$danhSachDanhGia,
@@ -209,8 +210,7 @@ class UserController extends Controller
         $luotThichSanPham = ProductUser::LuotThichSanPham($slug);
         return View('user.pages.detail')->with([
             'slug' => $slug,
-            "danhSachAnh" => $danhSachAnh,
-            "danhSachBoNho" => $danhSachBoNho,
+            //"danhSachBoNho" => $danhSachBoNho,
             "thongTinSanPham" => $thongTinSanPham[0],
             "thongSoKiThuatSanPham" => $thongSoKiThuatSanPham[0],
             "luotThichSanPham" => $luotThichSanPham,
@@ -222,8 +222,6 @@ class UserController extends Controller
         $data = ProductUser::LayThongTinSanPhamTheoMau($slug, $internal_memory, $color);
         return response()->json([
             "variant_id" => $data->id,
-            "image" => $data->image,
-            "stock" => $data->stock,
             "price" => $data->price
         ]);
     }

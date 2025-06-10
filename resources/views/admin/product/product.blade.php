@@ -39,9 +39,9 @@
                     <tr id="product-{{ $sanPham->id }}">
                         <td style="text-align: center;"> {{ $sanPham->id }}</td>
                         <td>{{ $sanPham->name }}</td>
-                        {{-- <td style="text-align: center;"> <a
+                        <td style="text-align: center;"> <a
                                 href="{{ route('admin.product_variant.index', [$sanPham->id]) }}"> <i
-                                    class="fa-solid fa-code"></i></a> </td> --}}
+                                    class="fa-solid fa-code"></i></a> </td>
                         <td style="text-align: center;"><a
                                 href="{{ route('product.edit', ['product' => $sanPham->id]) }}"><i
                                     class="fa-regular fa-pen-to-square"></i></a>

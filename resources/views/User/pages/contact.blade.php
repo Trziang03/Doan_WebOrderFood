@@ -68,7 +68,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <button type="submit" class="sendMessage">
+                            <button class="btn-border-radius sendMessage" type="submit">
                                 Gửi</button>
                         </form>
                     </div>

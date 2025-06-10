@@ -83,10 +83,10 @@
                     @endif
                 </div>
                 <div class="payment_action">
-                    <div class="voucher_payment">
+                    {{-- <div class="voucher_payment">
                         <input type="text" placeholder="Mã giảm giá" id="voucher-code">
                         <button type="button" id="btn-submit-voucher">Áp dụng</button>
-                    </div>
+                    </div> --}}
                     <div class="payment_action_temporary">
                         <div>
                             <p>Tạm tính </p>
@@ -126,9 +126,9 @@
             <div class="payment_right">
                 <form action="/completePayment" class="form_payment" method="POST">
                     @csrf
-                    <h4>Thông tin giao hàng</h4>
+                    {{-- <h4>Thông tin giao hàng</h4> --}}
                     <div class="profile_payment">
-                        <input type="text" name="full_name" id="full_name_payment"
+                        {{--<input type="text" name="full_name" id="full_name_payment"
                             value="{{ Auth()->user()->full_name }}" placeholder="Họ và tên">
                         <div class="alert_error_validate" id="full_name_payment_error"></div>
                         <div>
@@ -172,7 +172,7 @@
                             </div>
                             <div class="alert_error_validate" id="wards_error">
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="method_payment">
                             <table>
                                 <tbody>
@@ -202,20 +202,24 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3">
-                                            <p>Thông tin thanh toán của Sinh Viên Nghiêm Túc</p>
-                                            <p>Ngân hàng : SACOMBANK</p>
-                                            <p>Số tài khoản : 060277266401</p>
-                                            <p>Chủ tài khoản : NGUYEN THUY ANH THU</p>
+                                        
+                                        <td colspan="3 ">
+                                            <p>Thông tin thanh toán của GiDu Food</p>
+                                            
                                             <p>Nội dung chuyển khoản: {{ $code }}</p>
-
+                                                <a href=""><img src="./images/QR.jpg" alt="Lỗi"
+                                                    style="height: 300px;"></a>
                                         </td>
+                                        
+                                    </tr>
+                                    <tr >
+                                        
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </form>
+                </form> 
                 <button type="button" id="" onclick="order()"> Hoàn tất đơn hàng</button>
             </div>
         </div>
@@ -283,54 +287,54 @@
         function order() {
             try {
                 const data = {
-                    full_name: $('#full_name_payment').val(),
-                    email: $('#email_payment').val(),
-                    phone: $('#phone_payment').val(),
-                    address: $('#address').val(),
-                    provinces: localStorage.getItem('province'),
-                    districts: localStorage.getItem('district'),
-                    wards: localStorage.getItem('ward'),
-                    voucher: $('#voucher').val(),
+                    // full_name: $('#full_name_payment').val(),
+                    // email: $('#email_payment').val(),
+                    // phone: $('#phone_payment').val(),
+                    // address: $('#address').val(),
+                    // provinces: localStorage.getItem('province'),
+                    // districts: localStorage.getItem('district'),
+                    // wards: localStorage.getItem('ward'),
+                    // voucher: $('#voucher').val(),
                     method: $('input[name="method_payment"]:checked').val(),
                     code: {{ $code }},
                     _token: '{{ csrf_token() }}'
                 }
                 $.ajax({
-                        method: "POST",
+                        method: "GET",
                         url: '/payment',
                         data: data
                     })
-                    .fail((response) => {
-                        let errors = response.responseJSON.errors; // Lấy danh sách lỗi
-                        if (errors.full_name !== undefined) {
-                            $('#full_name_payment_error').text(errors.full_name);
-                            $('#full_name_payment').focus();
-                        }
-                        if (errors.phone !== undefined) {
-                            $('#phone_payment_error').text(errors.phone);
-                            $('#phone_payment').focus();
-                        }
-                        if (errors.email !== undefined) {
-                            $('#email_payment_error').text(errors.email);
-                            $('#email_payment').focus();
-                        }
-                        if (errors.address !== undefined) {
-                            $('#address_payment_error').text(errors.address);
-                            $('#address_payment').focus();
-                        }
-                        if (errors.provinces !== undefined) {
-                            $('#provinces_error').text(errors.provinces);
-                            $('#provinces').focus();
-                        }
-                        if (errors.districts !== undefined) {
-                            $('#districts_error').text(errors.districts);
-                            $('#districts').focus();
-                        }
-                        if (errors.wards !== undefined) {
-                            $('#wards_error').text(errors.wards);
-                            $('#wards').focus();
-                        }
-                    })
+                    //.fail((response) => {
+                        //let errors = response.responseJSON.errors; // Lấy danh sách lỗi
+                        // if (errors.full_name !== undefined) {
+                        //     $('#full_name_payment_error').text(errors.full_name);
+                        //     $('#full_name_payment').focus();
+                        // }
+                        // if (errors.phone !== undefined) {
+                        //     $('#phone_payment_error').text(errors.phone);
+                        //     $('#phone_payment').focus();
+                        // }
+                        // if (errors.email !== undefined) {
+                        //     $('#email_payment_error').text(errors.email);
+                        //     $('#email_payment').focus();
+                        // }
+                        // if (errors.address !== undefined) {
+                        //     $('#address_payment_error').text(errors.address);
+                        //     $('#address_payment').focus();
+                        // }
+                        // if (errors.provinces !== undefined) {
+                        //     $('#provinces_error').text(errors.provinces);
+                        //     $('#provinces').focus();
+                        // }
+                        // if (errors.districts !== undefined) {
+                        //     $('#districts_error').text(errors.districts);
+                        //     $('#districts').focus();
+                        // }
+                        // if (errors.wards !== undefined) {
+                        //     $('#wards_error').text(errors.wards);
+                        //     $('#wards').focus();
+                        // }
+                    //})
                     .done((data) => {
                         console.log(data);
                         if (data.success == 1) {
@@ -355,34 +359,34 @@
         }
 
 
-        const fullName = document.getElementById('full_name_payment');
-        fullName.addEventListener('input', () => {
-            $('#full_name_payment_error').text('');
-        })
-        const email = document.getElementById('email_payment');
-        email.addEventListener('input', () => {
-            $('#email_payment_error').text('');
-        })
-        const phone = document.getElementById('phone_payment');
-        phone.addEventListener('input', () => {
-            $('#phone_payment_error').text('');
-        })
-        const address = document.getElementById('address');
-        address.addEventListener('input', () => {
-            $('#address_payment_error').text('');
-        })
-        const provinces = document.getElementById('provinces');
-        provinces.addEventListener('input', () => {
-            $('#provinces_error').text('');
-        })
-        const districts = document.getElementById('districts');
-        provinces.addEventListener('input', () => {
-            $('#districts_error').text('');
-        })
-        const wards = document.getElementById('wards');
-        provinces.addEventListener('input', () => {
-            $('#wards_error').text('');
-        })
+        // const fullName = document.getElementById('full_name_payment');
+        // fullName.addEventListener('input', () => {
+        //     $('#full_name_payment_error').text('');
+        // })
+        // const email = document.getElementById('email_payment');
+        // email.addEventListener('input', () => {
+        //     $('#email_payment_error').text('');
+        // })
+        // const phone = document.getElementById('phone_payment');
+        // phone.addEventListener('input', () => {
+        //     $('#phone_payment_error').text('');
+        // })
+        // const address = document.getElementById('address');
+        // address.addEventListener('input', () => {
+        //     $('#address_payment_error').text('');
+        // })
+        // const provinces = document.getElementById('provinces');
+        // provinces.addEventListener('input', () => {
+        //     $('#provinces_error').text('');
+        // })
+        // const districts = document.getElementById('districts');
+        // provinces.addEventListener('input', () => {
+        //     $('#districts_error').text('');
+        // })
+        // const wards = document.getElementById('wards');
+        // provinces.addEventListener('input', () => {
+        //     $('#wards_error').text('');
+        // })
     </script>
     <script>
         const btn = document.getElementById('btn-submit-voucher');

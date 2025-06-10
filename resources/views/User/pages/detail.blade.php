@@ -124,35 +124,34 @@
                         {{-- <h5 id="status">{{ $mauSanPham[0]->stock > 0 ? '(Còn hàng)' : '(Hết hàng)' }}</h5> --}}
                     </div>
                     <h5 style="margin-bottom: 0; font-weight: 100; color: #a7a7a7;">Size</h5>
+                    <div class="product_detail_right_color" id="product_detail_right_color">
+                        @foreach ($mauSanPham as $index => $mau)
+                            <button class="{{ $index == 0 ? 'color_active' : '' }} btn-border-radius"
+                                onclick="LayThongTinSanPhamTheoMau('{{ $slug }}','{{ $mau->internal_memory }}','{{ $mau->color }}',this)">
+                                <span>
+                                    <p>{{ $mau->color }}</p>
+                                </span>
+                            </button>
+                        @endforeach
+                    </div>
+                   
+                    <h5 style="margin-top:10px; font-weight: 100;color:#a7a7a7">Topping</h5>
                     <div class="product_detail_right_ram">
                         @foreach ($danhSachBoNho as $index => $boNho)
-                            <button class="{{ $index == 0 ? 'color_active' : '' }}"
+                            <button class="{{ $index == 0 ? 'color_active' : '' }} btn-border-radius" 
                                 onclick="DanhSachMau('{{ Route('LayMauSanPhamTheoBoNho', ['slug' => $slug, 'internal_memory' => $boNho->internal_memory]) }}',this)">
                                 <span>{{ $boNho->internal_memory }}</span>
                                 {{-- <p> {{ number_format($boNho->price, 0, ',', '.') }}<sup>đ</sup></p> --}}
                             </button>
                         @endforeach
                     </div>
-                    <h5 style="margin-top:10px; font-weight: 100;color:#a7a7a7">Topping</h5>
-                    <div class="product_detail_right_color" id="product_detail_right_color">
-                        @foreach ($mauSanPham as $index => $mau)
-                            <button class="{{ $index == 0 ? 'color_active' : '' }}"
-                                onclick="LayThongTinSanPhamTheoMau('{{ $slug }}','{{ $mau->internal_memory }}','{{ $mau->color }}',this)">
-                                {{-- <img src="{{ asset('images/' . $mau->image) }}" alt="Lỗi hiển thị"> --}}
-                                <span>
-                                    <p>{{ $mau->color }}</p>
-                                    <span> {{ number_format($mau->price, 0, ',', '.') }}<sup>đ</sup></span>
-                                </span>
-                            </button>
-                        @endforeach
-                    </div>
                     <div class="product_detail_right_quantity">
                         {{-- <p>Cửa hàng hiện có <span id="stock">{{ $mauSanPham[0]->stock }}</span> sản phẩm</p> --}}
                         <div>
-                            <button id="button_minus_value" data-id="{{ $mauSanPham[0]->id }}"
+                            <button class="btn-border-radius" id="button_minus_value" data-id="{{ $mauSanPham[0]->id }} "
                                 onclick="minus(this.dataset.id)"><i class="fas fa-minus"></i></button>
-                            <input type="text" id="number_input" min="1" value="1">
-                            <button id="button_plus_value" data-id="{{ $mauSanPham[0]->id }}"
+                            <input class="btn-border-radius" type="text" id="number_input" min="1" value="1">
+                            <button class="btn-border-radius" id="button_plus_value" data-id="{{ $mauSanPham[0]->id }}"
                                 onclick="plus(this.dataset.id)"><i class="fas fa-plus"></i></button>
                         </div>
                         <span style="color:red" id="quantity-limit"></span>
@@ -161,7 +160,7 @@
                 <div class="product_detail_right_buy">
                     {{-- <div><button id="buy-now" data-id="@if(isset($mauSanPham[0])){{ $mauSanPham[0]->id}}@endif"
                             onclick="buyNow(this.dataset.id)">Mua ngay</button></div> --}}
-                    <div><button id="add-to-cart" onclick="addToCart(this.dataset.id)"
+                    <div><button class="btn-border-radius" id="add-to-cart" onclick="addToCart(this.dataset.id)"
                             data-id="@if (isset($mauSanPham[0])){{ $mauSanPham[0]->id }}@endif">
                             Thêm giỏ hàng<i class="fas fa-cart-plus" style="margin-left:5px;"></i></button></div>
                 </div>

@@ -15,8 +15,7 @@
         </div>
         <div class="row">
             <div>
-                <button type="button" class="cursor" data-id=0 id="btn-add"onclick="addVariant(this.dataset.id)">Thêm
-                    biến thể</button>
+                <button type="button" class="cursor" data-id=0 id="btn-add"onclick="addVariant(this.dataset.id)">Thêm Size</button>
             </div>
 
             <div class="col-lg-12">
@@ -28,10 +27,10 @@
                         <table>
                             <thead>
                                 <th>#</th>
-                                <th>Màu sắc</th>
-                                <th>Dung lượng</th>
+                                <th>Size</th>
+                                <th>Topping</th>
                                 <th>Giá</th>
-                                <th>Tồn kho</th>
+                                {{-- <th>Tồn kho</th> --}}
                                 <th>Hình ảnh</th>
                                 <th colspan="2">Thao tác</th>
                             </thead>
@@ -50,8 +49,8 @@
                                                     value="{{ $bienThe->internal_memory }}" name="internal_memory"></td>
                                             <td> <input style="width: 75px"type="number" min="0"
                                                     value="{{ $bienThe->price }}" name="price"></td>
-                                            <td> <input class="input-variant" type="number" min="0"
-                                                    value="{{ $bienThe->stock }}" name="stock"></td>
+                                            {{-- <td> <input class="input-variant" type="number" min="0"
+                                                    value="{{ $bienThe->stock }}" name="stock"></td> --}}
                                             <td><img id="image-{{ $bienTheId }}"
                                                     style="max-width:50px;"src="{{ asset('images/' . $bienThe->image) }}"
                                                     alt=""> <input type="file"
