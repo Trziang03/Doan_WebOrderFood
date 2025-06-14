@@ -13,53 +13,27 @@ class Product extends Model
 {
     //
     use HasFactory;
-    protected $fillable = ['name','slug','brand_id','description','status'];
+    protected $fillable = ['name', 'slug', 'category_id', 'image_food', 'description', 'price', 'status'];
 
-    public function brand(): BelongsTo
+
+    public function category()
     {
-        return $this->belongsTo(Brand::class);
-    }
-    static public function findProductByCategory($category){
-        return DB::connection('mysql')->select('select *
-                                                from categories inner join brands on categories.id = brands.category_id inner join products on products.brand_id = brands.id
-                                                where categories.slug = ?',[$category]);
-    }
-    public function product_variants():HasMany
-    {
-        return $this->hasMany(ProductVariant::class);
-    }
-    public function image_products():HasMany
-    {
-        return $this->hasMany(ImageProduct::class);
-    }
-    public function product_specification():HasMany
-    {
-        return $this->hasMany(ProductSpecification::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function ratings():HasMany
+    public function toppings()
     {
-        return $this->hasMany(Rating::class);
+        return $this->belongsToMany(Topping::class, 'product_topping')
+            ->withPivot('quantity');
     }
-     public function like_products():HasMany
+    public function sizes()
     {
-        return $this->hasMany(LikeProduct::class);
+        return $this->belongsToMany(Size::class, 'product_size');
     }
-    public static  function TimKiemTheoTuKhoa($key){
-        $keywords = preg_split('/\s+/', trim($key));
-        $danhSachSanPham = DB::table('products')
-        ->select('products.*')
-        ->where('products.status', 1)
-        ->where(function ($query) use ($keywords) {
-            foreach ($keywords as $word) {
-                $query->orWhereRaw('LOWER(products.name COLLATE utf8mb4_unicode_ci) LIKE ?', ["%{$word}%"])
-                      ->orWhereRaw('LOWER(products.description COLLATE utf8mb4_unicode_ci) LIKE ?', ["%{$word}%"]);
-            }
-        })
-        ->orderBy('products.name')
-        ->paginate(8);
 
-    return $danhSachSanPham;
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'food_id');
     }
 }
 

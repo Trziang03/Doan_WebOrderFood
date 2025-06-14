@@ -2,16 +2,16 @@
 @section('title', 'Trang quản lý danh mục')
 @section('active-category', 'active')
 <style>
-    #categoryForm>button {
-        background-color: rgb(19, 93, 102);
-        color: rgb(255, 255, 255);
+    .btn {
+        background-color: rgb(240, 145, 55);
+        color: white !important;
         text-align: center;
         padding: 8px;
-        width: 70px;
+        width: 130px;
         margin-bottom: 12px;
         border-radius: 4px;
         float: right;
-        margin-right: 10px;
+        margin-right: 0px;
         margin-top: 1px;
     }
 
@@ -21,63 +21,62 @@
         padding: 7px 30px;
         border-radius: 5px;
     }
+
+    td,
+    th {
+        word-wrap: break-word;
+        word-break: break-word;
+    }
 </style>
 @section('content')
     <div class="content" id="danhmuc">
         <div class="head">
             <div class="title">Quản Lý Danh Mục</div>
-            <button><a href="{{ route('admin.category.addcategory') }}"> Danh Mục
-                </a></button>
-            {{-- <button><a href="{{ route('admin.category.addbrand') }}"><i class="fa-solid fa-plus"></i> Thương hiệu</a></button> --}}
             <div class="search">
-                <form action="{{ route('admin.category.searchbrand') }}" method="GET">
-                    <input name="keySearchBrand">
+                <form action="{{ route('admin.category') }}" method="GET">
+                    <input type="text" name="keyword" placeholder="Tìm danh mục..." value="{{ request('keyword') }}">
                     <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
             </div>
         </div>
         <div class="separator_x"></div>
-        <form id="filterForm">
-            <select name="categoryFilter" id="categoryFilter">
-                <option value="all">Tất cả</option>
-                @foreach ($danhSachDanhMucLoc as $item)
-                    <option value="{{ $item->id }}">{{ $item->name }}</option>
-                @endforeach
-            </select>
-        </form>
-        @if ($danhSachThuongHieu->isEmpty())
-            @if (isset($message))
-                <div class="alert alert-warning" style="font-size: 20px">
-                    {{ $message }}
-                </div>
-            @endif
-        @else
+        <a href="{{ route('admin.category.addcategory') }}" class="btn">
+            <i class="fa-solid fa-plus"></i> Thêm danh mục
+        </a>
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 48px;">ID</th>
-                        <th>Name</th>
-                        <th>Image</th>
+                        <th style="width: 160px;">Tên danh mục</th>
+                        <th style="width: 300px;">Mô tả</th>
+                        <th style="width: 140px;">Trạng thái</th>
                         <th style="width: 48px;">Sửa</th>
                         <th style="width: 48px;">Xóa</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($danhSachThuongHieu as $item)
+                    @forelse ($danhSachDanhMuc as $item)
                         <tr>
-                            <td style="text-align: center;">{{ $item->id }}</td>
-                            <td>{{ $item->name }}</td>
-                            <td>{{ $item->image }}</td>
-                            <td style="text-align: center;"><a
-                                    href="{{ route('admin.category.editbrand', ['id' => $item->id]) }}"><i
-                                        class="fa-regular fa-pen-to-square"></i></a></td>
+                            <td style="text-align: center;">{{ $item->name }}</td>
+                            <td style="text-align: center;">{{ $item->description }}</td>
+                            <td style="text-align: center;">
+                                {{ $item->status == 1 ? 'Hiện' : 'Ẩn' }}
+                            </td>
+                            <td style="text-align: center;">
+                                <a href="{{ route('admin.category.editcategory', ['id' => $item->id]) }}">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                            </td>
                             <td style="text-align: center;">
                                 <a onclick="popup('delete', {{ $item->id }})" data-id="{{ $item->id }}">
                                     <i class="fa-regular fa-trash-can"></i>
                                 </a>
                             </td>
                         </tr>
-                    @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Không có danh mục nào.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
             <div class="popup_admin" id="popupdm">
@@ -90,112 +89,80 @@
                     <button onclick="cancel('dm')">Hủy</button>
                 </div>
             </div>
-        @endif
         <div class="pagination">
-            <a href="{{ $danhSachThuongHieu->previousPageUrl() }}"><i class="fa-solid fa-chevron-left"></i></a>
-            @if ($danhSachThuongHieu->currentPage() - 1 != 0)
-                <a
-                    href="{{ $danhSachThuongHieu->previousPageUrl() }}">{{ $danhSachThuongHieu->currentPage() - 1 }}</i></a>
-            @endif
-            <a href="{{ $danhSachThuongHieu->currentPage() }}" class="active">
-                {{ $danhSachThuongHieu->currentPage() }}</a>
-            @if ($danhSachThuongHieu->currentPage() != $danhSachThuongHieu->lastPage())
-                <a href="{{ $danhSachThuongHieu->nextPageUrl() }}">{{ $danhSachThuongHieu->currentPage() + 1 }}</a>
-            @endif
-            <a href="{{ $danhSachThuongHieu->nextPageUrl() }}"><i class="fa-solid fa-chevron-right"></i></a>
+            {{ $danhSachDanhMuc->links() }}
         </div>
     </div>
 @endsection
 @section('script')
     <script>
-        document.getElementById('categoryFilter').addEventListener('change', function() {
+        document.getElementById('categoryFilter').addEventListener('change', function () {
             const categoryId = this.value;
 
             fetch(`{{ route('filter.category', ['id' => 'all']) }}?categoryFilter=${categoryId}`)
                 .then(response => response.json())
                 .then(data => {
-                    // Cập nhật bảng với dữ liệu mới
                     const tbody = document.querySelector('table tbody');
-                    tbody.innerHTML = ''; // Xóa nội dung cũ
+                    tbody.innerHTML = '';
 
                     if (data.length === 0) {
-                        tbody.innerHTML =
-                            '<tr><td colspan="5" style="text-align: center;">Không có danh mục nào để hiển thị.</td></tr>';
+                        tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center;">Không có danh mục nào để hiển thị.</td>
+                </tr>`;
                     } else {
                         data.forEach(item => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
-                            <td style="text-align: center;">${item.id}</td>
-                            <td>${item.name}</td>
-                            <td>${item.image}</td>
-                            <td style="text-align: center;">
-                                <a href="/admin/category/edit/${item.id}"><i class="fa-solid fa-check"></i></a>
-                            </td>
-                            <td style="text-align: center;">
-                                <a onclick="popup('dm', ${item.id})" data-id="${item.id}">
-                                    <i class="fa-solid fa-x"></i>
-                                </a>
-                            </td>
-                        `;
+                    <td style="text-align: center;">${item.name}</td>
+                    <td style="text-align: center;">${item.description}</td>
+                    <td style="text-align: center;">${item.status == 1 ? 'Hiển thị' : 'Ẩn'}</td>
+                    <td style="text-align: center;">
+                        <a href="/admin/category/edit/${item.id}"><i class="fa-solid fa-check"></i></a>
+                    </td>
+                    <td style="text-align: center;">
+                        <a onclick="popup('dm', ${item.id})" data-id="${item.id}">
+                            <i class="fa-solid fa-x"></i>
+                        </a>
+                    </td>
+                `;
                             tbody.appendChild(row);
                         });
                     }
-                })
-                .catch(error => console.error('Error:', error));
-        });
+                });
+            });
 
-
-        // document.addEventListener('DOMContentLoaded', function() {
-        const btnAddSpecifications = document.getElementById('btn_addSpecifications');
         const inputContainer = document.getElementById('inputContainer');
 
-        btnAddSpecifications.addEventListener('click', function() {
+        btnAddSpecifications.addEventListener('click', function () {
             const newInput = document.createElement('input');
             newInput.type = 'text';
             newInput.className = 'form-control';
-            newInput.name = 'nameSpecifications[]';
-            newInput.placeholder = 'Nhập thông số kĩ thuật';
-
-            // Thêm ô input mới vào container
             inputContainer.appendChild(newInput);
         });
-
 
         function popup(action, id) {
             console.log('ID nhận được:', id);
 
-            // Hiển thị popup
             const popupElement = document.getElementById('popupdm');
             popupElement.style.display = 'block';
 
-            // Lưu ID vào nút "Đồng ý"
             const deleteButton = document.getElementById('deleteBtn');
             deleteButton.setAttribute('data-id', id);
 
-            // Gán sự kiện click cho nút "Đồng ý" khi popup được mở
-            deleteButton.onclick = function() {
+            deleteButton.onclick = function () {
                 console.log('Nút Đồng ý đã được nhấn');
-                const brandId = this.getAttribute('data-id');
+                const categoryId = this.getAttribute('data-id'); // Dùng đúng tên
 
-                fetch(`/admin/deletebrand/${brandId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    })
-                    .then(response => {
-                        return response.json().then(data => {
-                            return {
-                                ok: response.ok,
-                                data: data
-                            }; // Trả về một đối tượng chứa cả ok và data
-                        });
-                    })
-                    .then(({
-                        ok,
-                        data
-                    }) => {
+                fetch(`/admin/deletecategory/${categoryId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                    .then(response => response.json().then(data => ({ ok: response.ok, data })))
+                    .then(({ ok, data }) => {
                         if (ok) {
                             alertify.success(data.message);
                             window.location.href = '/admin/category';
@@ -209,7 +176,6 @@
             };
         }
 
-        // Hàm hủy bỏ popup
         function cancel(action) {
             const popupElement = document.getElementById('popupdm');
             popupElement.style.display = 'none';

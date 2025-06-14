@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="go">
-                <a href="{{route('admin.review')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="{{route('admin.table')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
         <div class="count">
