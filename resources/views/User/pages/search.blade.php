@@ -68,31 +68,31 @@
                         @endforeach
                 </div>
                 <div class="page" id="page"></div>
-                 @else
-                 <div class="product_search_list_right_items">
-                    @if (isset($HienThiTatCaSanPham) && $HienThiTatCaSanPham->isNotEmpty())
-                        @foreach($HienThiTatCaSanPham as $food)
-                        <div class="product_search_list_right_item">
-                            <a href="{{route('detail',[$food->slug])}}"><img src="{{ asset('images/' . $food->image) }}" alt="Lỗi hiển thị"></a>
-                            <div class="product_search_list_item_info">
-                                <ul>
-                                    <li><a href="{{route('detail',$food->slug )}}">{{ $food->name }}</a></li>
-                                    <li class = "price">{{ number_format($food->price, 0, ',', '.') }}<sup>đ</sup></li>
-                                    <li>{{ $food->rating }} <i class="fas fa-star"></i></li>
-                                    <li>
-                                        <button class="btn-border-radius" onclick="buyNowSearch({{$food->variants}})">Thêm vào giỏ</button>
-                                    </li>
-                                </ul>
+                 {{-- @else
+                    <div class="product_search_list_right_items">
+                        @if (isset($HienThiTatCaSanPham) && $HienThiTatCaSanPham->isNotEmpty())
+                            @foreach($HienThiTatCaSanPham as $food)
+                            <div class="product_search_list_right_item">
+                                <a href="{{route('detail',[$food->slug])}}"><img src="{{ asset('images/' . $food->image) }}" alt="Lỗi hiển thị"></a>
+                                <div class="product_search_list_item_info">
+                                    <ul>
+                                        <li><a href="{{route('detail',$food->slug )}}">{{ $food->name }}</a></li>
+                                        <li class = "price">{{ number_format($food->price, 0, ',', '.') }}<sup>đ</sup></li>
+                                        <li>{{ $food->rating }} <i class="fas fa-star"></i></li>
+                                        <li>
+                                            <button class="btn-border-radius" onclick="buyNowSearch({{$food->variants}})">Thêm vào giỏ</button>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                        @endforeach
-                    </div>
-                    @else
-                        <div style="color: black; text-align:center; width:100%; margin-top:10px">
-                            <h5>Không có sản phẩm tương tự</h5>
-                        </div>
-                    @endif
-                @endif
+                            @endforeach
+                    </div> --}}
+                        @else
+                            <div style="color: black; text-align:center; width:100%; margin-top:10px">
+                                <h5>Không có sản phẩm tương tự</h5>
+                            </div>
+                        @endif
+                {{-- @endif --}}
                 
             </div>
         </div>

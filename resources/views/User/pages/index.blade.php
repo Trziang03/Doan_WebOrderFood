@@ -2,6 +2,191 @@
 @section('title', 'Trang chủ')
 @section('content')
     <!-- slideshow -->
+    {{-- <style>
+        .product_best_seller {
+            padding: 2rem 1rem;
+        }
+        .product_best_seller h4 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+        .product_best_seller_items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .product_best_seller_item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+        .product_best_seller_item:hover {
+            transform: translateY(-4px);
+        }
+        .product_best_seller_item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .product_best_seller_item_info {
+            padding: 1rem;
+            text-align: center;
+        }
+        .product_best_seller_item_info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .product_best_seller_item_info li {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .product_best_seller_item_info li a {
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+        }
+        .product_best_seller_item_info li a:hover {
+            color: #ff6600;
+        }
+        .product_best_seller_item_info button {
+            
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .product_best_seller_item_info button:hover {
+            background-color: #218838;
+        }
+    
+        @media (max-width: 768px) {
+            .product_best_seller h4 {
+                font-size: 1.4rem;
+            }
+            .product_best_seller_item_info li {
+                font-size: 0.9rem;
+            }
+            .product_best_seller_item_info button {
+                padding: 0.4rem 0.8rem;
+            }
+        }
+    </style>
+     --}}
+     <style>
+        :root {
+            --orange: #ff6600;
+            --white: #ffffff;
+            --light-orange: #fff2e6;
+            --text-dark: #333;
+            --shadow: rgba(0, 0, 0, 0.05);
+        }
+    
+        .product_best_seller {
+            padding: 2rem 1rem;
+            background-color: var(--light-orange);
+            border-radius:10px; 
+        }
+        .product_best_seller h4 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            color: var(--orange);
+        }
+        .product_best_seller_items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .product_best_seller_item {
+            background-color: var(--white);
+            border: 1px solid #ffe0cc;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px var(--shadow);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product_best_seller_item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 10px rgba(255, 102, 0, 0.2);
+        }
+        .product_best_seller_item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .product_best_seller_item_info {
+            padding: 1rem;
+            text-align: center;
+        }
+        .product_best_seller_item_info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .product_best_seller_item_info li {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .product_best_seller_item_info li a {
+            font-weight: 600;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+        .product_best_seller_item_info li a:hover {
+            color: var(--orange);
+        }
+        .product_best_seller_item_info button {
+            background-color: var(--orange);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .product_best_seller_item_info button:hover {
+            background-color: #e65c00;
+        }
+    
+        @media (max-width: 768px) {
+            .product_best_seller h4 {
+                font-size: 1.4rem;
+            }
+            .product_best_seller_items {
+                flex-direction: column;
+                width: 100%;
+
+            }
+            .product_best_seller_item {
+                flex-direction: row;
+                justify-content: flex-start;
+                text-align: left;
+            }
+            .product_best_seller_item img {
+                width: 100px;
+                height: 100px;
+            }
+            .product_best_seller_item_info li {
+                text-align: left;
+            }
+            .product_best_seller_item_info button {
+                width: auto;
+            }
+        }
+    </style>
     <section class="container_css main_slideshow">
         <div class="main_slideshow_left">
             <div id="carouselExampleControls" class="carousel carousel-success slide" data-bs-ride="carousel">
@@ -83,7 +268,7 @@
     </section> --}}
     <!-- Sản phẩm bán chạy -->
     <section class="container_css product_best_seller">
-        <h4>Món ăn nổi bật</h4>
+        <h4 style="color:white">Món ăn nổi bật</h4>
         
         <div id="carouselExampleIntervals" class="carousel slide carousel-dark" data-bs-ride="carousel">
             <div class="carousel-inner">
