@@ -7,28 +7,28 @@
             <p><i class="fas fa-times"></i></p>
             <h4>Xác nhận đơn hàng - COD</h4>
             <div>
-                <p>Đơn hàng của bạn đã được ghi nhận</p>
-                <p>Cảm ơn bạn đã tin tưởng mua hàng tại Sinh Viên Nghiêm Túc shop</p>
+                <p>Thực đơn của bạn đã được ghi nhận</p>
+                <p>Cảm ơn bạn đã tin tưởng sử dụng dịch vụ tại GiDu Food</p>
             </div>
             <div>
-                <button><a href="">Xem chi tiết đơn hàng</a></button>
-                <button><a href="">Tiếp tục mua sắm</a></button>
+                <button><a href="">Xem chi tiết Thực đơn</a></button>
+                <button><a href="">Tiếp tục Chọn món</a></button>
             </div>
         </div>
         <div class="popup_payment_base payment_banking">
             <p><i class="fas fa-times"></i></p>
             <h4>Xác nhận đơn hàng - Banking</h4>
             <div>
-                <p>Đơn hàng của bạn đã được ghi nhận</p>
-                <p>Cảm ơn bạn đã tin tưởng mua hàng tại Sinh Viên Nghiêm Túc shop</p>
+                <p>Thực đơn của bạn đã được ghi nhận</p>
+                <p>Cảm ơn bạn đã tin tưởng sử dụng dịch vụ tại GiDu Food</p>
                 <div class="content_banking">
-                    <p>Nội dung chuyển khoản : 0123456789 HD001</p>
-                    <p>Đơn hàng sẽ tự động hủy nếu chưa thanh toán trong vòng 3 ngày</p>
+                    <p>Nội dung chuyển khoản: {{ $code }}</p>
+                        <a href=""><img src="./images/QR.jpg" alt="Lỗi" style="height: 100px;"></a>
                 </div>
             </div>
             <div>
-                <button><a href="">Xem chi tiết đơn hàng</a></button>
-                <button><a href="">Tiếp tục mua sắm</a></button>
+                <button><a href="">Xem chi tiết Thực đơn</a></button>
+                <button><a href="">Tiếp tục Chọn món</a></button>
             </div>
         </div>
     </div>
@@ -126,9 +126,9 @@
             <div class="payment_right">
                 <form action="/completePayment" class="form_payment" method="POST">
                     @csrf
-                    {{-- <h4>Thông tin giao hàng</h4> --}}
+                    <h4>Thông tin Thực đơn</h4>
                     <div class="profile_payment">
-                        {{--<input type="text" name="full_name" id="full_name_payment"
+                        <input type="text" name="full_name" id="full_name_payment"
                             value="{{ Auth()->user()->full_name }}" placeholder="Họ và tên">
                         <div class="alert_error_validate" id="full_name_payment_error"></div>
                         <div>
@@ -145,11 +145,11 @@
                             </div>
 
                         </div>
-                        <input id="address"type="text" placeholder="Địa chỉ - Số nhà, tên Đường" required name="address"
+                        {{-- <input id="address"type="text" placeholder="Địa chỉ - Số nhà, tên Đường" required name="address"
                             value="">
                         <div class="alert_error_validate" id="address_payment_error">
-                        </div>
-                        <div class="css_select_div">
+                        </div> --}}
+                        {{-- <div class="css_select_div">
                             <select class="css_select" id="provinces" name="provinces" title="Chọn Tỉnh Thành"
                                 onchange=hadelChangeProvince(this)>
                                 <option required value="">Tỉnh Thành</option>
@@ -201,123 +201,122 @@
                                                 (Banking)</label>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        
-                                        <td colspan="3 ">
-                                            <p>Thông tin thanh toán của GiDu Food</p>
-                                            
+                                    {{-- <tr>
+                                        <td colspan="3">
+                                            <p>Thông tin thanh toán của Sinh Viên Nghiêm Túc</p>
+                                            <p>Ngân hàng : SACOMBANK</p>
+                                            <p>Số tài khoản : 060277266401</p>
+                                            <p>Chủ tài khoản : NGUYEN THUY ANH THU</p>
                                             <p>Nội dung chuyển khoản: {{ $code }}</p>
-                                                <a href=""><img src="./images/QR.jpg" alt="Lỗi"
-                                                    style="height: 300px;"></a>
-                                        </td>
-                                        
-                                    </tr>
-                                    <tr >
-                                        
+
+                                        </td> --}}
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </form> 
-                <button type="button" id="" onclick="order()"> Hoàn tất đơn hàng</button>
+                </form>
+                <button type="button" id="" onclick="order()">Gửi thực đơn</button>
             </div>
         </div>
     </div>
 @endsection
 @section('script')
     <script>
-        localStorage.removeItem("province");
-        localStorage.removeItem("district");
-        localStorage.removeItem("ward");
-        let selectedProvinceName = "";
-        let selectedDistrictName = "";
-        let selectedWardName = "";
+        // localStorage.removeItem("province");
+        // localStorage.removeItem("district");
+        // localStorage.removeItem("ward");
+        // let selectedProvinceName = "";
+        // let selectedDistrictName = "";
+        // let selectedWardName = "";
 
-        fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
-            .then(response => response.json())
-            .then(data => {
-                let provinces = data.data;
-                if (provinces !== undefined) {
-                    provinces.map(item => document.getElementById('provinces').innerHTML +=
-                        `<option value="${item.id}">${item.name}</option>`);
-                }
-            });
+        // fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         let provinces = data.data;
+        //         if (provinces !== undefined) {
+        //             provinces.map(item => document.getElementById('provinces').innerHTML +=
+        //                 `<option value="${item.id}">${item.name}</option>`);
+        //         }
+        //     });
 
-        function hadelChangeProvince(provinceId) {
-            selectedProvinceName = provinceId.options[provinceId.selectedIndex].text;
-            localStorage.setItem("province", selectedProvinceName);
-            fetch(`https://esgoo.net/api-tinhthanh/2/${provinceId.value}.htm`)
-                .then(response => response.json())
-                .then(data => {
-                    let districts = data.data;
-                    document.getElementById('districts').innerHTML = '<option value="">Quận Huyện</option>';
-                    document.getElementById('wards').innerHTML = '<option value="">Phường xã</option>';
-                    if (districts !== undefined) {
-                        districts.map(item => document.getElementById('districts').innerHTML +=
-                            `<option value="${item.id}">${item.full_name}</option>`);
-                    }
-                });
+        // function hadelChangeProvince(provinceId) {
+        //     selectedProvinceName = provinceId.options[provinceId.selectedIndex].text;
+        //     localStorage.setItem("province", selectedProvinceName);
+        //     fetch(`https://esgoo.net/api-tinhthanh/2/${provinceId.value}.htm`)
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             let districts = data.data;
+        //             document.getElementById('districts').innerHTML = '<option value="">Quận Huyện</option>';
+        //             document.getElementById('wards').innerHTML = '<option value="">Phường xã</option>';
+        //             if (districts !== undefined) {
+        //                 districts.map(item => document.getElementById('districts').innerHTML +=
+        //                     `<option value="${item.id}">${item.full_name}</option>`);
+        //             }
+        //         });
 
-        }
+        // }
 
 
 
-        function hadelChangeDistrict(districtId) {
-            let selectedDistrictName = districtId.options[districtId.selectedIndex].text;
-            localStorage.setItem("district", selectedDistrictName);
+        // function hadelChangeDistrict(districtId) {
+        //     let selectedDistrictName = districtId.options[districtId.selectedIndex].text;
+        //     localStorage.setItem("district", selectedDistrictName);
 
-            fetch(`https://esgoo.net/api-tinhthanh/3/${districtId.value}.htm`)
-                .then(response => response.json())
-                .then(data => {
-                    let wards = data.data;
-                    document.getElementById('wards').innerHTML = '<option value="">Phường xã</option>';
-                    if (wards !== undefined) {
-                        wards.map(item => document.getElementById('wards').innerHTML +=
-                            `<option value="${item.id}">${item.full_name}</option>`);
-                    }
-                });
-        }
+        //     fetch(`https://esgoo.net/api-tinhthanh/3/${districtId.value}.htm`)
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             let wards = data.data;
+        //             document.getElementById('wards').innerHTML = '<option value="">Phường xã</option>';
+        //             if (wards !== undefined) {
+        //                 wards.map(item => document.getElementById('wards').innerHTML +=
+        //                     `<option value="${item.id}">${item.full_name}</option>`);
+        //             }
+        //         });
+        // }
 
-        function handleChangePosition(ward) {
-            let selectedWardName = ward.options[ward.selectedIndex].text;
-            localStorage.setItem("ward", selectedWardName);
-        }
+        // function handleChangePosition(ward) {
+        //     let selectedWardName = ward.options[ward.selectedIndex].text;
+        //     localStorage.setItem("ward", selectedWardName);
+        // }
 
         function order() {
             try {
                 const data = {
-                    // full_name: $('#full_name_payment').val(),
-                    // email: $('#email_payment').val(),
-                    // phone: $('#phone_payment').val(),
-                    // address: $('#address').val(),
-                    // provinces: localStorage.getItem('province'),
-                    // districts: localStorage.getItem('district'),
-                    // wards: localStorage.getItem('ward'),
-                    // voucher: $('#voucher').val(),
+                    full_name: $('#full_name_payment').val(),
+                    email: $('#email_payment').val(),
+                    phone: $('#phone_payment').val(),
+                    address: $('#address').val(),
+                    provinces: localStorage.getItem('province'),
+                    districts: localStorage.getItem('district'),
+                    wards: localStorage.getItem('ward'),
+                    voucher: $('#voucher').val(),
                     method: $('input[name="method_payment"]:checked').val(),
                     code: {{ $code }},
                     _token: '{{ csrf_token() }}'
                 }
                 $.ajax({
-                        method: "GET",
+                        method: "POST",
                         url: '/payment',
                         data: data
                     })
-                    //.fail((response) => {
-                        //let errors = response.responseJSON.errors; // Lấy danh sách lỗi
-                        // if (errors.full_name !== undefined) {
-                        //     $('#full_name_payment_error').text(errors.full_name);
-                        //     $('#full_name_payment').focus();
-                        // }
-                        // if (errors.phone !== undefined) {
-                        //     $('#phone_payment_error').text(errors.phone);
-                        //     $('#phone_payment').focus();
-                        // }
-                        // if (errors.email !== undefined) {
-                        //     $('#email_payment_error').text(errors.email);
-                        //     $('#email_payment').focus();
-                        // }
+                    .fail((response) => {
+                        let errors = response.responseJSON.errors; // Lấy danh sách lỗi
+                        if (errors.full_name !== undefined) {
+                            $('#full_name_payment_error').text(errors.full_name);
+                            $('#full_name_payment').focus();
+                            return;
+                        }
+                        if (errors.phone !== undefined) {
+                            $('#phone_payment_error').text(errors.phone);
+                            $('#phone_payment').focus();
+                            return;
+                        }
+                        if (errors.email !== undefined) {
+                            $('#email_payment_error').text(errors.email);
+                            $('#email_payment').focus();
+                            return;
+                        }
                         // if (errors.address !== undefined) {
                         //     $('#address_payment_error').text(errors.address);
                         //     $('#address_payment').focus();
@@ -334,7 +333,7 @@
                         //     $('#wards_error').text(errors.wards);
                         //     $('#wards').focus();
                         // }
-                    //})
+                    })
                     .done((data) => {
                         console.log(data);
                         if (data.success == 1) {
@@ -359,18 +358,18 @@
         }
 
 
-        // const fullName = document.getElementById('full_name_payment');
-        // fullName.addEventListener('input', () => {
-        //     $('#full_name_payment_error').text('');
-        // })
-        // const email = document.getElementById('email_payment');
-        // email.addEventListener('input', () => {
-        //     $('#email_payment_error').text('');
-        // })
-        // const phone = document.getElementById('phone_payment');
-        // phone.addEventListener('input', () => {
-        //     $('#phone_payment_error').text('');
-        // })
+        const fullName = document.getElementById('full_name_payment');
+        fullName.addEventListener('input', () => {
+            $('#full_name_payment_error').text('');
+        })
+        const email = document.getElementById('email_payment');
+        email.addEventListener('input', () => {
+            $('#email_payment_error').text('');
+        })
+        const phone = document.getElementById('phone_payment');
+        phone.addEventListener('input', () => {
+            $('#phone_payment_error').text('');
+        })
         // const address = document.getElementById('address');
         // address.addEventListener('input', () => {
         //     $('#address_payment_error').text('');
@@ -417,7 +416,7 @@
                         @endif ) - data.voucher.discount_value));
                     $('#voucher').val(data.voucher.id);
                     totalPrice = parseInt(
-                        @if (session('buy-now') == null)
+                        @if (session('buy-now') == null) 
                             {{ session('cart')->totalPrice }}
                         @else
                             session('buy-now')['totalPrice']

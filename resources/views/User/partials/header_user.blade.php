@@ -21,7 +21,10 @@
                 @auth
                     <li class="handleDropbox"><a href="" onclick="event.preventDefault();"><i class="far fa-user-circle"
                                 style="margin-right:5px"></i>{{ Auth::user()->username }}</a>
-                        <ul class="dropbox_login">      
+                        <ul class="dropbox_login">  
+                            @if (Auth::user()->role === 'KH')
+                                <li><a href="{{ route('profile.index') }} ">Thông tin cá nhân</a></li>
+                            @endif    
                             @if (Auth::user()->role === 'NV' or Auth::user()->role === 'QL')
                                 <li><a href="{{ route('admin.index') }} ">Trang quản trị</a></li>
                             @endif

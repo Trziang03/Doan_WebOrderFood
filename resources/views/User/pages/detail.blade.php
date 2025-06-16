@@ -21,7 +21,7 @@
         }
 
     @endphp
-    {{-- <div style="background-color: rgb(241, 240, 241);">
+    <div style="background-color: rgb(241, 240, 241);">
         <div class="container_css product_detail_top_url">
             <ul>
 
@@ -29,14 +29,164 @@
                     <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
                     <li><a href="{{ route('timkiemsanpham', ['slug' => $seach->slug]) }}">{{ $seach->category }}</a></li>
                     <!-- Truy xuất đúng tên trường -->
-                    <li><a
-                            href="{{ route('timkiemsanpham', ['slug' => $seach->slug, 'id' => $seach->brand]) }}">{{ $seach->brand }}</a>
-                    </li>
                     <li><a href="{{ route('detail', $slug) }}">{{ $seach->product }}</a></li>
                 @endif
             </ul>
         </div>
-    </div> --}}
+    </div>
+    <style>
+        /* Base Reset */
+        .container_css {
+            padding: 16px;
+            max-width: 1200px;
+            margin: auto;
+        }
+    
+        .product_detail {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+    
+        .product_detail_left, .product_detail_right {
+            flex: 1 1 100%;
+        }
+    
+        .product_detail_left img {
+            width: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+    
+        .carousel-inner {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    
+        .product_detail_right h4 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+    
+        .product_detail_right_price span {
+            font-size: 20px;
+            color: #e53935;
+            font-weight: bold;
+        }
+    
+        .product_detail_right_color,
+        .product_detail_right_ram {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    
+        .product_detail_right_color button,
+        .product_detail_right_ram button {
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+    
+        .product_detail_right_color button:hover,
+        .product_detail_right_ram button:hover {
+            background-color: #ffebee;
+            border-color: #e53935;
+            color: #e53935;
+        }
+    
+        .color_active {
+            background-color: #e53935;
+            color: #000000;
+            border-color: #e53935;
+        }
+    
+        .product_detail_right_quantity {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+    
+        .product_detail_right_quantity button {
+            width: 36px;
+            height: 36px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: 0.3s;
+        }
+    
+        .product_detail_right_quantity button:hover {
+            background-color: #f5f5f5;
+        }
+    
+        .product_detail_right_buy button {
+            background-color: #e53935;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: 0.3s;
+        }
+    
+        .product_detail_right_buy button:hover {
+            background-color: #d32f2f;
+        }
+        /* chỉnh css nút + và - trang detail */
+        /* .quantity-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ccc;
+            background-color: white;
+            font-size: 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .quantity-input {
+            width: 40px;
+            height: 32px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: white;
+        } */
+        @media (min-width: 768px) {
+            .product_detail_left, .product_detail_right {
+                flex: 1 1 48%;
+            }
+        }
+    
+        @media (min-width: 1024px) {
+            .product_detail_right h4 {
+                font-size: 28px;
+            }
+    
+            .product_detail_right_price span {
+                font-size: 24px;
+            }
+        }
+    </style>
+    
     <!-- Chi tiết sản phẩm -->
     <section class="container_css" style="padding:10px;">
         <div class="product_detail">
@@ -147,11 +297,11 @@
                     </div>
                     <div class="product_detail_right_quantity">
                         {{-- <p>Cửa hàng hiện có <span id="stock">{{ $mauSanPham[0]->stock }}</span> sản phẩm</p> --}}
-                        <div>
-                            <button class="btn-border-radius" id="button_minus_value" data-id="{{ $mauSanPham[0]->id }} "
+                        <div class="quantity-wrapper">
+                            <button class="btn-border-radius minus" id="button_minus_value" data-id="{{ $mauSanPham[0]->id }} "
                                 onclick="minus(this.dataset.id)"><i class="fas fa-minus"></i></button>
-                            <input class="btn-border-radius" type="text" id="number_input" min="1" value="1">
-                            <button class="btn-border-radius" id="button_plus_value" data-id="{{ $mauSanPham[0]->id }}"
+                            <input class="btn-border-radius " type="text" id="number_input" min="1" value="1">
+                            <button class="btn-border-radius plus" id="button_plus_value" data-id="{{ $mauSanPham[0]->id }}"
                                 onclick="plus(this.dataset.id)"><i class="fas fa-plus"></i></button>
                         </div>
                         <span style="color:red" id="quantity-limit"></span>
@@ -380,6 +530,28 @@
 @section('script')
 
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const btnPlus = document.querySelector(".quantity-btn.plus");
+        const btnMinus = document.querySelector(".quantity-btn.minus");
+        const quantityInput = document.querySelector(".quantity-input");
+
+        btnPlus.addEventListener("click", function () {
+            let value = parseInt(quantityInput.value);
+            if (value < 10) {
+                quantityInput.value = value + 1;
+            }
+        });
+
+        btnMinus.addEventListener("click", function () {
+            let value = parseInt(quantityInput.value);
+            if (value > 1) {
+                quantityInput.value = value - 1;
+            }
+        });
+    });
+</script>
+
+<script>
     function loadRating(sao, id, btn) {
         const button_rating = document.querySelectorAll('#button_rating button');
         if (button_rating) {
@@ -526,7 +698,7 @@
             })
             .done((data) => {
                 if (data <= quantity) {
-                    $('#quantity-limit').text('Số lượng đã đạt giới hạn số lượng tồn kho của sản phẩm này');
+                    $('#quantity-limit').text('Số lượng vượt mức cho phép của sản phẩm này');
                     $('#number_input').val(data);
                     $('#button_plus_value').attr('disabled', true);
 

@@ -18,18 +18,18 @@
                 <div class="carousel-inner">
                     <div class="carousel-item active">
                         <a href="{{ route('timkiemsanpham', ['slug' => 'laptop', 'id' => 'Asus']) }}"><img
-                                src="images/banner-tra-sua-7.jpg" class="d-block w-100" style="" alt="Lỗi hiển thị"></a>
+                                src="images/banner-tra-sua-7.jpg" class="d-block w-100 img-fluid rounded" style="" alt="Lỗi hiển thị"></a>
                     </div>
                     {{-- {{ route('timkiemsanpham', ['slug' => 'laptop', 'id' => 'Asus']) }} --}}
                     <div class="carousel-item">
                         <a href=""><img
-                                src="images/banner-tra-sua-9.jpg" class="d-block w-100" style=""
+                                src="images/banner-tra-sua-9.jpg" class="d-block w-100 img-fluid rounded" style=""
                                 alt="Lỗi hiển thị"></a>
                                 {{-- {{ route('timkiemsanpham', ['slug' => 'dien-thoai', 'id' => 'Apple']) }} --}}
                     </div>
                     <div class="carousel-item">
                         <a href=""><img
-                                src="images/banner-tra-sua-8.jpg" class="d-block w-100" style=""
+                                src="images/banner-tra-sua-8.jpg" class="d-block w-100 img-fluid rounded" style=""
                                 alt="Lỗi hiển thị"></a>
                                 {{-- {{ route('timkiemsanpham', ['slug' => 'dien-thoai', 'id' => 'Samsung']) }} --}}
                     </div>
@@ -82,8 +82,9 @@
         </div>
     </section> --}}
     <!-- Sản phẩm bán chạy -->
-    {{-- <section class="container_css product_best_seller">
-        <h4>MÓN ĂN NỔI BẬT</h4>
+    <section class="container_css product_best_seller">
+        <h4>Món ăn nổi bật</h4>
+        
         <div id="carouselExampleIntervals" class="carousel slide carousel-dark" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active" data-bs-interval="10000">
@@ -155,7 +156,7 @@
             @else
         </div>
         @endif
-    </section> --}}
+    </section>
 
 <!-- Điện thoại mới nhất -->
 {{-- <section class="container_css product_best_seller">
@@ -346,17 +347,17 @@
                             _token: '{{ csrf_token() }}'
                         }
                     })
-                    // .done((data) => {
-                    //     if(data.success===1){
-                    //         window.location.href = data.url;
-                    //     }else{
-                    //         alertify.alert('Vui lòng đăng nhập để mua ngay');
-                    //     }
+                    .done((data) => {
+                        if(data.success===1){
+                            window.location.href = data.url;
+                        }else{
+                            alertify.alert('Vui lòng đăng nhập để mua ngay');
+                        }
 
-                    // })
-                    // .fail((data)=>{
-                    //     console.log(data);
-                    // })
+                    })
+                    .fail((data)=>{
+                        console.log(data);
+                    })
 
                 }
             })

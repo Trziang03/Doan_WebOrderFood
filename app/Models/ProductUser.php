@@ -9,6 +9,31 @@ use Illuminate\Support\Facades\DB;
 class ProductUser extends Model
 {
     use HasFactory;
+    public static function HienThiTatCaSanPham(){
+        $HienThiTatCaSanPham = DB::table('products')
+        ->select(
+            'products.id',
+            'products.name',
+            'products.slug',
+            'products.rating',
+            'categories.name as category_name',
+            'brands.name as brand_name',
+            DB::raw('MIN(image_products.image) as image'), // Lấy hình ảnh đầu tiên
+            DB::raw('MIN(product_variants.price) as price'),
+            DB::raw('MIN(product_variants.id) as variants')
+             // Lấy giá thấp nhất
+        )
+        ->join('image_products', 'products.id', '=', 'image_products.product_id')
+        ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+        ->join('brands', 'products.brand_id', '=', 'brands.id')
+        ->join('categories', 'brands.category_id', '=', 'categories.id')
+        ->where('products.status', 1)
+        ->groupBy('products.id', 'products.name', 'products.slug', 'products.rating', 'categories.name', 'brands.name')
+        ->orderBy('products.name')
+        ->get();
+
+    return $HienThiTatCaSanPham;
+    }
     public static function TimKiemSanPham($slug, $brandName = null)
     {
         if ($brandName) {
@@ -206,7 +231,8 @@ class ProductUser extends Model
         ->join('brands', 'products.brand_id', '=', 'brands.id')
         ->join('categories', 'brands.category_id', '=', 'categories.id')
         ->where('products.status', 1)
-        ->where('categories.name',$category)->groupBy('products.id', 'products.name', 'products.slug','products.rating', 'categories.name', 'brands.name')
+        ->where('categories.name',$category)->groupBy('products.id', 'products.name', 'products.slug',
+            'products.rating', 'categories.name', 'brands.name')
         ->orderBy('products.created_at','desc')->take(8)->get();
     }
     public static function SanPhamTuongDuong($category,$brand,$slug){

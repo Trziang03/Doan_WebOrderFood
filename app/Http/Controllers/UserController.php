@@ -9,6 +9,7 @@ use App\Models\Blog;
 use App\Models\ProductUser;
 use App\Models\Brand;
 use App\Models\Product;
+use App\Models\Category ;
 use App\Models\LikeProduct;
 use App\Models\Rating;
 use App\Models\Contact;
@@ -29,16 +30,17 @@ class UserController extends Controller
         $danhSachDTHot = ProductUser::LayThongTinSanPham('Bánh Tráng');
         $danhSachLapTopMoi = ProductUser::LayThongTinSanPham('Đồ uống các loại');
         $danhSachBanChay = ProductUser::SanPhamBanChay();
-        return View('User.pages.index')->with([
+        return view('User.pages.index')->with([
             "thuongHieu" => $thuongHieu,
             "danhSachDTHot" => $danhSachDTHot,
             "danhSachLapTopMoi" => $danhSachLapTopMoi,
             "danhSachBanChay" => $danhSachBanChay
       ]);
     }
-    public function search(){
-        $products =DB::table('Products')->where('status', 1)->get();
-        return view('user.pages.search',compact('products'));
+    public function search()
+    {
+        $layTatCaSanPham =ProductUser::HienThiTatCaSanPham();
+        return view('user.pages.search',['layTatCaSanPham'=> $layTatCaSanPham]);
     }
     public function TimKiemSanPhamFH($slug, $id = null)
     {

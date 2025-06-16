@@ -36,7 +36,16 @@
                     <li><a href="{{$lienKetWebsite->youtube}}"><i class="fab fa-youtube"></i>Youtube</a></li>
                 </ul>
             </div>
-            <div class="footer_top_item">
+            <div class="footer_bottom">
+                <section id="lienhe" class="intro">
+                    <h2>Liên Hệ Với Gidu Food</h2>
+                    <p>📍 Địa chỉ: 65 Huỳnh Thúc Kháng, P.Bến Nghé, Q.1, Tp.HCM</p>
+                    <p>📞 Hotline: 0909 123 456</p>
+                    <p>📧 Email: lienhe@gidufood.vn</p>
+                    <p>©2025 - Bản quyền thuộc về GiDu Food</p>
+                  </section>
+            </div>
+            {{-- <div class="footer_top_item">
                 <p style="text-align: center;font-size: 20px; font-weight: bold;">Danh mục sản phẩm</p>
                 <ul>
                     @foreach ($danhSachDanhMuc as $item)
@@ -45,7 +54,7 @@
                         </li>
                     @endforeach
                 </ul>
-            </div>
+            </div> --}}
             {{-- <div class="footer_top_item">
                 <p style="text-align: center;font-size: 19px; font-weight: bold;">Thương hiệu mới nhất</p>
                 <ul>
@@ -64,14 +73,5 @@
             </div>
         </div>
     </div>
-    <div class="footer_bottom">
-        <section id="lienhe" class="intro">
-            <h2>Liên Hệ Với Gidu Food</h2>
-            <p>📍 Địa chỉ: 65 Huỳnh Thúc Kháng, P.Bến Nghé, Q.1, Tp.HCM</p>
-            <p>📞 Hotline: 0909 123 456</p>
-            <p>📧 Email: lienhe@gidufood.vn</p>
-            <p>Chịu trách nhiệm nội dung bởi Nguyễn Trường Giang, Trần Thiện Hữu Dũng</p>
-            <p>©2025 - Bản quyền thuộc về GiDu Food</p>
-          </section>
-    </div>
+    
 </footer>
