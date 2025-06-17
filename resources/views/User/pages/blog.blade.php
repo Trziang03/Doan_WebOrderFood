@@ -97,7 +97,6 @@
       
       /* Tiêu đề */
       h2 {
-        color: white;
         margin-bottom: 15px;
       }
       
@@ -140,11 +139,14 @@
       
 </style>
     
-      <section id="gioithieu" class="intro">
+      <section id="gioithieu" class="intro" style="background-color:#fff2e6;
+      ">
         <h3>Chào mừng Quý khách!</h3>
                 <h4>GiDu Shop</h4>
         <h2>Về Chúng Tôi</h2>
         <p>Gidu Food là cửa hàng chuyên cung cấp các món ăn nhanh hấp dẫn, phục vụ nhanh chóng, tiện lợi với giá cả hợp lý. Đội ngũ đầu bếp chuyên nghiệp và nguyên liệu sạch giúp bạn luôn an tâm khi thưởng thức.</p>
+        <p>GiDu Food – Thế giới ăn vặt đậm chất Việt!
+          Chuyên bán bánh tráng, trà sữa và nước ngọt thơm ngon, giá bình dân, phục vụ nhanh – chuẩn vị học trò, sinh viên và dân văn phòng.  </p>
       </section>
     
       <section id="thucdon">
@@ -152,7 +154,7 @@
         <div class="menu">
           <div class="item">
             <img src="images/banh-trang-tron-sate.jpg" alt="Bánh tráng trộn">
-            <h3>Bánh Tráng Trộn</h3>
+            <h3 >Bánh Tráng Trộn</h3>
             <p>Bánh tráng mềm dẻo, đậm đà, topping đầy đủ: khô bò, trứng cút, rau răm, xoài bào.</p>
           </div>
           <div class="item">

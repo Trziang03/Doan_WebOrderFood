@@ -5,7 +5,7 @@
 }
 
 .profile .row_profile {
-    background-color: white;
+    background-color:#fff2e6;
     width: 100%;
     display: flex;
     flex-wrap: wrap;
@@ -502,6 +502,7 @@
     justify-content: space-around;
     flex-wrap: wrap;
     border-bottom: 1px solid #C7C7C7;
+    background-color:#fff2e6;   
 }
 .cart_item_img {
     width: 20%;
@@ -764,6 +765,7 @@
     }
     .shopping_cart_item {
         padding-bottom: 5px;
+        background-color:#fff2e6;
     }
     .cart_item_info_top > button{
         padding: 5px;

@@ -4,6 +4,8 @@
     @php
         $danhSachDanhMuc = DB::table('categories')->where('status', 1)->select('name', 'slug', 'id')->get();
         $danhSachThuongHieu = DB::table('brands')->where('status', 1)->select('name')->get();
+        $danhSachDanhMucLoc = DB::table('categories')->where('status', 1)->select('name', 'slug', 'id')->get();
+
     @endphp
     <section class="container_css product_searchs">
         <div class="product_search_lists">
@@ -11,7 +13,13 @@
                 <div>
                     <h5><i class="fas fa-filter" style="margin-right: 5px;"></i>Bộ lọc tìm kiếm</h5>
                     <div class="product_search product_search_list_category">
-                        <p>Danh mục<i class="fas fa-sort-down"></i></p>
+                        {{-- <select name="categoryFilter" id="categoryFilter">
+                            <option value="all">Tất cả</option>
+                            @foreach ($danhSachDanhMucLoc as $item)
+                                <option value="{{ $item->id, route('timkiemsanpham', ['slug' => $item->slug]) }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select> --}}
+                        <p>Danh mục<i class="fas fa-sort-down"></i></p>                 
                         <div class="product_search_list_category_popup">
                             @foreach ($danhSachDanhMuc as $danhMuc)
                                 <a href="{{ route('timkiemsanpham', ['slug' => $danhMuc->slug]) }}">{{ $danhMuc->name }}</a>
@@ -100,6 +108,44 @@
     </section>
 @endsection
 @section('script')
+<script>
+    document.getElementById('categoryFilter').addEventListener('change', function() {
+            const categoryId = this.value;
+
+            fetch(`{{ route('user.search', ['id' => 'all']) }}?categoryFilter=${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Cập nhật bảng với dữ liệu mới
+                    const tbody = document.querySelector('table tbody');
+                    tbody.innerHTML = ''; // Xóa nội dung cũ
+
+                    if (data.length === 0) {
+                        tbody.innerHTML =
+                            '<tr><td colspan="5" style="text-align: center;">Không có danh mục nào để hiển thị.</td></tr>';
+                    } else {
+                        data.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                            <td style="text-align: center;">${item.id}</td>
+                            <td>${item.name}</td>
+                            <td>${item.image}</td>
+                            <td style="text-align: center;">
+                                <a href="/admin/category/edit/${item.id}"><i class="fa-solid fa-check"></i></a>
+                            </td>
+                            <td style="text-align: center;">
+                                <a onclick="popup('dm', ${item.id})" data-id="${item.id}">
+                                    <i class="fa-solid fa-x"></i>
+                                </a>
+                            </td>
+                        `;
+                            tbody.appendChild(row);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+</script>
 <script>
          function buyNowSearch(variantId){
         const quantity = 1;

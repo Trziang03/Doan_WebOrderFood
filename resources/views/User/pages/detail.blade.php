@@ -189,7 +189,7 @@
     
     <!-- Chi tiết sản phẩm -->
     <section class="container_css" style="padding:10px;">
-        <div class="product_detail">
+        <div class="product_detail" style="background-color:#fff2e6;">
             <div class="product_detail_left">
                 <div id="carouselExampleIndicators" class="carousel slide carousel-dark" data-bs-ride="carousel">
                     <div class="carousel-inner">

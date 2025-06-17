@@ -621,6 +621,7 @@
     display: flex;
     flex-wrap: wrap;
     padding:10px;
+    background-color: #fff2e6;
 }
 .product_search_list_left {
     width: 20%;

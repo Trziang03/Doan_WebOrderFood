@@ -61,7 +61,8 @@
                                     </div>
                             </div>
                             <div class="col">
-                                <textarea name="content" placeholder="Nội dung" style="width: 500px;height: 250px;margin-left: 10px; padding-left: 5px; outline:none"></textarea>
+                                <textarea name="content" placeholder="Nội dung" style="width: 500px;height: 250px;margin-left: 10px; padding-left: 5px; outline:none; background-color:#fff2e6;
+                                "></textarea>
                                 <div class="alert_error_validate">
                                     <span style="color: red; font-size:12px;margin-left: 10px" >
                                         @error('content'){{$message}}@enderror
