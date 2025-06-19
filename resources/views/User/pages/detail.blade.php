@@ -278,6 +278,7 @@
                         @foreach ($mauSanPham as $index => $mau)
                             <button class="{{ $index == 0 ? 'color_active' : '' }} btn-border-radius"
                                 onclick="LayThongTinSanPhamTheoMau('{{ $slug }}','{{ $mau->internal_memory }}','{{ $mau->color }}',this)">
+                                <img src="{{ asset('images/' . $mau->image) }}" alt="Lỗi hiển thị">
                                 <span>
                                     <p>{{ $mau->color }}</p>
                                 </span>

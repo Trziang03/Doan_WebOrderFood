@@ -1,3 +1,9 @@
+/* Ẩn thanh cuộn bên phải ở all page user*/
+html {
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
 .active_tab {
     background-color:rgb(240, 145, 55) !important;
     color: white;
@@ -110,7 +116,7 @@
 }
 .product_best_seller_items{
     display: flex;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     justify-content: flex-start;
 }
 
@@ -784,7 +790,8 @@
     font-size: 13px;
     border: none;
     font-weight: 800;
-    color: #288ad6;
+    color: #ffffff;
+    background-color:rgb(240, 145, 55);
 }
 .product_search_list_item_info > ul > li:nth-child(4) div a {
     color: rgb(22, 66, 60);
