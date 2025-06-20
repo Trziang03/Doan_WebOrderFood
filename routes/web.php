@@ -130,9 +130,13 @@ Route::middleware(['role:QL,NV'])->group(function () {
 
     //quản lý bàn ăn
     Route::get('/admin/table', [AdminTableController::class, 'index'])->name('admin.table');
-    Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');;
+    // Thêm bàn mới
+    Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');
+    // Sửa bàn
     Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
-    Route::delete('/admin/table/delete/{id}', [AdminTableController::class, 'destroy'])->name('admin.table.destroy');
+    // Xoá bàn
+    Route::get('/admin/table/delete/{id}', [AdminTableController::class, 'destroy'])->name('admin.table.destroy');
+
 });
 
 
@@ -151,6 +155,8 @@ Route::middleware(['role:KH'])->group(function () {
         Route::get('/payment', 'index')->name('user.payment');
         Route::post('/payment', 'completePayment')->name('complete-payment');
         Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
+        Route::get('/table/{id}', 'orderByTable')->name('order.table');
+
     });
 
     Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');

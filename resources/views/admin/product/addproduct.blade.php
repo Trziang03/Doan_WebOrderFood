@@ -137,7 +137,7 @@
                 <input type="text" id="toppingName" name="name" required>
 
                 <label for="toppingPrice">Giá Topping</label>
-                <input type="number" id="toppingPrice" name="price" required>
+                <input type="text" id="toppingPrice" name="price" required>
 
                 <button type="submit">Thêm Topping</button>
             </form>
@@ -148,7 +148,7 @@
                 <input type="text" id="sizeName" name="name" required>
 
                 <label for="sizePrice">Giá Size</label>
-                <input type="number" id="sizePrice" name="price" required>
+                <input type="text" id="sizePrice" name="price" required>
 
                 <button type="submit">Thêm Size</button>
             </form>

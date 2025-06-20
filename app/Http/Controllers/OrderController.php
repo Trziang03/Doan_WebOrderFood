@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Voucher;
+use App\Models\Table;
 use App\Models\VoucherUser;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,20 @@ class OrderController extends Controller
             return redirect()->route('user.index');
         return view('User.profile.payment',['code'=>$code]);
     }
+    public function orderByTable($id)
+    {
+        $table = Table::with('status')->find($id);
 
+        if (!$table) {
+            abort(404, 'Bàn không tồn tại');
+        }
+
+        // Gửi thông tin bàn đến view gọi món
+        return view('client.order', [
+            'table' => $table,
+            // 'foods' => Food::all(), // Nếu có danh sách món ăn
+        ]);
+    }
     public function addVoucher(Request $request){
         //kiểm tra mã code có tồn tại
         $voucher =  Voucher::where('code',$request->code)->first();
