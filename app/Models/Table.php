@@ -12,8 +12,8 @@ class Table extends Model
     protected $table = 'tables';
 
     protected $fillable = [
-        'table_name',
-        'qr_code_table',
+        'name',
+        'qr_code',
         'table_status_id',
     ];
 

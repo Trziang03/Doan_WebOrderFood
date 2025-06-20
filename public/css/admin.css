@@ -195,7 +195,7 @@ input {
     margin-bottom: 15px;
     border-radius: 4px;
     display: block;
-    margin-top: 2px;
+    margin-top: 10px;
 }
 
 .content option {
@@ -471,7 +471,7 @@ table tr td {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin: 0 1rem 1rem 0;
+    margin: 15px 1rem 1rem 0;
 }
 
 .col:last-child>select {
@@ -578,6 +578,7 @@ table tr td {
     padding: 10px;
     box-sizing: border-box;
     font-size: 14px;
+    margin-top: 2px;
 }
 
 .short-input input {
@@ -590,7 +591,7 @@ table tr td {
     /* nhỏ hơn 180px để các thẻ nhỏ hơn */
     gap: 8px;
     /* giảm khoảng cách giữa các thẻ */
-    margin-top: 12px;
+    margin-top: 8px;
 }
 
 .topping-card {
@@ -693,15 +694,51 @@ table tr td {
     display: block;
 }
 
+/* Select fields */
+#optionPopup select {
+    width: 60%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;           /* to hơn 1px */
+    background-color: #fff;
+    cursor: pointer;
+}
+
 /* Input fields */
-#optionPopup input[type="text"],
-#optionPopup input[type="number"] {
+#optionPopup input[type="text"] {
     width: 100%;
     padding: 8px 10px;
     margin-bottom: 12px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 14px;
+}
+
+/* Container cho label + checkbox */
+#optionPopup .form-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    margin-top: 12px;
+    font-size: 16px;
+}
+
+/* Checkbox style */
+#optionPopup .form-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #007bff; /* Màu xanh đặc trưng */
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Label cho checkbox */
+#optionPopup .form-check label {
+    margin: 0;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 /* Submit buttons */
@@ -785,7 +822,7 @@ table tr td {
     cursor: pointer;
 }
 
-/* Bảng */
+/* Bảng ////////////////////*/
 .modal-content table {
     width: 100%;
     border-collapse: collapse;
@@ -828,21 +865,38 @@ table tr td {
         table-layout: fixed;
     }
 
-    th, td {
+    th,
+    td {
         border: 1px solid #000;
         padding: 6px;
         text-align: center;
         word-wrap: break-word;
     }
 
-    .btn, .modal-header, .modal-footer {
+    .btn,
+    .modal-header,
+    .modal-footer {
         display: none;
     }
 
-    .food-table th:nth-child(1), .topping-table th:nth-child(1) { width: 40%; }
-    .food-table th:nth-child(2), .topping-table th:nth-child(2) { width: 20%; }
-    .food-table th:nth-child(3), .topping-table th:nth-child(3) { width: 20%; }
-    .food-table th:nth-child(4) { width: 20%; }
+    .food-table th:nth-child(1),
+    .topping-table th:nth-child(1) {
+        width: 40%;
+    }
+
+    .food-table th:nth-child(2),
+    .topping-table th:nth-child(2) {
+        width: 20%;
+    }
+
+    .food-table th:nth-child(3),
+    .topping-table th:nth-child(3) {
+        width: 20%;
+    }
+
+    .food-table th:nth-child(4) {
+        width: 20%;
+    }
 
 }
 
@@ -859,5 +913,101 @@ table tr td {
     }
 } */
 
+/* form group thêm*/
+.form-section {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
 
+.form-group-tablee {
+    margin-bottom: -2rem;
+    max-width: 1000px;
+    width: 100%;
+}
 
+.form-group-row-table {
+    display: flex;
+    gap: 0px;
+    margin-bottom: 20px;
+}
+
+.form-group-table {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-table label {
+    margin-bottom: 5px;
+}
+
+.form-group-table input {
+    width: 60% !important;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.form-group-table select {
+    width: 35% !important;
+}
+
+.form-group-row-table.buttons {
+    display: flex;
+    justify-content: flex-end;
+    /* Đẩy về phải */
+    gap: 10px;
+}
+/* form group thêm*/
+
+    /* Danh sách bàn */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        /* Chia 4 cột cố định */
+        gap: 20px;
+    }
+
+    .table-box {
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-top: 10px;
+        background-color: white;
+        border-radius: 10px;
+        padding: 40px 10px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease;
+    }
+
+    .table-box:hover {
+        transform: scale(1.05);
+        background-color: #ffefcc;
+    }
+
+    .table-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .table-status {
+        font-size: 14px;
+        color: black;
+        margin-bottom: 12px;
+    }
+
+    .table-actions button {
+        width: 34px;
+        height: 34px;
+        margin: 0 4px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    /* Danh sách bàn */

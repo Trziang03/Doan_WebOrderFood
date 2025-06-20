@@ -23,115 +23,6 @@
             </script>
         @endif
         <div class="row">
-<<<<<<< HEAD
-            <div class="col-lg-8">
-
-                <div class="row">
-                    <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data"
-                        id="formAddProduct" class="form-product">
-                        <div class="col">
-                            <div class="form-groups">
-                                <div class="form-group-product">
-                                    <div class="col"><label>Tên Món ăn:</label></div>
-                                    <div class="col"><input type="text" onkeyup="checkProduct(this.value)"
-                                            class="form-control" id="name" name="name" required></div>
-                                    <span id="isset-product"></span>
-                                    @error('name')
-                                        <span class="text-danger" style="color:red">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="form-group-product">
-                                    <div class="col"><label>Mô tả:</label></div>
-                                    <textarea name="description" required></textarea>
-                                    @error('description')
-                                        <span class="text-danger" style="color:red">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="form-group-product">
-                                    <div>
-                                        <div class="col"><label>Danh mục:</label></div>
-                                        <div class="col">
-                                            <select name="category" onchange="loadBrandAndCategorySpe(this)">
-                                                @foreach ($danhSachPhanLoai as $phanLoai)
-                                                    <option value="{{ $phanLoai->id }}">{{ $phanLoai->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    {{-- <div>
-                                        <div class="col"><label>Thương hiệu:</label></div>
-                                        <div class="col">
-                                            <select name="brand" id="brands">
-                                                @foreach ($danhSachThuongHieu as $thuongHieu)
-                                                    <option value="{{ $thuongHieu->id }}">{{ $thuongHieu->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div> --}}
-                                </div>
-                                <div class="form-group-product">
-                                    <div class="col">
-                                        <label>Hình ảnh:</label>
-                                    </div>
-                                    <div> <button type="button" data-idx=1 onclick="addImage(this)">Thêm hình ảnh</button>
-                                    </div>
-                                    <div class="col" id="image-products">
-                                        <img id="output-1" />
-                                        <input type="file" data-index=1 onchange="loadFile(event,this)"
-                                            class="form-control" style="background-color:white" name="image[0]" required>
-                                    </div>
-                                    @error('image')
-                                        <span class="text-danger" style="color:red">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            {{-- <div class="form-groups" id="category-specification">
-                                @foreach ($danhSachThongTinKyThuat as $index => $thongTinKyThuat)
-                                    <div class=" form-group-product">
-                                        <div class="col">
-                                            <label>{{ $thongTinKyThuat->name }}</label>
-                                        </div>
-                                        <div class="col">
-                                            <input type="hidden" name="specification[{{ $index }}]"
-                                                value="{{ $thongTinKyThuat->id }}">
-                                            <input type="text" class="form-control" name="value[{{ $index }}]" required>
-
-                                        </div>
-                                    </div>
-                                @endforeach
-                                 Hiển thị xong 
-
-                            </div> --}}
-                            <div class="row">
-                                <p>Thêm các biến thể</p>
-                                <div>
-                                    <button type="button" data-index=0 onclick="addVariant(this)">Thêm biến thể</button>
-                                </div>
-                                <div id="variants">
-                                    <div>
-                                        <p>Biến thể 1</p>
-                                        <span>
-                                            Màu sắc
-                                            <input type="text" name="variants[0][color]" required>
-                                        </span>
-                                        <span>
-                                            Dung lượng
-                                            <input type="text" name="variants[0][internal_memory]" required>
-                                        </span>
-                                        <span>
-                                            Giá
-                                            <input type="number" min="0" name="variants[0][price]" required>
-                                        </span>
-                                        <div>
-                                            <span>
-                                                Số lượng
-                                                <input type="number" min="0" name="variants[0][stock]" required>
-                                            </span>
-                                            <span>
-                                                Hình ảnh
-                                                <input type="file" name="variants[0][image_variant]" required>
-                                            </span>
-=======
             <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data" id="formAddProduct">
                 @csrf
                 <div class="form-group">
@@ -213,7 +104,6 @@
                                             <div class="topping-price">
                                                 {{ $size->price > 0 ? '+' . number_format($size->price, 0, ',', '.') . ' đ' : '+0 đ' }}
                                             </div>
->>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
                                         </div>
                                     </div>
                                 @endforeach
@@ -247,7 +137,7 @@
                 <input type="text" id="toppingName" name="name" required>
 
                 <label for="toppingPrice">Giá Topping</label>
-                <input type="number" id="toppingPrice" name="price" required>
+                <input type="text" id="toppingPrice" name="price" required>
 
                 <button type="submit">Thêm Topping</button>
             </form>
@@ -258,7 +148,7 @@
                 <input type="text" id="sizeName" name="name" required>
 
                 <label for="sizePrice">Giá Size</label>
-                <input type="number" id="sizePrice" name="price" required>
+                <input type="text" id="sizePrice" name="price" required>
 
                 <button type="submit">Thêm Size</button>
             </form>
@@ -337,70 +227,6 @@
                     }
                 });
             }
-<<<<<<< HEAD
-
-        }
-    </script>
-    <script>
-        var loadFile = function(event, img) {
-            const idx = img.dataset.index;
-            var reader = new FileReader();
-            reader.onload = function() {
-                var output = document.getElementById('output-' + idx);
-                output.src = reader.result;
-                output.style.width = "150px";
-                output.style.height = "150px";
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        };
-    </script>
-    <script>
-        function notification() {
-            setTimeout(() => {
-                message.style.display = 'none';
-            }, 3000);
-        }
-    </script>
-
-    <script>
-        // function addVariant(btn) {
-        //     btn.dataset.index++;
-        //     const variants = document.getElementById('variants');
-        //     const variant = `<div>
-        //                     <p> Biến thể ${Number(btn.dataset.index)+1}</p>
-        //                     <span>
-        //                         Màu sắc
-        //                         <input type="text" name="variants[${Number(btn.dataset.index)}][color]" required>
-        //                     </span>
-        //                     <span>
-        //                         Dung lượng
-        //                         <input type="text" name="variants[${Number(btn.dataset.index)}][internal_memory]" required>
-        //                     </span>
-        //                     <span>
-        //                         Giá
-        //                         <input type="number" min="0" name="variants[${Number(btn.dataset.index)}][price]" required>
-        //                     </span>
-        //                     <div>
-        //                         <span>
-        //                             Số lượng
-        //                             <input type="number" min="0" name="variants[${Number(btn.dataset.index)}][stock]" required>
-        //                         </span>
-        //                         <span>
-        //                             Hình ảnh
-        //                             <input type="file" name="variants[${Number(btn.dataset.index)}][image_variant]" required>
-        //                         </span>
-        //                     </div>
-
-        //                 </div>`;
-        //     variants.insertAdjacentHTML('beforeend', variant);
-        // }
-    </script>
-    <script>
-        function loadBrandAndCategorySpe(category) {
-            loadCategorySpecification(category);
-            loadBrands(category);
-=======
->>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
         }
 
         // Hiển thị preview ảnh sản phẩm
@@ -421,19 +247,11 @@
         @if ($errors->any())
             alertify.alert('Vui lòng nhập đầy đủ các trường!');
         @endif
-<<<<<<< HEAD
-    </script>
-    <script>
-            const input = document.getElementById("name");
-            input.addEventListener("invalid", function () {
-            input.setCustomValidity("Vui lòng nhập tên món ăn vào đây!");
-=======
 
                                     // Cảnh báo HTML5 input name
                     const input = document.getElementById("name");
         input.addEventListener("invalid", function () {
             input.setCustomValidity("Vui lòng nhập tên sản phẩm vào đây!");
->>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
             input.addEventListener("input", function () {
                 input.setCustomValidity("");
             });

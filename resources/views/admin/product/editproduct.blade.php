@@ -18,98 +18,6 @@
     </div>
     <div class="separator_x"></div>
 
-<<<<<<< HEAD
-                            <div class=" form-groups">
-                                <div class="form-group-product">
-                                    <input type="hidden" name="id" value="{{ $sanPham->id }}">
-                                    <div class="col"><label>Tên sản phẩm:</label></div>
-                                    <div class="col"><input type="text" class="form-control" id="name"
-                                            name="name" value="{{ $sanPham->name }}" required
-                                            oninvalid="this.setCustomValidity('Vui lòng nhập tên sản phẩm')"></div>
-                                    @error('name')
-                                        <span class="text-danger" style="color:red">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="form-group-product">
-                                    <div class="col"><label>Mô tả:</label></div>
-                                    <textarea name="description" required>{{ $sanPham->description }}</textarea>
-                                    @error('description')
-                                        <span class="text-danger" style="color:red">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="form-group-product">
-                                    <div>
-                                        <div class="col"><label>Danh mục:</label></div>
-                                        <div class="col">
-                                            <select name="category" onchange="loadBrandAndCategorySpe(this)" disabled>
-                                                @foreach ($danhSachPhanLoai as $phanLoai)
-                                                    <option value="{{ $phanLoai->id }}"
-                                                        @if ($phanLoai->id == $sanPham->brand->category->id) {{ 'selected' }} @endif>
-                                                        {{ $phanLoai->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                        {{-- <div>
-                                            <div class="col"><label>Thương hiệu:</label></div>
-                                            <div class="col">
-                                                <select name="brand" id="brands">
-                                                    @foreach ($danhSachThuongHieu as $thuongHieu)
-                                                        <option value="{{ $thuongHieu->id }}"
-                                                            @if ($sanPham->brand_id == $thuongHieu->id) {{ 'selected' }} @endif>
-                                                            {{ $thuongHieu->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div> --}}
-                                </div>
-                                <div class="form-group-product">
-                                    <div class="col">
-                                        <label>Hình ảnh:</label>
-                                    </div>
-                                    <div> <button type="button" data-idx={{ count($sanPham->image_products) }}
-                                            onclick="addImage(this)">Thêm hình ảnh</button>
-                                    </div>
-                                    @for ($i = 0; $i < count($sanPham->image_products); $i++)
-                                        <div class="col" id="image-products">
-                                            <img id="output-{{ $i + 1 }}" style="witdh: 70px; height: 70px"
-                                                src="{{ asset('/images/' . $sanPham->image_products[$i]->image) }}" />
-                                            <input type="file" data-index={{ $i + 1 }}
-                                                onchange="loadFile(event,this)" class="form-control"
-                                                style="background-color:white" name="image[{{ $i }}]">
-                                            <input type="hidden" name="image_id[{{ $i }}]"
-                                                value="{{ $sanPham->image_products[$i]->id }}">
-                                        </div>
-
-                                        @error('image')
-                                            <span class="text-danger" style="color:red">{{ $message }}</span>
-                                        @enderror
-                                    @endfor
-                                </div>
-                            </div>
-                            {{-- <div class="form-groups" id="category-specification">
-                                @foreach ($sanPham->product_specification as $index => $specification)
-                                    <div class=" form-group-product">
-                                        <div class="col">
-                                            <label>{{ $specification->category_specification->name }}</label>
-                                        </div>
-                                        <div class="col">
-                                            <input type="hidden" name="specification[{{ $index }}]"
-                                                value="{{ $specification->id }}">
-                                            <input type="text" class="form-control" name="value[{{ $index }}]"
-                                                value="{{ $specification->value }}" required>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div> --}}
-                            @csrf
-                            @method('put')
-                            <div class="btn-goback button-product">
-                                <button type="submit">Xác nhận</button>
-                                <button type="button">Hủy</button>
-                            </div>
-                        </form>
-=======
     @if (session('msg'))
         <script>
             alertify.success("{{ session('msg') }}");
@@ -227,7 +135,6 @@
                         <button>Cập nhật</button>
                         <button type="reset">Đặt lại</button>
                         <button type="button"><a href="{{ route('admin.product') }}">&laquo; Trở lại</a></button>
->>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
                     </div>
                 </div>
             </div>
@@ -244,7 +151,7 @@
             <input type="text" id="toppingName" name="name" required>
 
             <label for="toppingPrice">Giá Topping</label>
-            <input type="number" id="toppingPrice" name="price" required>
+            <input type="text" id="toppingPrice" name="price" required>
 
             <button type="submit">Thêm Topping</button>
         </form>
@@ -255,7 +162,7 @@
             <input type="text" id="sizeName" name="name" required>
 
             <label for="sizePrice">Giá Size</label>
-            <input type="number" id="sizePrice" name="price" required>
+            <input type="text" id="sizePrice" name="price" required>
 
             <button type="submit">Thêm Size</button>
         </form>
