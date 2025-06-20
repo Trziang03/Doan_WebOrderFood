@@ -13,14 +13,11 @@ class Category extends Model
     //
     use HasFactory;
 
-    protected $fillable = ['id', 'name', 'slug', 'status'];
-    public function brands(): HasMany
+    protected $fillable = ['id', 'name', 'description', 'slug', 'status'];
+
+    public function products()
     {
-        return $this->hasMany(Brand::class);
-    }
-    public function category_specifications(): HasMany
-    {
-        return $this->hasMany(CategorySpecification::class);
+        return $this->hasMany(Product::class, 'category_id');
     }
     public function products()
     {
