@@ -13,26 +13,22 @@ class Product extends Model
 {
     //
     use HasFactory;
-    protected $fillable = ['name','slug','brand_id','description','status'];
-    protected $table = 'Products'; 
+    protected $fillable = ['name', 'slug', 'category_id', 'image_food', 'description', 'price', 'status'];
+    
     
     public function category()
     {
-        return $this->belongsTo(Category::class);
-    } 
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 
-    public function brand(): BelongsTo
+    public function toppings()
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsToMany(Topping::class, 'product_topping')
+            ->withPivot('quantity');
     }
-    static public function findProductByCategory($category){
-        return DB::connection('mysql')->select('select *
-                                                from categories inner join brands on categories.id = brands.category_id inner join products on products.brand_id = brands.id
-                                                where categories.slug = ?',[$category]);
-    }
-    public function product_variants():HasMany
+    public function sizes()
     {
-        return $this->hasMany(ProductVariant::class);
+        return $this->belongsToMany(Size::class, 'product_size');
     }
     public function image_products():HasMany
     {
@@ -42,7 +38,6 @@ class Product extends Model
     {
         return $this->hasMany(ProductSpecification::class);
     }
-
     public function ratings():HasMany
     {
         return $this->hasMany(Rating::class);
@@ -66,6 +61,10 @@ class Product extends Model
         ->paginate(8);
 
     return $danhSachSanPham;
+    }
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'food_id');
     }
 }
 

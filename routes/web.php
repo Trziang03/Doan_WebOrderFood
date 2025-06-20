@@ -125,12 +125,32 @@ Route::controller(AdminBrandController::class)->group(
     Route::get('/admin/contact/update/{id}', [AdminContactController::class, 'updateContact'])->name('contact.update');
 
 
-    //quản lý đánh giá
-    Route::get('/admin/review', [AdminReviewController::class, 'showListReviews'])->name('admin.review');
-    Route::get('/admin/review/point-review/{opt}', [AdminReviewController::class, 'pointReview']);
-    Route::delete('/admin/review/delete/{id}', [AdminReviewController::class, 'deleteReviews'])->name('admin.review.delete');
-    Route::get('/admin/review/search' , [AdminReviewController::class, 'searchReview'])->name('admin.review.search');
-    Route::post('/admin/review/pointreview', [AdminReviewController::class, 'pointReview'])->name('admin.review.pointreview');
+   //quản lý bàn ăn
+   Route::get('/admin/table', [AdminTableController::class, 'index'])->name('admin.table');
+   // Thêm bàn mới
+   Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');
+   // Sửa bàn
+   Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
+   // Xoá bàn
+   Route::get('/admin/table/delete/{id}', [AdminTableController::class, 'destroy'])->name('admin.table.destroy');
+   
+   //Route quản lí món ăn
+   Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
+   Route::get('/admin/products/category/{id}', [AdminProductController::class, 'filterByCategory']);
+   Route::get('/admin/product/active/{id}', [AdminProductController::class, 'active'])->middleware(AdminRoleMiddleware::class)->name('admin.product.active');
+   Route::get('/admin/product/deactive/{id}', [AdminProductController::class, 'deactive'])->middleware(AdminRoleMiddleware::class)->name('admin.product.deactive');
+   Route::get('/admin/product/search', [AdminProductController::class, 'search'])->name('admin.product.search');
+   Route::get('/admin/proudct/list-product-unapproved', [AdminProductController::class, 'getListProductsUnapproved'])->middleware(AdminRoleMiddleware::class)->name('admin.product.unapproved');
+   Route::get('/admin/product/filter', [AdminProductController::class, 'filter'])->name('admin.product.filter');
+   Route::get('/admin/product-variant/{id}', [AdminProductVariantController::class, 'index'])->name('admin.product_variant.index');
+   Route::get('/admin/product-variant-hidden/{id}', [AdminProductVariantController::class, 'showListVariantsHide'])->name('product_variant_hide');
+   Route::PUT('/admin/product-variant/active/{id}', [AdminProductVariantController::class, 'active'])->middleware(AdminRoleMiddleware::class);
+   Route::post('/admin/product/is_isset', [AdminProductController::class, 'isIssetProduct']);
+   Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
+   Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
+
+   Route::resource('/admin/product-variant', AdminProductVariantController::class)->except(['index']);
+   Route::resource('/admin/product', AdminProductController::class);    
 });
 
 
@@ -150,6 +170,7 @@ Route::middleware(['role:KH'])->group(function () {
         Route::get('/payment', 'index')->name('user.payment');
         Route::post('/payment/complete', 'completePayment')->name('complete-payment');
         // Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
+        Route::get('/table/{id}', 'orderByTable')->name('order.table');
     });
 
     Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');

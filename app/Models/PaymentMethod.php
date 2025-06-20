@@ -11,4 +11,10 @@ class PaymentMethod extends Model
     //
     use HasFactory;
 
+    protected $fillable = ['name_method']; // các cột cho phép gán dữ liệuAdd commentMore actions
+    
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'payment_method_id');
+    }
 }

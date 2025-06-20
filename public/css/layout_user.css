@@ -480,6 +480,7 @@ footer{
 }
 .payment_left {
     width: 39%;
+    background-color:#fff2e6;
 }
 .payment_left .payment_products .payment_product {
     padding: 10px;
@@ -573,6 +574,7 @@ footer{
     width: 60%;
     padding: 10px;
     border-left: 1px solid #C7C7C7;
+    background-color: #fff2e6;
 }
 .profile_payment >input {
     width: 100%;
