@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Models\Category;
-use App\Models\Brand;
+use App\Models\Topping;
+use App\Models\Size;
 use App\Models\ImageProduct;
 use Illuminate\Support\Facades\File;
-use App\Models\ProductSpecification;
-use App\Models\CategorySpecification;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ProductUser;
@@ -22,11 +20,41 @@ class AdminProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $danhSachSanPham = Product::where('status',1)->orderBy('created_at','desc')->paginate(8);
-        return view('admin.product.product',['danhSachSanPham'=>$danhSachSanPham]);
+        $categories = Category::all();
+
+        $query = Product::with('category'); // để load tên danh mục
+
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = strtolower(trim($request->keyword));
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', '%' . $keyword . '%')
+                    ->orWhere('description', 'like', '%' . $keyword . '%')
+                    ->orWhere('price', 'like', '%' . $keyword . '%');
+
+                // Tìm theo tên danh mục (từ bảng categories)
+                $q->orWhereHas('category', function ($cat) use ($keyword) {
+                    $cat->where('name', 'like', '%' . $keyword . '%');
+                });
+
+                // Tìm theo trạng thái
+                if (in_array($keyword, ['hiện', 'hien', '1'])) {
+                    $q->orWhere('status', 1);
+                } elseif (in_array($keyword, ['ẩn', 'an', '0'])) {
+                    $q->orWhere('status', 0);
+                }
+            });
+        }
+
+        $danhSachSanPham = $query->orderBy('created_at', 'desc')->paginate(5)->withQueryString();
+
+
+        return view('admin.product.product', [
+            'danhSachSanPham' => $danhSachSanPham,
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -34,76 +62,90 @@ class AdminProductController extends Controller
      */
     public function create()
     {
-        //
-        $danhSachPhanLoai = Category::where('status',1)->get();
-        $danhSachThuongHieu = Brand::filter(1);
-        $danhSachThongTinKyThuat = CategorySpecification::where('category_id',1)->get();
-        return view('admin.product.addproduct',['danhSachPhanLoai'=>$danhSachPhanLoai,'danhSachThuongHieu'=>$danhSachThuongHieu,'danhSachThongTinKyThuat'=>$danhSachThongTinKyThuat]);
-    }
+        $danhSachPhanLoai = Category::where('status', 1)->get();
+        $toppings = Topping::where('status', 1)->get();
+        $sizes = Size::where('status', 1)->get(); // Thêm dòng này
 
+        return view('admin.product.addproduct', [
+            'danhSachPhanLoai' => $danhSachPhanLoai,
+            'toppings' => $toppings,
+            'sizes' => $sizes // Truyền sang view
+        ]);
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $validate = $request->validate([
-            'name'=>'required|unique:products|max:255',
-            'description'=>'required',
-            'image.*'=>'required|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'value.*'=>'required',
-            'variants.*.color'=>'required',
-            'variants.*.stock'=>'required|min:0',
-            'variants.*.internal_memory'=>'required',
-            'variants.*.price'=>'required|min:0',
-            'variants.*.image_variant'=>'required|image|mimes:jpeg,png,jpg,webp|max:2048'
-        ],[
-            'name.required'=> 'Vui lòng nhập tên sản phẩm!',
-            'name.unique'=>'Tên sản phẩm đã tồn tại!',
-            'image.required'=>'Vui lòng thêm hình ảnh!',
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'status' => 'required|boolean',
+            'price' => 'required|numeric',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        //thêm sản phẩm
+        // Xử lý hình ảnh
+        $image_food = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/products'), $imageName);
+            $image_food = 'uploads/products/' . $imageName;
+        }
+
+        // Tạo sản phẩm
         $product = Product::create([
-            'name'=>$request->input('name'),
-            'slug'=>Str::slug($request->input('name')),
-            'description'=>$request->input('description'),
-            'brand_id'=>$request->input('brand'),
+            'name' => $request->input('name'),
+            'slug' => Str::slug($request->input('name')),
+            'description' => $request->input('description'),
+            'category_id' => $request->input('category_id'),
+            'status' => $request->input('status'),
+            'price' => $request->input('price'),
+            'image_food' => $image_food ?? 'uploads/products/default.png',
         ]);
-        // //thêm nhiều hình ảnh sản phẩm từ id sản phẩm ở $product
-        $idx = 0;
-        foreach($request->image as $image){
-            $extension = $image->getClientOriginalExtension();
-            $fileName = 'product_'.$idx.time().'.'.$extension;
-            $image->move(public_path('images'), $fileName);
-            ImageProduct::create([
-                'image'=>$fileName,
-                'product_id'=> $product->id
-            ]);
-            $idx++;
+
+        // Gắn sizes nếu có
+        if ($request->has('sizes')) {
+            $product->sizes()->sync($request->sizes);
         }
 
-        //thêm thông số kĩ thuật cho sản phẩm từ id của $product
-        for($i = 0; $i < count($request->specification);$i++){
-            ProductSpecification::create([
-                'product_id'=>$product->id,
-                'category_specification_id' => $request->specification[$i],
-                'value' => $request->value[$i]
-            ]);
+        // Gắn toppings với quantity nếu có
+        $toppings = [];
+        if ($request->has('toppings')) {
+            foreach ($request->toppings as $toppingId => $data) {
+                if (isset($data['selected']) && $data['selected'] == 1) {
+                    $quantity = isset($data['quantity']) ? intval($data['quantity']) : 1;
+                    $toppings[$toppingId] = ['quantity' => $quantity];
+                }
+            }
+            $product->toppings()->sync($toppings);
         }
 
-        //Thêm nhiều variant
-        foreach($request->variants as $index=>$variant){
-            ProductVariant::create([
-                'color'=>$variant['color'],
-                'stock'=>$variant['stock'],
-                'price'=>$variant['price'],
-                'internal_memory'=>$variant['internal_memory'],
-                'product_id'=>$product->id,
-                'image'=> ProductVariant::uploadImageVariant($variant['image_variant'],$index)
-                ]);
-        }
+        return redirect()->route('admin.product')
+            ->with('message', 'Thêm món ăn thành công');
+    }
 
-        return redirect()->route('product.index')->with('msg','Thêm sản phẩm thành công! Sản phẩm đang ở trạng thái chờ duyệt');
+    public function storeTopping(Request $request)
+    {
+        Topping::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'status' => 1,
+        ]);
+        return back()->with('message', 'Đã thêm topping mới.');
+    }
+
+    public function storeSize(Request $request)
+    {
+        Size::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'status' => 1
+        ]);
+        return back()->with('message', 'Đã thêm size mới.');
     }
 
     /**
@@ -117,15 +159,19 @@ class AdminProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
-        $danhSachPhanLoai = Category::where('status',1)->get();
-        $sanPham = Product::with('brand.category')->find($id);
-        $danhSachThuongHieu = $sanPham->brand->category->brands;
-        $thongSoKyThuat = $sanPham->product_specification;
+        $sanPham = Product::with(['toppings', 'sizes'])->findOrFail($id);
+        $danhSachPhanLoai = Category::where('status', 1)->get();
+        $toppings = Topping::where('status', 1)->get();
+        $sizes = Size::where('status', 1)->get();
 
-        return view('admin.product.editproduct',['danhSachPhanLoai'=>$danhSachPhanLoai,'danhSachThuongHieu'=>$danhSachThuongHieu,'sanPham'=>$sanPham]);
+        return view('admin.product.editproduct', [
+            'sanPham' => $sanPham,
+            'danhSachPhanLoai' => $danhSachPhanLoai,
+            'toppings' => $toppings,
+            'sizes' => $sizes
+        ]);
     }
 
     /**
@@ -133,62 +179,79 @@ class AdminProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-
-        $validate = $request->validate([
-            'name'=>'required',
-            'description'=>'required',
-            'value.*' => 'required|'
-        ],[
-            'name'=>'Vui lòng nhập tên sản phẩm',
-            'description'=>'Vui lòng nhập mô tả sản phẩm'
+        $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+            'status' => 'required|boolean',
+            'value.*' => 'nullable', // nếu có thuộc tính động
+        ], [
+            'name.required' => 'Vui lòng nhập tên món ăn',
+            'description.required' => 'Vui lòng nhập mô tả',
+            'price.required' => 'Vui lòng nhập giá',
+            'price.numeric' => 'Giá phải là số',
+            'category_id.required' => 'Vui lòng chọn danh mục',
+            'status.required' => 'Vui lòng chọn trạng thái',
         ]);
 
-        $check =Product::where('slug',Str::slug($request->input('name')))->where('id','<>',$request->id)->first();
-        if($check != null && Str::slug($request->input('name')) == $check->slug){
-            return back()->with('msg','Chỉnh sửa không thành công! Tên sản phẩm đã tồn tại');
-        }
-        $product = Product::find($request->id);
-        //chỉnh và thêm các ảnh của sản phẩm
-        for($i = 0; $i < count($request->image_id);$i++){
-            if(isset($request->image[$i]))
-            {
-                //kiểm tra nếu request->image[$i] có hình ảnh thì tiếp tục thao tác
-                //đồng thời kiểm tra image_id của hình ảnh nếu là có id rùi thì cập nhật, id trả về -1 thì thêm mới hình ảnh
-                if($request->image_id[$i]!=-1)
-                {
-                    $image = $request->image[$i];
-                    $extension = $image->getClientOriginalExtension();
-                    $fileName = 'product_'.$i.time().'.'.$extension;
-                    $image->move(public_path('images'), $fileName);
-                    ImageProduct::where('product_id',$product->id)
-                                ->where('id',$request->image_id[$i])
-                                ->update([
-                                    'image'=>$fileName,
-                                ]);
-                }else{
-                    $image = $request->image[$i];
-                    $extension = $image->getClientOriginalExtension();
-                    $fileName = 'product_'.$i.time().'.'.$extension;
-                    $image->move(public_path('images'), $fileName);
-                    ImageProduct::create(['image'=>$fileName,'product_id'=>$product->id]);
-                }
+        $product = Product::findOrFail($id);
 
+        // Kiểm tra trùng slug
+        $check = Product::where('slug', Str::slug($request->name))
+            ->where('id', '<>', $id)->first();
+        if ($check) {
+            return back()->with('msg', 'Tên món ăn đã tồn tại, vui lòng chọn tên khác!');
+        }
+
+        // Nếu có file ảnh mới
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/products'), $imageName);
+
+            // Xóa ảnh cũ nếu có
+            if ($product->image_food && file_exists(public_path($product->image_food))) {
+                unlink(public_path($product->image_food));
             }
+
+            $product->image_food = 'uploads/products/' . $imageName;
         }
 
+        // Sau khi xử lý xong, lưu lại
+        $product->save();
 
-        $product->update(['name'=>$request->input('name'),'slug'=>Str::slug($request->input('name')),'description'=>$request->description,'brand_id'=>$request->brand]);
+        // Cập nhật thông tin sản phẩm
+        $product->update([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+            'description' => $request->description,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'status' => $request->status,
+        ]);
 
+        // // Cập nhật toppings
+        $toppingIds = $request->input('toppings', []); // mảng ID topping
+        $product->toppings()->sync($toppingIds);
 
-        //duyệt danh sách các spe của sản phẩm gửi từ form và cập nhật từng dòng
-        //cập nhật theo id của product-spe
-        for($i = 0; $i < count($request->specification);$i++){
-            $spec = ProductSpecification::where('id',$request->specification[$i])->update([
-                'value'=>$request->value[$i]
-            ]);
-        }
-        return back()->with('msg','chỉnh sửa sản phẩm thành công!');
+        // $toppings = [];
+        // if ($request->has('toppings')) {
+        //     foreach ($request->toppings as $toppingId => $data) {
+        //         if (isset($data['selected']) && $data['selected'] == 1) {
+        //             $quantity = isset($data['quantity']) ? intval($data['quantity']) : 1;
+        //             $toppings[$toppingId] = ['quantity' => $quantity];
+        //         }
+        //     }
+        // }
+        // $product->toppings()->sync($toppings); // <- luôn sync, kể cả mảng rỗng
+
+        // Cập nhật sizes
+        $sizes = $request->sizes ?? []; // Mảng các ID size được chọn
+        $product->sizes()->sync($sizes); // <- luôn sync
+
+        return redirect()->route('admin.product', ['id' => $id])
+            ->with('message', 'Cập nhật món ăn thành công');
     }
 
     /**
@@ -197,96 +260,39 @@ class AdminProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'message' => 'Sản phẩm không tồn tại!'
+            ], 404);
+        }
+
         $name = $product->name;
-        if($product){
-            $variants = $product->product_variants;
-            foreach($variants as $variant){
-                if ($variant->image && File::exists(public_path('images/'.$variant->image))) {
-                    File::delete(public_path('images/'.$variant->image));
-                }
-            }
-            $image_products = $product->image_products;
-            foreach( $image_products as $image_product){
-                if ($image_product->image && File::exists(public_path('images/'.$image_product->image))) {
-                    File::delete(public_path('images/' . $image_product->image));
-                }
-            }
-            foreach($product->product_variants as $variant){
-                $items = OrderItem::where('product_variant_id',$variant->id)->get();
-                foreach($items as $item){
-                    $item->product_variant_id = null;
-                    $item->save();
-                }
-            }
 
-            $product->product_variants()->forceDelete();
-            $product->product_specification()->forceDelete();
-            $product->image_products()->forceDelete();
-            $product->ratings()->forceDelete();
-            $product->like_products()->forceDelete();
-            $product->forceDelete();
-
-            return 'Xóa sản phẩm '.$name.' thành công!';
+        // Xoá ảnh sản phẩm
+        foreach ($product->image_products as $image_product) {
+            if ($image_product->image && File::exists(public_path('images/' . $image_product->image))) {
+                File::delete(public_path('images/' . $image_product->image));
+            }
         }
-        return 'Xóa sản phẩm '.$name.' không thành công!';
-    }
 
-    public function search(Request $request){
+        $product->forceDelete();
 
-        $validate = $request->validate([
-            'key' => 'required'
+        return response()->json([
+            'message' => "Xóa sản phẩm {$name} thành công!"
         ]);
-        $key = str_replace('$', '', $request->input('key'));
-        $danhSachSanPhamDaTimKiem =Product::TimKiemTheoTuKhoa($key);
-
-        return view('admin.product.product')->with(
-            'danhSachSanPham',$danhSachSanPhamDaTimKiem
-        );
-    }
-    public function filter(Request $req){
-        if($req->opt=='all'){
-            $danhSachSanPham = Product::where('status',1)->get();
-        }else{
-            $danhSachSanPham = Product::findProductByCategory($req->opt);
-        }
-
-        return  $danhSachSanPham;
     }
 
-
-
-    public function getListProductsUnapproved(){
-        $danhSachSanPham = Product::where('status',2)->get();
-        $danhSachSanPhamBiAn = Product::where('status',0)->get();
-        return view('admin.product.product_approved',['danhSachSanPham'=>$danhSachSanPham,'danhSachSanPhamBiAn'=>$danhSachSanPhamBiAn]);
-    }
-
-    public function active($id){
-        $product = Product::find($id);
-        if($product->status!=1){
-            $product->update(['status'=>1]);
-            $product->product_variants()->update([
-                'status'=>1
-            ]);
-        }
-        return back()->with('msg','Sản phẩm '.$product->name.' đã được hiển thị!');
-    }
-
-    public function deactive($id){
-        $product = Product::find($id);
-        $product->update(['status'=>0]);
-        $product->product_variants()->update([
-            'status'=>0
-        ]);
-        return 'Ẩn sản phẩm thành công!';
-    }
-
-    public function isIssetProduct(Request $request)
+    public function filterByCategory($id)
     {
-        $slug = Str::slug($request->name);
-        $sanPham = Product::where('slug',$slug)->first();
-        if(isset($sanPham))
-            return 1;
-        return 0;
+        $categories = Category::all();
+        $danhSachSanPham = Product::where('category_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        return view('admin.product.product', [
+            'danhSachSanPham' => $danhSachSanPham,
+            'categories' => $categories,
+        ]);
     }
 }

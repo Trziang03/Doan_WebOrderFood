@@ -12,7 +12,7 @@ use App\Http\Controllers\AdminProductVariantController;
 use App\Http\Controllers\AdminBrandController;
 use App\Http\Controllers\AdminCategoryController;
 use App\Http\Controllers\AdminContactController;
-use App\Http\Controllers\AdminReviewController;
+use App\Http\Controllers\AdminTableController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
@@ -32,11 +32,11 @@ Route::controller(UserController::class)->group(function () {
     Route::get('detail/{slug}', "ChiTietSanPham")->name("detail");
     Route::get('detail/{slug}/{internal_memory}', "LayMauSanPhamTheoBoNho")->name("LayMauSanPhamTheoBoNho");
     Route::get('detail/{slug}/{internal_memory}/{color}', "LayThongTinSanPhamTheoMau")->name("LayThongTinSanPhamTheoMau");
-    Route::post('/addContact',  'addContact');
-    Route::get('/yeuthich/{sampham}/{user}',  'CapNhapSanPhamYeuThich')->name("SanPhamYeuThich");
-    Route::get('/get/{user}/{code}',  'GetDanhSachDanhGia');
+    Route::post('/addContact', 'addContact');
+    Route::get('/yeuthich/{sampham}/{user}', 'CapNhapSanPhamYeuThich')->name("SanPhamYeuThich");
+    Route::get('/get/{user}/{code}', 'GetDanhSachDanhGia');
     Route::post('/them-danh-gia', 'ThemDanhGia');
-    Route::get('/get-rating/{id}/{sao?}','getRating');
+    Route::get('/get-rating/{id}/{sao?}', 'getRating');
 
 });
 
@@ -52,29 +52,28 @@ Route::get('/admin/check-stock-variant/{id}', [AdminProductVariantController::cl
 //Phân quyền quản lý và nhân viên
 Route::middleware(['role:QL,NV'])->group(function () {
     //Route quan li danh mục
-Route::controller(AdminCategoryController::class)->group(
-    function () {
-        Route::get('/admin/addcategory', [AdminCategoryController::class, 'addCategory'])->name('admin.category.addcategory');
-        Route::post('/admin/addcategory/store', [AdminCategoryController::class, 'storeCategory'])->name('admin.category.storecategory');
-        Route::get('/admin/editcategory/{id}', [AdminCategoryController::class, 'editCategory'])->name('admin.category.editcategory');
-        Route::post('/admin/updatecategory//{id}', [AdminCategoryController::class, 'updateCategory'])->name('admin.category.updatecategory');
-        Route::get('/admin/filter-category/{id}', [AdminCategoryController::class, 'filterCategory'])->name('filter.category');
-        Route::delete('/admin/deletecategory/{id}', [AdminCategoryController::class, 'deleteCategory'])->name('admin.delete.category');
-    }
-);
+    Route::controller(AdminCategoryController::class)->group(
+        function () {
+            Route::get('/admin/category', [AdminCategoryController::class, 'index'])->name('admin.category');
+            Route::get('/admin/addcategory', [AdminCategoryController::class, 'addCategory'])->name('admin.category.addcategory');
+            Route::post('/admin/addcategory/store', [AdminCategoryController::class, 'storeCategory'])->name('admin.category.storecategory');
+            Route::get('/admin/editcategory/{id}', [AdminCategoryController::class, 'editCategory'])->name('admin.category.editcategory');
+            Route::post('/admin/updatecategory//{id}', [AdminCategoryController::class, 'updateCategory'])->name('admin.category.updatecategory');
+            Route::get('/admin/filter-category/{id}', [AdminCategoryController::class, 'filterCategory'])->name('filter.category');
+            Route::delete('/admin/deletecategory/{id}', [AdminCategoryController::class, 'deleteCategory'])->name('admin.delete.category');
+        }
+    );
 
-//Route quan li danh mục con
-Route::controller(AdminBrandController::class)->group(
-    function () {
-        Route::get('/admin/category', [AdminBrandController::class, 'getListBrand'])->name('admin.category');
-        Route::get('/admin/addbrand', [AdminBrandController::class, 'addBrand'])->name('admin.category.addbrand');
-        Route::post('/admin/brandStore', [AdminBrandController::class, 'storeBrand'])->name('admin.category.storebrand');
-        Route::get('/admin/editbrand/{id}', [AdminBrandController::class, 'editBrand'])->name('admin.category.editbrand');
-        Route::post('/admin/updatebrand/{id}', [AdminBrandController::class, 'updateBrand'])->name('admin.category.updatebrand');
-        Route::delete('/admin/deletebrand/{id}', [AdminBrandController::class, 'deleteBrand'])->name('admin.brand.delete');
-        Route::get('/admin/searchbrand', [AdminBrandController::class, 'searchBrand'])->name('admin.category.searchbrand');
-    }
-);
+    //Route quan li danh mục con
+    Route::controller(AdminBrandController::class)->group(
+        function () {
+            Route::get('/admin/addbrand', [AdminBrandController::class, 'addBrand'])->name('admin.category.addbrand');
+            Route::post('/admin/brandStore', [AdminBrandController::class, 'storeBrand'])->name('admin.category.storebrand');
+            Route::get('/admin/editbrand/{id}', [AdminBrandController::class, 'editBrand'])->name('admin.category.editbrand');
+            Route::post('/admin/updatebrand/{id}', [AdminBrandController::class, 'updateBrand'])->name('admin.category.updatebrand');
+            Route::delete('/admin/deletebrand/{id}', [AdminBrandController::class, 'deleteBrand'])->name('admin.brand.delete');
+        }
+    );
 
     //Route profile
     Route::get('/admin/profile', [AdminController::class, 'profile'])->name('admin.profile');
@@ -89,20 +88,23 @@ Route::controller(AdminBrandController::class)->group(
     Route::post('/admin/editWebsite', [AdminController::class, 'editWebsite'])->middleware(AdminRoleMiddleware::class)->name('admin.editWebsite');
     Route::post('/admin/editLogo', [AdminController::class, 'editLogo'])->middleware(AdminRoleMiddleware::class)->name('admin.editLogo');
 
-    //Route quan ly don hang
+    //Route quản lí đơn hàng
     Route::get('/admin/order', [AdminOrderController::class, 'index'])->name('admin.order');
-    Route::get('/admin/updateChuanBi/{id}', [AdminOrderController::class, 'updateChuanBi'])->name('admin.updateChuanBi');
-    Route::get('/admin/updateVanChuyen/{id}', [AdminOrderController::class, 'updateVanChuyen'])->name('admin.updateVanChuyen');
     Route::post('/admin/order/delete/{id}', [AdminOrderController::class, 'deleteOrder'])->name('order.delete');
     Route::post('/admin/order/cancel/{id}', [AdminOrderController::class, 'cancelOrder'])->name('order.cancel');
+    Route::get('/admin/order/show/{id}', [AdminOrderController::class, 'show'])->name('admin.order.show');
+    Route::get('/admin/order/change-status/{id}', [AdminOrderController::class, 'changeStatus'])->name('admin.order.change-status');
+    Route::get('/admin/order/detail/{id}', [AdminOrderController::class, 'ajaxDetail'])->name('admin.order.ajaxDetail');
 
-    //Route quan li thong ke
+    //Route quản lí thống kê
     Route::get('/admin/static', [AdminStaticController::class, 'index'])->name('admin.static');
     Route::post('/admin/statistic', [AdminStaticController::class, 'statistics'])->name('admin.statistic');
 
     Route::get('/admin/category-specification/{id}', [AdminCategoryController::class, 'loadCategorySpecification']);
 
-    //Route quan ly san pham
+    //Route quản lí món ăn
+    Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
+    Route::get('/admin/products/category/{id}', [AdminProductController::class, 'filterByCategory']);
     Route::get('/admin/product/active/{id}', [AdminProductController::class, 'active'])->middleware(AdminRoleMiddleware::class)->name('admin.product.active');
     Route::get('/admin/product/deactive/{id}', [AdminProductController::class, 'deactive'])->middleware(AdminRoleMiddleware::class)->name('admin.product.deactive');
     Route::get('/admin/product/search', [AdminProductController::class, 'search'])->name('admin.product.search');
@@ -112,6 +114,8 @@ Route::controller(AdminBrandController::class)->group(
     Route::get('/admin/product-variant-hidden/{id}', [AdminProductVariantController::class, 'showListVariantsHide'])->name('product_variant_hide');
     Route::PUT('/admin/product-variant/active/{id}', [AdminProductVariantController::class, 'active'])->middleware(AdminRoleMiddleware::class);
     Route::post('/admin/product/is_isset', [AdminProductController::class, 'isIssetProduct']);
+    Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
+    Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
 
     Route::resource('/admin/product-variant', AdminProductVariantController::class)->except(['index']);
     Route::resource('/admin/product', AdminProductController::class);
@@ -125,22 +129,21 @@ Route::controller(AdminBrandController::class)->group(
     Route::get('/admin/contact/update/{id}', [AdminContactController::class, 'updateContact'])->name('contact.update');
 
 
-    //quản lý đánh giá
-    Route::get('/admin/review', [AdminReviewController::class, 'showListReviews'])->name('admin.review');
-    Route::get('/admin/review/point-review/{opt}', [AdminReviewController::class, 'pointReview']);
-    Route::delete('/admin/review/delete/{id}', [AdminReviewController::class, 'deleteReviews'])->name('admin.review.delete');
-    Route::get('/admin/review/search' , [AdminReviewController::class, 'searchReview'])->name('admin.review.search');
-    Route::post('/admin/review/pointreview', [AdminReviewController::class, 'pointReview'])->name('admin.review.pointreview');
+    //quản lý bàn ăn
+    Route::get('/admin/table', [AdminTableController::class, 'index'])->name('admin.table');
+    Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');;
+    Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
+    Route::delete('/admin/table/delete/{id}', [AdminTableController::class, 'destroy'])->name('admin.table.destroy');
 });
 
 
 //Phân quyền quản lý
-Route::middleware(['role:QL'])->group(function () {});
+Route::middleware(['role:QL'])->group(function () { });
 
 
 
 //Phân quyền quản lý , nhân viên và khách hàng
-Route::middleware(['role:QL,NV,KH'])->group(function () {});
+Route::middleware(['role:QL,NV,KH'])->group(function () { });
 
 //phân quyền khách hàng
 Route::middleware(['role:KH'])->group(function () {

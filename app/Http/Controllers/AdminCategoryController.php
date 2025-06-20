@@ -2,84 +2,109 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Category;
-use App\Models\Brand;
 use App\Models\Product;
-use App\Models\CategorySpecification;
 
 class AdminCategoryController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = Category::query();
+
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = strtolower(trim($request->keyword));
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', '%' . $keyword . '%')
+                    ->orWhere('description', 'like', '%' . $keyword . '%');
+
+                // Tìm theo trạng thái
+                if (in_array($keyword, ['hiện', 'hien', '1'])) {
+                    $q->orWhere('status', 1);
+                } elseif (in_array($keyword, ['ẩn', 'an', '0'])) {
+                    $q->orWhere('status', 0);
+                }
+            });
+        }
+
+        $danhSachDanhMuc = $query->paginate(5)->withQueryString();
+
+        return view('admin.category.category', ['danhSachDanhMuc' => $danhSachDanhMuc]);
+    }
     //chuyển hướng trang thêm danh mục
     public function addCategory()
     {
-        $danhSachDanhMuc = Category::where('status', 1)->paginate(5);
-        return view('admin.category.addcategory')->with('danhSachDanhMuc', $danhSachDanhMuc);
+        return view('admin.category.addcategory');
     }
     // lưu trữ danh mục
     public function storeCategory(Request $request)
     {
         $validate = $request->validate([
-            'nameCategory' => 'required|unique:categories,name|max:255',
-            'nameSpecifications' => 'required|unique:category_specifications,name|max:255',
+            'name' => 'required|unique:categories,name|max:255',
+            'description' => 'required|max:255',
+            'status' => 'required|in:0,1',
         ], [
-            'nameCategory.required' => 'Vui lòng nhập tên danh mục',
-            'nameCategory.unique' => 'Tên danh mục đã tồn tại',
-            'nameCategory.max' => 'Tên danh mục quá 255 ký tự',
-            'nameSpecifications.required' => 'Vui lòng nhập thông số',
-            'nameSpecifications.unique' => 'Tên thông số đã tồn tại',
-            'nameSpecifications.max' => 'Tên danh mục quá 255 ký tự',
+            'name.required' => 'Vui lòng nhập tên danh mục',
+            'name.unique' => 'Tên danh mục đã tồn tại',
+            'name.max' => 'Tên danh mục không vượt quá 255 ký tự',
+            'description' => 'Vui lòng nhập mô tả',
         ]);
 
-        $nameCategory = $request->input('nameCategory');
-        $slug = Str::slug($nameCategory);
+        $slug = $request->input('slug') ?: Str::slug($request->input('name'));
+
         $category = Category::create([
-            'name' => $nameCategory,
+            'name' => $request->input('name'),
             'slug' => $slug,
-            'status' => 1,
+            'description' => $request->input('description'),
+            'status' => $request->input('status'),
         ]);
 
-        foreach ($request->input('nameSpecifications') as $specification) {
-            CategorySpecification::create([
-                'name' => $specification,
-                'category_id' => $category->id,
-            ]);
-        }
-
-        return redirect()->route('admin.category.addcategory')
-            ->with('message', 'Thêm phân loại thành công');
+        return redirect()->route('admin.category')
+            ->with('message', 'Thêm danh mục thành công');
     }
 
     //tìm id và chuyển trang sửa danh mục
     public function editCategory(string $id)
     {
-        $danhMucTimKiem = Category::find($id);
-        $thongSoKyThuat = $danhMucTimKiem->category_specifications;
+        $danhMucTimKiem = Category::findOrFail($id);
+
         return view('admin.category.editcategory')
-            ->with('danhMucTimKiem', $danhMucTimKiem)
-            ->with('thongSoKyThuat', $thongSoKyThuat);
+            ->with('danhMucTimKiem', $danhMucTimKiem);
     }
 
     //cập nhật danh mục
     public function updateCategory(Request $request, $id)
     {
-        $nameCategory = $request->input('nameCategory');
-        $status = $request->input('status');
-        $slug = Str::slug($request->input('nameCategory'));
-        Category::where('id', $id)->update([
-            'name' => $nameCategory,
-            'slug' => $slug,
-            'status' => $status
+        $request->validate([
+            'name' => [
+                'required',
+                'max:255',
+                Rule::unique('categories')->ignore($id),
+            ],
+            'description' => 'required|max:255',
+            'status' => 'required|in:0,1'
+        ], [
+            'name.required' => 'Vui lòng nhập tên danh mục',
+            'name.unique' => 'Tên danh mục đã tồn tại',
+            'name.max' => 'Tên danh mục không vượt quá 255 ký tự',
+            'description.required' => 'Vui lòng nhập mô tả',
         ]);
 
-        return redirect()->route('admin.category.editcategory', ['id' => $id])
-            ->with('message', 'Thêm phân loại thành công');;
-    }
+        $slug = Str::slug($request->input('name'));
 
-    public function loadCategorySpecification($category)
-    {
-        return CategorySpecification::where('category_id', $category)->get();
+        Category::where('id', $id)->update([
+            'name' => $request->input('name'),
+            'slug' => $slug,
+            'description' => $request->input('description'),
+            'status' => $request->input('status'),
+            'updated_at' => now(), // Optional: nếu muốn cập nhật thời gian
+        ]);
+
+        return redirect()->route('admin.category', ['id' => $id])
+            ->with('message', 'Cập nhật danh mục thành công');
     }
 
     //lọc theo tên danh mục
@@ -88,9 +113,9 @@ class AdminCategoryController extends Controller
         $categoryId = $request->input('categoryFilter', 'all');
 
         if ($categoryId == 'all') {
-            $danhSachDanhMuc = Brand::where('status', 1)->get();
+            $danhSachDanhMuc = Category::where('status', 1)->get();
         } else {
-            $danhSachDanhMuc = Brand::where('category_id', $categoryId)->get();
+            $danhSachDanhMuc = Category::where('id', $categoryId)->get();
         }
 
         return response()->json($danhSachDanhMuc);
@@ -101,9 +126,8 @@ class AdminCategoryController extends Controller
     {
         $danhMucTimKiem = Category::find($id);
         if ($danhMucTimKiem) {
-            Product::where('brand_id', $danhMucTimKiem->id)->update(['status' => 0]);
             $danhMucTimKiem->update(['status' => 0]);
-            return response()->json(['message' => 'Xóa danh mục thành công.'], 200);
+            return response()->json(['message' => 'Ẩn danh mục thành công.'], 200);
         }
         return response()->json(['message' => 'Danh mục không tồn tại.'], 404);
     }

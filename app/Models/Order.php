@@ -10,10 +10,13 @@ class Order extends Model
 {
     //
     use HasFactory;
-    public $timestamps =false;
-    protected $fillable = ['id', 'order_code','full_name','phone','address','total_price','payment_method','user_id','voucher_id','order_status_id'];
+    public $timestamps = true;
+    protected $fillable = ['id', 'order_code', 'table_id', 'full_name', 'phone', 'address', 'total_price', 'payment_method_id', 'user_id', 'voucher_id', 'order_status_id'];
+
+
     //tạo mã hóa đơn order_code năm (2 chữ số), tháng, ngày, giờ phút giây và 2 số ngẫu nhiên
-    static public function generateTimestamp() {
+    static public function generateTimestamp()
+    {
         // Lấy thời gian hiện tại
         $now = new \DateTime();
         // Lấy các thành phần thời gian
@@ -31,5 +34,34 @@ class Order extends Model
         $timestamp = $year . $month . $day . $hour . $minute . $second . $random;
 
         return $timestamp;
+    }
+
+    public function table()
+    {
+        return $this->belongsTo(Table::class, 'table_id');
+    }
+
+    /**
+     * Phương thức thanh toán (cash, QR, v.v.).
+     */
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+
+    /**
+     * Trạng thái đơn hàng (Đang xử lý, Đã giao, v.v.).
+     */
+    public function status()
+    {
+        return $this->belongsTo(OrderStatus::class, 'order_status_id');
+    }
+
+    /**
+     * Danh sách món ăn chi tiết trong đơn.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }
