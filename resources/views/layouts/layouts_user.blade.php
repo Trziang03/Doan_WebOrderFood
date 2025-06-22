@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css" />
     <!-- Bootstrap theme -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css" />
-    <link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon">
+    {{-- <link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon"> --}}
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout_user.css') }}">
@@ -55,6 +55,37 @@
     <script src="{{ asset('js/layout_user.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     @yield('script')
+    {{-- ấn nút tìm kiếm thanh input sẽ trượt ra --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.querySelector('.search-toggle');
+            const searchInput = document.querySelector('.search-input');
+    
+            if (toggleBtn && searchInput) {
+                toggleBtn.addEventListener('click', function () {
+                    searchInput.classList.toggle('active');
+                    if (searchInput.classList.contains('active')) {
+                        searchInput.focus();
+                    }
+                });
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('.search-form');
+            const input = document.querySelector('.search-input');
+        
+            form.addEventListener('submit', function (e) {
+                // Nếu input chưa mở hoặc chưa nhập gì thì chỉ mở ra thôi
+                if (!input.classList.contains('active') || input.value.trim() === '') {
+                    e.preventDefault(); // Không gửi form
+                    input.classList.add('active');
+                    input.focus();
+                }
+            });
+        });
+        </script>
 </body>
 <script>
     function Login() {

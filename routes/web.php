@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\AdminTableController;
 use App\Http\Controllers\AdminProductVariantController;
 use App\Http\Controllers\AdminBrandController;
 use App\Http\Controllers\AdminCategoryController;
@@ -162,16 +163,18 @@ Route::middleware(['role:QL'])->group(function () {});
 //Phân quyền quản lý , nhân viên và khách hàng
 Route::middleware(['role:QL,NV,KH'])->group(function () {});
 
+ //xác nhận đặt hàng và thanh toán
+ Route::controller(OrderController::class)->group(function () {
+    Route::get('/payment', 'index')->name('user.payment');
+    Route::post('/payment/complete', 'completePayment')->name('complete-payment');
+    // Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
+    Route::get('/table/{id}', 'orderByTable')->name('order.table');
+});
+
 //phân quyền khách hàng
 Route::middleware(['role:KH'])->group(function () {
 
-    //xác nhận đặt hàng và thanh toán
-    Route::controller(OrderController::class)->group(function () {
-        Route::get('/payment', 'index')->name('user.payment');
-        Route::post('/payment/complete', 'completePayment')->name('complete-payment');
-        // Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
-        Route::get('/table/{id}', 'orderByTable')->name('order.table');
-    });
+    
 
     Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
 

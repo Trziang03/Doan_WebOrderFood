@@ -128,7 +128,7 @@
                     @csrf
                     <h4>Thông tin Thực đơn</h4>
                     <div class="profile_payment">
-                        <input type="text" name="full_name" id="full_name_payment"
+                        {{-- <input type="text" name="full_name" id="full_name_payment"
                             value="{{ Auth()->user()->full_name }}" placeholder="Họ và tên">
                         <div class="alert_error_validate" id="full_name_payment_error"></div>
                         <div>
@@ -137,7 +137,7 @@
                             <input type="tel" name="phone" placeholder="Số điện thoại" required id="phone_payment"
                                 value="{{ Auth()->user()->phone }}">
 
-                        </div>
+                        </div> --}}
                         <div>
                             <div class="alert_error_validate" id="email_payment_error">
                             </div>
@@ -279,97 +279,202 @@
         //     let selectedWardName = ward.options[ward.selectedIndex].text;
         //     localStorage.setItem("ward", selectedWardName);
         // }
+    
+    //bỏ qua kiểm tra table_id
+    function order() {
+        try {
+            const tableId = $('#table_id').val(); // Không còn kiểm tra bắt buộc tableId
 
-        function order() {
-            try {
-                const data = {
-                    full_name: $('#full_name_payment').val(),
-                    email: $('#email_payment').val(),
-                    phone: $('#phone_payment').val(),
-                    address: $('#address').val(),
-                    provinces: localStorage.getItem('province'),
-                    districts: localStorage.getItem('district'),
-                    wards: localStorage.getItem('ward'),
-                    voucher: $('#voucher').val(),
-                    method: $('input[name="method_payment"]:checked').val(),
-                    code: {{ $code }},
-                    _token: '{{ csrf_token() }}'
-                }
-                $.ajax({
-                        method: "POST",
-                        url: '/payment',
-                        data: data
-                    })
-                    .fail((response) => {
-                        let errors = response.responseJSON.errors; // Lấy danh sách lỗi
-                        if (errors.full_name !== undefined) {
-                            $('#full_name_payment_error').text(errors.full_name);
-                            $('#full_name_payment').focus();
-                            return;
-                        }
-                        if (errors.phone !== undefined) {
-                            $('#phone_payment_error').text(errors.phone);
-                            $('#phone_payment').focus();
-                            return;
-                        }
-                        if (errors.email !== undefined) {
-                            $('#email_payment_error').text(errors.email);
-                            $('#email_payment').focus();
-                            return;
-                        }
-                        // if (errors.address !== undefined) {
-                        //     $('#address_payment_error').text(errors.address);
-                        //     $('#address_payment').focus();
-                        // }
-                        // if (errors.provinces !== undefined) {
-                        //     $('#provinces_error').text(errors.provinces);
-                        //     $('#provinces').focus();
-                        // }
-                        // if (errors.districts !== undefined) {
-                        //     $('#districts_error').text(errors.districts);
-                        //     $('#districts').focus();
-                        // }
-                        // if (errors.wards !== undefined) {
-                        //     $('#wards_error').text(errors.wards);
-                        //     $('#wards').focus();
-                        // }
-                    })
-                    .done((data) => {
-                        console.log(data);
-                        if (data.success == 1) {
-
-                            alertify.confirm('Thông báo', data.message, function() {
-                                window.location.href = data.url
-                            }, function() {
-                                window.location.href = data.url
-                            })
-                        } else {
-                            alertify.confirm('Thông báo', data.message, function() {
-                                window.location.href = data.url
-                            }, function() {
-                                window.location.href = data.url
-                            })
-                        }
-
-                    });
-            } catch (errors) {
-                console.log(errors);
+            const data = {
+                method: $('input[name="method_payment"]:checked').val(),
+                code: {{ $code }}, // Laravel sẽ render code vào đây
+                table_id: tableId, // vẫn gửi nếu có, nhưng không bắt buộc
+                _token: '{{ csrf_token() }}'
             }
+
+            $.ajax({
+                method: "POST",
+                url: "/payment/complete",
+                data: data
+            })
+            .done((response) => {
+                if (response.success === 1) {
+                    alertify.success(response.message);
+                    window.location.href = response.url;
+                } else {
+                    alertify.alert('Thông báo', response.message, function () {
+                        window.location.href = response.url;
+                    });
+                }
+            })
+            .fail((error) => {
+                console.error("Lỗi khi gửi đơn hàng:", error.responseText);
+                alertify.error("Đặt hàng thất bại. Vui lòng thử lại.");
+            });
+
+        } catch (err) {
+            console.error(err);
+            alertify.error("Đã xảy ra lỗi khi gửi đơn hàng!");
         }
+    }
 
 
-        const fullName = document.getElementById('full_name_payment');
-        fullName.addEventListener('input', () => {
-            $('#full_name_payment_error').text('');
-        })
-        const email = document.getElementById('email_payment');
-        email.addEventListener('input', () => {
-            $('#email_payment_error').text('');
-        })
-        const phone = document.getElementById('phone_payment');
-        phone.addEventListener('input', () => {
-            $('#phone_payment_error').text('');
-        })
+    //kiểm tra table_id có tồn tại hay ko
+    // function order() {
+    //     try {
+    //         const tableId = $('#table_id').val();
+
+    //         // Kiểm tra table_id có hợp lệ không
+    //         if (!tableId || isNaN(tableId)) {
+    //             alertify.error("Không xác định được bàn. Vui lòng quét lại mã QR!");
+    //             return;
+    //         }
+
+    //         const data = {
+    //             method: $('input[name="method_payment"]:checked').val(),
+    //             code: {{ $code }}, // Laravel sẽ render code vào đây
+    //             table_id: tableId,
+    //             _token: '{{ csrf_token() }}'
+    //         }
+
+    //         $.ajax({
+    //             method: "POST",
+    //             url: "/payment/complete",
+    //             data: data
+    //         })
+    //         .done((response) => {
+    //             if (response.success === 1) {
+    //                 alertify.success(response.message);
+    //                 window.location.href = response.url;
+    //             } else {
+    //                 alertify.alert('Thông báo', response.message, function () {
+    //                     window.location.href = response.url;
+    //                 });
+    //             }
+    //         })
+    //         .fail((error) => {
+    //             console.error("Lỗi khi gửi đơn hàng:", error.responseText);
+    //             alertify.error("Đặt hàng thất bại. Vui lòng thử lại.");
+    //         });
+
+    //     } catch (err) {
+    //         console.error(err);
+    //         alertify.error("Đã xảy ra lỗi khi gửi đơn hàng!");
+    //     }
+    // }
+
+            // function order() {
+        //     try {
+        //         const data = {
+        //             // full_name: $('#full_name_payment').val(),
+        //             // email: $('#email_payment').val(),
+        //             // phone: $('#phone_payment').val(),
+        //             // address: $('#address').val(),
+        //             // provinces: localStorage.getItem('province'),
+        //             // districts: localStorage.getItem('district'),
+        //             // wards: localStorage.getItem('ward'),
+        //             // voucher: $('#voucher').val(),
+        //             method: $('input[name="method_payment"]:checked').val(),
+        //             code: {{ $code }},
+        //             _token: '{{ csrf_token() }}'
+        //         }
+        //         $.ajax({
+        //             method: "POST",
+        //             url: "/payment/complete", // Laravel route xử lý đơn hàng
+        //             data: data
+        //         })
+        //         .done((response) => {
+        //             if (response.success === 1) {
+        //                 alertify.success(response.message);
+        //                 window.location.href = response.url;
+        //             } else {
+        //                 alertify.alert('Thông báo', response.message, function () {
+        //                     window.location.href = response.url;
+        //                 });
+        //             }
+        //         })
+        //         .fail((error) => {
+        //             console.error("Lỗi khi gửi đơn hàng:", error.responseText);
+        //             alertify.error("Đặt hàng thất bại. Vui lòng kiểm tra lại thông tin.");
+        //         });
+        //     } catch (err) {
+        //         console.error(err);
+        //         alertify.error("Đã xảy ra lỗi!");
+        //     }
+        //     //     $.ajax({
+        //     //             method: "GET",
+        //     //             url: '/payment',
+        //     //             data: data
+        //     //         })
+        //     //         .fail((response) => {
+        //     //             // let errors = response.responseJSON.errors; // Lấy danh sách lỗi
+        //     //             // if (errors.full_name !== undefined) {
+        //     //             //     $('#full_name_payment_error').text(errors.full_name);
+        //     //             //     $('#full_name_payment').focus();
+        //     //             //     return;
+        //     //             // }
+        //     //             // if (errors.phone !== undefined) {
+        //     //             //     $('#phone_payment_error').text(errors.phone);
+        //     //             //     $('#phone_payment').focus();
+        //     //             //     return;
+        //     //             // }
+        //     //             // if (errors.email !== undefined) {
+        //     //             //     $('#email_payment_error').text(errors.email);
+        //     //             //     $('#email_payment').focus();
+        //     //             //     return;
+        //     //             // }
+        //     //             //  if (errors.address !== undefined) {
+        //     //             //     $('#address_payment_error').text(errors.address);
+        //     //             //     $('#address_payment').focus();
+        //     //             // }
+        //     //             // if (errors.provinces !== undefined) {
+        //     //             //     $('#provinces_error').text(errors.provinces);
+        //     //             //     $('#provinces').focus();
+        //     //             // }
+        //     //             // if (errors.districts !== undefined) {
+        //     //             //     $('#districts_error').text(errors.districts);
+        //     //             //     $('#districts').focus();
+        //     //             // }
+        //     //             // if (errors.wards !== undefined) {
+        //     //             //     $('#wards_error').text(errors.wards);
+        //     //             //     $('#wards').focus();
+        //     //             // }
+        //     //         })
+        //     //         .done((data) => {
+        //     //             console.log(data);
+        //     //             if (data.success == 1) {
+
+        //     //                 alertify.confirm('Thông báo', data.message, function() {
+        //     //                     window.location.href = data.url
+        //     //                 }, function() {
+        //     //                     window.location.href = data.url
+        //     //                 })
+        //     //             } else {
+        //     //                 alertify.confirm('Thông báo', data.message, function() {
+        //     //                     window.location.href = data.url
+        //     //                 }, function() {
+        //     //                     window.location.href = data.url
+        //     //                 })
+        //     //             }
+
+        //     //         });
+        //     // } catch (errors) {
+        //     //     console.log(errors);
+        //     // }
+        // }
+
+        // const fullName = document.getElementById('full_name_payment');
+        // fullName.addEventListener('input', () => {
+        //     $('#full_name_payment_error').text('');
+        // })
+        // const email = document.getElementById('email_payment');
+        // email.addEventListener('input', () => {
+        //     $('#email_payment_error').text('');
+        // })
+        // const phone = document.getElementById('phone_payment');
+        // phone.addEventListener('input', () => {
+        //     $('#phone_payment_error').text('');
+        // })
         // const address = document.getElementById('address');
         // address.addEventListener('input', () => {
         //     $('#address_payment_error').text('');
@@ -388,43 +493,43 @@
         // })
     </script>
     <script>
-        const btn = document.getElementById('btn-submit-voucher');
-        btn.addEventListener('click', (event) => {
-            const code = $('#voucher-code').val().trim();
+        // const btn = document.getElementById('btn-submit-voucher');
+        // btn.addEventListener('click', (event) => {
+        //     const code = $('#voucher-code').val().trim();
 
-            $.ajax({
-                method: "POST",
-                url: '/add-voucher',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    orderValue: @if (session('buy-now') == null)
-                        {{ session('cart')->totalPrice }}
-                    @else
-                        {{ session('buy-now')['totalPrice'] }}
-                    @endif ,
-                    code
-                }
-            }).done((data) => {
-                if (data.success === 1) {
-                    alertify.success(data.message);
-                    $('#discount').text(new Intl.NumberFormat('vi-VN').format(data.voucher.discount_value));
-                    $('#total-price').text(new Intl.NumberFormat('vi-VN').format(parseInt(
-                        @if (session('buy-now') == null)
-                            {{ session('cart')->totalPrice }}
-                        @else
-                            session('buy-now')['totalPrice']
-                        @endif ) - data.voucher.discount_value));
-                    $('#voucher').val(data.voucher.id);
-                    totalPrice = parseInt(
-                        @if (session('buy-now') == null) 
-                            {{ session('cart')->totalPrice }}
-                        @else
-                            session('buy-now')['totalPrice']
-                        @endif ) - data.voucher.discount_value;
-                } else {
-                    alertify.error(data.message);
-                }
-            })
-        })
+        //     $.ajax({
+        //         method: "POST",
+        //         url: '/add-voucher',
+        //         data: {
+        //             _token: '{{ csrf_token() }}',
+        //             orderValue: @if (session('buy-now') == null)
+        //                 {{ session('cart')->totalPrice }}
+        //             @else
+        //                 {{ session('buy-now')['totalPrice'] }}
+        //             @endif ,
+        //             code
+        //         }
+        //     }).done((data) => {
+        //         if (data.success === 1) {
+        //             alertify.success(data.message);
+        //             $('#discount').text(new Intl.NumberFormat('vi-VN').format(data.voucher.discount_value));
+        //             $('#total-price').text(new Intl.NumberFormat('vi-VN').format(parseInt(
+        //                 @if (session('buy-now') == null)
+        //                     {{ session('cart')->totalPrice }}
+        //                 @else
+        //                     session('buy-now')['totalPrice']
+        //                 @endif ) - data.voucher.discount_value));
+        //             $('#voucher').val(data.voucher.id);
+        //             totalPrice = parseInt(
+        //                 @if (session('buy-now') == null) 
+        //                     {{ session('cart')->totalPrice }}
+        //                 @else
+        //                     session('buy-now')['totalPrice']
+        //                 @endif ) - data.voucher.discount_value;
+        //         } else {
+        //             alertify.error(data.message);
+        //         }
+        //     })
+        // })
     </script>
 @endsection

@@ -195,7 +195,7 @@ input {
     margin-bottom: 15px;
     border-radius: 4px;
     display: block;
-    margin-top: 2px;
+    margin-top: 10px;
 }
 
 .content option {
@@ -254,14 +254,7 @@ table tr td {
     margin-top: 15px;
 }
 
-.pagination a {
-    background-color: rgb(215, 229, 232);
-    color: rgb(0, 0, 0);
-    padding: 10px 15px;
-    margin: 12px;
-    border-radius: 6px;
-    transition: background-color 0.3s, color 0.3s;
-}
+.pagination a,
 .pagination span {
     padding: 8px 12px;
     border: 1px solid #ccc;
@@ -269,10 +262,8 @@ table tr td {
     text-decoration: none;
     border-radius: 4px;
 }
-
 .pagination a:hover {
-    background-color: rgb(240, 145, 55);
-    color: rgb(215, 229, 232);
+    background-color: orange;
 }
 
 .pagination li.active span {
@@ -427,12 +418,8 @@ table tr td {
     align-items: center;
 }
 
-.form-group:first-child {
+/* .form-group:first-child {
     width: 50%;
-}
-
-.col {
-    margin: 8px 0;
 }
 
 .form-group:nth-child(2) {
@@ -441,6 +428,9 @@ table tr td {
 
 .form-group:nth-child(3) {
     width: 20%;
+} */
+.col {
+    margin: 8px 0;
 }
 
 .form-group {
@@ -457,6 +447,9 @@ table tr td {
     width: 100%;
     display: flex;
     justify-content: flex-start;
+}
+.input-description {
+    padding: 50px;
 }
 
 .btn-goback button {
@@ -526,8 +519,7 @@ table tr td {
 }
 .button-delete{
     background-color: white;
-    color:rgb(0, 0, 0)
-}
+    color: rgb(0, 0, 0)}
 .alert_error_validate {
     color: red;
     font-size: 14px;
@@ -543,3 +535,404 @@ table tr td {
     top: 22px;
     display: none;
 }
+.form-group-row {
+    display: flex;
+    gap: 140px;
+    margin-bottom: 20px;
+}
+
+.form-group-product {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-product label {
+    margin-bottom: 5px;
+}
+
+.form-group-product input,
+.form-group-product select,
+.form-group-product textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.short-input input {
+    width: 150px;
+}
+
+.topping-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    /* nhỏ hơn 180px để các thẻ nhỏ hơn */
+    gap: 8px;
+    /* giảm khoảng cách giữa các thẻ */
+    margin-top: 12px;
+}
+
+.topping-card {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+
+.topping-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.topping-checkbox {
+    position: absolute;
+    top: 22px;
+    right: -45px;
+    transform: scale(1.2);
+}
+
+.topping-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.topping-name {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.topping-price {
+    color: orange;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Danh sách đã chọn */
+.selected-toppings-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.selected-toppings-list .selected-item {
+    background-color: #f1f1f1;
+    padding: 6px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.selected-toppings-list .selected-item .remove-btn {
+    margin-left: 8px;
+    background: transparent;
+    border: none;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* Popup container */
+#optionPopup {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+/* Popup content */
+#optionPopup .popup-content {
+    background: orange;
+    padding: 24px 20px;
+    border-radius: 10px;
+    width: 315px;
+    margin: 100px auto;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Title */
+#optionPopup h4 {
+    margin-bottom: 20px;
+    font-size: 30px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Label styling */
+#optionPopup label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Input fields */
+#optionPopup input[type="text"],
+#optionPopup input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Submit buttons */
+#optionPopup button[type="submit"] {
+    padding: 6px 14px;
+    border: none;
+    background-color: #28a745;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#optionPopup button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+/* Close button */
+#optionPopup .btn-close-popup {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#optionPopup .btn-close-popup:hover {
+    color: red;
+}
+
+.btn-action {
+    display: inline-block;
+    margin-top: 0px;
+    padding: 6px 12px;
+    background-color: orange;
+    color: white !important;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+/* Toàn màn hình mờ */
+#orderDetailModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+    overflow-y: auto;
+}
+
+/* Nội dung popup */
+.modal-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 70px auto;
+    max-width: 300px;
+    /* Giới hạn chiều rộng tối đa */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    max-height: 60vh;
+    /* Giới hạn chiều cao tối đa */
+    overflow-y: auto;
+    /* Cho phép cuộn dọc nếu nội dung vượt quá */
+}
+
+/* Nút đóng popup */
+.close-modal {
+    position: absolute;
+    top: 8px;
+    right: 17px;
+    font-size: 35px;
+    cursor: pointer;
+}
+
+/* Bảng */
+.modal-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+
+}
+
+.modal-content table th,
+.modal-content table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    width: 50px;
+}
+
+.modal-content h2 {
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+@media print {
+    body {
+        background: white;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .bill-container {
+        width: 400px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        background: white;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: center;
+        word-wrap: break-word;
+    }
+
+    .btn, .modal-header, .modal-footer {
+        display: none;
+    }
+
+    .food-table th:nth-child(1), .topping-table th:nth-child(1) { width: 40%; }
+    .food-table th:nth-child(2), .topping-table th:nth-child(2) { width: 20%; }
+    .food-table th:nth-child(3), .topping-table th:nth-child(3) { width: 20%; }
+    .food-table th:nth-child(4) { width: 20%; }
+
+}
+
+/* @media screen and (max-width: 400px) {
+    .modal-content {
+        width: 100%;
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    .modal-content table th,
+    .modal-content table td {
+        font-size: 13px;
+    }
+} */
+/* form group thêm*/
+.form-section {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.form-group-tablee {
+    margin-bottom: -2rem;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.form-group-row-table {
+    display: flex;
+    gap: 0px;
+    margin-bottom: 20px;
+}
+
+.form-group-table {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-table label {
+    margin-bottom: 5px;
+}
+
+.form-group-table input {
+    width: 60% !important;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.form-group-table select {
+    width: 35% !important;
+}
+
+.form-group-row-table.buttons {
+    display: flex;
+    justify-content: flex-end;
+    /* Đẩy về phải */
+    gap: 10px;
+}
+/* form group thêm*/
+
+    /* Danh sách bàn */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        /* Chia 4 cột cố định */
+        gap: 20px;
+    }
+
+    .table-box {
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-top: 10px;
+        background-color: white;
+        border-radius: 10px;
+        padding: 40px 10px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease;
+    }
+
+    .table-box:hover {
+        transform: scale(1.05);
+        background-color: #ffefcc;
+    }
+
+    .table-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .table-status {
+        font-size: 14px;
+        color: black;
+        margin-bottom: 12px;
+    }
+
+    .table-actions button {
+        width: 34px;
+        height: 34px;
+        margin: 0 4px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    /* Danh sách bàn */

@@ -138,7 +138,7 @@ img{
     align-items: center;
 }
 .navbar-bottom .navbar_item_second{
-    width: 65%;
+    width: 50%;
     display: flex;
     justify-content: flex-end ;
     align-items: center;
@@ -265,7 +265,7 @@ img{
 }
 .navbar-bottom .navbar_item_second .cart__header_mb_tl .number_cart_mb_tl{
     position: absolute;
-    font-size: 7px;
+    font-size: 10px;
     top:0;
     padding:3px;
     left:0px;
@@ -275,6 +275,7 @@ img{
 }
 .navbar-bottom .navbar_item_second .cart__header_mb_tl > a{
     padding:10px 5px;
+    margin-right: 0.5rem;
 }
 /* Nav mb tl */
 .navbar_hidden_mb_tl{
@@ -348,6 +349,24 @@ img{
     .navbar-top, .navbar-bottom .navbar_item_first ul {
         display: none;
     }
+    .navbar_item_first {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar_item_first img {
+        width: 140px;
+        height: auto;
+        margin: 8px auto;
+    }
+
+    .navbar_item_first ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
     .navbar-bottom .navbar_item_second .cart__header_mb_tl{
         display: block;
     }
@@ -358,7 +377,7 @@ img{
     .navbar-bottom .menu-icon {
         display: inline-block;
         cursor: pointer;
-        font-size: 15px;
+        font-size: 25px;
         color: rgb(233, 239, 236);
         padding: 5px;
     }
@@ -366,6 +385,7 @@ img{
         width: 100%;
         display: flex;
         justify-content: space-between;
+        margin-left: 0.5rem;
     }
     .navbar-bottom > .navbar_item_second > ul li:first-child form{
         width: 270px;
@@ -557,6 +577,8 @@ footer{
 .payment_action_temporary > div{
     display: flex;
     justify-content: space-between;
+    margin: 1rem;
+
 }
 .total_price {
     padding: 10px 0;
@@ -566,6 +588,7 @@ footer{
 .total_price > p{
     font-weight: 500;
     font-size: 22px;
+    margin:1rem ;
 }
 .total_price > p:last-child{
     color: red;
@@ -638,6 +661,7 @@ footer{
     top: 5%;
     left: 50%;
     transform: translate(-50%,-50%);
+    margin-top: 1.5rem;
 }
 /* popup payment */
 .overflow_payment {
@@ -905,6 +929,58 @@ footer{
 .change_password_form > div > span:hover{
     cursor: pointer;
 }
+/* Ẩn thanh input ban đầu trên mobile */
+.search-btn {
+    background-color: #ff9933;     /* Màu cam nổi bật */
+    color: #fff;                   /* Màu icon trắng */
+    border: none;
+    border-radius: 50%;           /* Bo tròn nút */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.search-btn:hover {
+    background-color: #e67e22;    /* Màu hover đậm hơn */
+}
+.search-form {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 14px;
+    background: white;
+    margin-left: 8px;
+}
+
+.search-input.active {
+    width: 180px;
+    opacity: 1;
+}
+@media (min-width: 768px) {
+    .search-input {
+        width: 200px !important;
+        opacity: 1 !important;
+    }
+
+    .search-toggle {
+        display: none;
+    }
+}
+
 /*---------------------------------responsive Mobile footer-----------------------------------*/
 @media only screen and (max-width: 768px){
     .popup_payment_base {
