@@ -195,7 +195,7 @@ input {
     margin-bottom: 15px;
     border-radius: 4px;
     display: block;
-    margin-top: 2px;
+    margin-top: 10px;
 }
 
 .content option {
@@ -262,7 +262,6 @@ table tr td {
     text-decoration: none;
     border-radius: 4px;
 }
-
 .pagination a:hover {
     background-color: orange;
 }
@@ -278,7 +277,6 @@ table tr td {
     pointer-events: none;
     border: 1px solid #eee;
 }
-
 .static {
     display: flex;
     justify-content: space-between;
@@ -424,10 +422,6 @@ table tr td {
     width: 50%;
 }
 
-.col {
-    margin: 8px 0;
-}
-
 .form-group:nth-child(2) {
     width: 20%;
 }
@@ -435,7 +429,6 @@ table tr td {
 .form-group:nth-child(3) {
     width: 20%;
 } */
-
 .col {
     margin: 8px 0;
 }
@@ -464,6 +457,9 @@ table tr td {
     width: 100%;
     display: flex;
     justify-content: flex-start;
+}
+.input-description {
+    padding: 50px;
 }
 
 .btn-goback button {
@@ -534,9 +530,7 @@ table tr td {
 
 .button-delete {
     background-color: white;
-    color: rgb(0, 0, 0)
-}
-
+    color: rgb(0, 0, 0)}
 .alert_error_validate {
     color: red;
     font-size: 14px;
@@ -554,7 +548,6 @@ table tr td {
     top: 22px;
     display: none;
 }
-
 .form-group-row {
     display: flex;
     gap: 140px;
@@ -858,6 +851,101 @@ table tr td {
         font-size: 13px;
     }
 } */
+/* form group thêm*/
+.form-section {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
 
+.form-group-tablee {
+    margin-bottom: -2rem;
+    max-width: 1000px;
+    width: 100%;
+}
 
+.form-group-row-table {
+    display: flex;
+    gap: 0px;
+    margin-bottom: 20px;
+}
 
+.form-group-table {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-table label {
+    margin-bottom: 5px;
+}
+
+.form-group-table input {
+    width: 60% !important;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.form-group-table select {
+    width: 35% !important;
+}
+
+.form-group-row-table.buttons {
+    display: flex;
+    justify-content: flex-end;
+    /* Đẩy về phải */
+    gap: 10px;
+}
+/* form group thêm*/
+
+    /* Danh sách bàn */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        /* Chia 4 cột cố định */
+        gap: 20px;
+    }
+
+    .table-box {
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-top: 10px;
+        background-color: white;
+        border-radius: 10px;
+        padding: 40px 10px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease;
+    }
+
+    .table-box:hover {
+        transform: scale(1.05);
+        background-color: #ffefcc;
+    }
+
+    .table-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .table-status {
+        font-size: 14px;
+        color: black;
+        margin-bottom: 12px;
+    }
+
+    .table-actions button {
+        width: 34px;
+        height: 34px;
+        margin: 0 4px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    /* Danh sách bàn */

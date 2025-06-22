@@ -24,6 +24,7 @@
         @endif
         <div class="row">
 <<<<<<< HEAD
+<<<<<<< HEAD
             <div class="col-lg-8">
 
                 <div class="row">
@@ -84,21 +85,76 @@
                                         <span class="text-danger" style="color:red">{{ $message }}</span>
                                     @enderror
                                 </div>
+=======
+            <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data" id="formAddProduct">
+                @csrf
+                <div class="form-group">
+                    <div class="col">
+                        <div class="form-group-row">
+                            <div class="form-group-product">
+                                <label>Tên món ăn</label>
+                                <input type="text" class="form-control" name="name" required>
+>>>>>>> giang
                             </div>
-                            {{-- <div class="form-groups" id="category-specification">
-                                @foreach ($danhSachThongTinKyThuat as $index => $thongTinKyThuat)
-                                    <div class=" form-group-product">
-                                        <div class="col">
-                                            <label>{{ $thongTinKyThuat->name }}</label>
-                                        </div>
-                                        <div class="col">
-                                            <input type="hidden" name="specification[{{ $index }}]"
-                                                value="{{ $thongTinKyThuat->id }}">
-                                            <input type="text" class="form-control" name="value[{{ $index }}]" required>
-
+                            <div class="form-group-product">
+                                <label>Danh mục</label>
+                                <select name="category_id" required>
+                                    @foreach ($danhSachPhanLoai as $phanLoai)
+                                        <option value="{{ $phanLoai->id }}">{{ $phanLoai->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group-product">
+                                <label>Trạng thái</label>
+                                <select name="status" required>
+                                    <option value="1">Hiển thị</option>
+                                    <option value="0">Ẩn</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group-row">
+                            <div class="form-group-product">
+                                <label>Mô tả</label>
+                                <textarea name="description" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group-product short-input">
+                                <label>Giá tiền</label>
+                                <input type="text" class="form-control" name="price" required>
+                            </div>
+                            <div class="form-group-product short-input">
+                                <label>Hình ảnh:</label>
+                                <div id="image-products">
+                                    <img id="preview-image" style="max-width: 150px; max-height: 150px; display: none;" />
+                                    <input type="file" onchange="loadFile(event)" class="form-control"
+                                        style="background-color:white" name="image" required>
+                                </div>
+                                @error('image')
+                                    <span class="text-danger" style="color:red">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group-product">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="margin: 0;">Toppings có sẵn</label>
+                                <button type="button" class="btn" onclick="openOptionPopup()">+ Thêm
+                                    Topping/Size</button>
+                            </div>
+                            <div class="topping-grid">
+                                <!-- Toppings -->
+                                @foreach ($toppings as $topping)
+                                    <div class="topping-card">
+                                        <input type="checkbox" name="toppings[]" value="{{ $topping->id }}"
+                                            onchange="handleToppingChange(this, '{{ $topping->name }}', {{ $topping->price }})"
+                                            class="topping-checkbox">
+                                        <div class="topping-content">
+                                            <div class="topping-name">{{ $topping->name }}</div>
+                                            <div class="topping-price">
+                                                {{ $topping->price > 0 ? '+' . number_format($topping->price, 0, ',', '.') . ' đ' : '+0 đ' }}
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach
+<<<<<<< HEAD
                                  Hiển thị xong 
 
                             </div> --}}
@@ -200,6 +256,9 @@
                                     </div>
                                 @endforeach
                             </div>
+=======
+                            </div>
+>>>>>>> giang
                             <label style="margin-top: 20px;">Sizes có sẵn</label>
                             <div class="topping-grid">
                                 <!-- Sizes -->
@@ -213,7 +272,10 @@
                                             <div class="topping-price">
                                                 {{ $size->price > 0 ? '+' . number_format($size->price, 0, ',', '.') . ' đ' : '+0 đ' }}
                                             </div>
+<<<<<<< HEAD
 >>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
+=======
+>>>>>>> giang
                                         </div>
                                     </div>
                                 @endforeach
@@ -247,7 +309,11 @@
                 <input type="text" id="toppingName" name="name" required>
 
                 <label for="toppingPrice">Giá Topping</label>
+<<<<<<< HEAD
                 <input type="number" id="toppingPrice" name="price" required>
+=======
+                <input type="text" id="toppingPrice" name="price" required>
+>>>>>>> giang
 
                 <button type="submit">Thêm Topping</button>
             </form>
@@ -258,7 +324,11 @@
                 <input type="text" id="sizeName" name="name" required>
 
                 <label for="sizePrice">Giá Size</label>
+<<<<<<< HEAD
                 <input type="number" id="sizePrice" name="price" required>
+=======
+                <input type="text" id="sizePrice" name="price" required>
+>>>>>>> giang
 
                 <button type="submit">Thêm Size</button>
             </form>
@@ -318,7 +388,7 @@
             name = name.trim();
             if (name === "") {
                 issetSpan.style.color = "red";
-                issetSpan.textContent = "Tên món ăn không được bỏ trống";
+                issetSpan.textContent = "Tên sản phẩm không được bỏ trống";
             } else {
                 $.ajax({
                     method: "POST",
@@ -330,13 +400,14 @@
                 }).done((data) => {
                     if (data == 0) {
                         issetSpan.style.color = "green";
-                        issetSpan.textContent = "Tên món ăn hợp lệ!";
+                        issetSpan.textContent = "Tên sản phẩm hợp lệ!";
                     } else {
                         issetSpan.style.color = "red";
-                        issetSpan.textContent = "Tên món ăn đã tồn tại!";
+                        issetSpan.textContent = "Tên sản phẩm đã tồn tại!";
                     }
                 });
             }
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         }
@@ -401,6 +472,8 @@
             loadBrands(category);
 =======
 >>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
+=======
+>>>>>>> giang
         }
 
         // Hiển thị preview ảnh sản phẩm
@@ -422,6 +495,7 @@
             alertify.alert('Vui lòng nhập đầy đủ các trường!');
         @endif
 <<<<<<< HEAD
+<<<<<<< HEAD
     </script>
     <script>
             const input = document.getElementById("name");
@@ -438,6 +512,27 @@
                 input.setCustomValidity("");
             });
         });
+=======
+
+                                    // Cảnh báo HTML5 input name
+                    const input = document.getElementById("name");
+        input.addEventListener("invalid", function () {
+            input.setCustomValidity("Vui lòng nhập tên sản phẩm vào đây!");
+            input.addEventListener("input", function () {
+                input.setCustomValidity("");
+            });
+        });
+    </script>
+    <script>
+        // đóng mở popup
+        function openOptionPopup() {
+            document.getElementById('optionPopup').style.display = 'block';
+        }
+
+        function closeOptionPopup() {
+            document.getElementById('optionPopup').style.display = 'none';
+        }
+>>>>>>> giang
     </script>
     <script>
         // đóng mở popup

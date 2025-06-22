@@ -76,11 +76,14 @@
                 </ul>
             </nav>
             <ul>
-                <li>
-                    <form action="{{ route('timkiemtheotukhoa') }}" method="GET">
+                <li class="search-wrapper">
+
+                    <form action="{{ route('timkiemtheotukhoa') }}" method="GET" class="search-form">
                         <input type="search" name = "seachbykey" placeholder="Tìm kiếm..."
-                            value="{{ request('seachbykey') }}">
-                        <button type="submit"><i class="fas fa-search"></i></button>
+                            value="{{ request('seachbykey') }}" class="search-input">
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </form>
                 </li>
                 <li class="cart__header_desktop"><a href="{{ route('user.shoppingcart') }}"><i

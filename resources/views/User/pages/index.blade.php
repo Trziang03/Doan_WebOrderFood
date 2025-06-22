@@ -265,7 +265,7 @@
     </section>
 
     <section class="container_css product_best_seller">
-        <h4>CÁC LOẠI ĐỒ UỐNG NỔI BẬT</h4>
+        <h4 >CÁC LOẠI ĐỒ UỐNG NỔI BẬT</h4>
         <div id="carouselExampleControlsNoTouching" class="carousel slide carousel-dark" data-bs-touch="false">
             <div class="carousel-inner">
                 <div class="carousel-item active" data-bs-interval="10000">
@@ -454,7 +454,7 @@
                         if(data.success===1){
                             window.location.href = data.url;
                         }else{
-                            alertify.alert('Vui lòng đăng nhập để mua ngay');
+                            alertify.alert('Thông báo','Vui lòng đăng nhập để mua ngay');
                         }
 
                     })

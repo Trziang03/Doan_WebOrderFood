@@ -5,6 +5,7 @@
     .btn-goback>button>a {
         color: white;
     }
+<<<<<<< HEAD
 
     #inputContainer .form-control {
         margin-bottom: 5px;
@@ -80,27 +81,48 @@
                                             <input type="hidden" name="image_id[{{ $i }}]"
                                                 value="{{ $sanPham->image_products[$i]->id }}">
                                         </div>
+=======
 
-                                        @error('image')
-                                            <span class="text-danger" style="color:red">{{ $message }}</span>
-                                        @enderror
-                                    @endfor
-                                </div>
-                            </div>
-                            {{-- <div class="form-groups" id="category-specification">
-                                @foreach ($sanPham->product_specification as $index => $specification)
-                                    <div class=" form-group-product">
-                                        <div class="col">
-                                            <label>{{ $specification->category_specification->name }}</label>
-                                        </div>
-                                        <div class="col">
-                                            <input type="hidden" name="specification[{{ $index }}]"
-                                                value="{{ $specification->id }}">
-                                            <input type="text" class="form-control" name="value[{{ $index }}]"
-                                                value="{{ $specification->value }}" required>
-                                        </div>
-                                    </div>
+    #inputContainer .form-control {
+        margin-bottom: 5px;
+    }
+</style>
+@section('content')
+<div class="separator"></div>
+<div class="content">
+    <div class="head">
+        <div class="title">Chỉnh sửa món ăn</div>
+    </div>
+    <div class="separator_x"></div>
+
+    @if (session('msg'))
+        <script>
+            alertify.success("{{ session('msg') }}");
+        </script>
+    @endif
+>>>>>>> giang
+
+    <div class="row">
+        <form action="{{ route('product.update', $sanPham->id) }}" method="POST" enctype="multipart/form-data" id="formEditProduct">
+            @csrf
+            @method('PUT')
+
+            <div class="form-group">
+                <div class="col">
+                    <div class="form-group-row">
+                        <div class="form-group-product">
+                            <label>Tên món ăn</label>
+                            <input type="text" class="form-control" name="name" value="{{ $sanPham->name }}" required>
+                        </div>
+                        <div class="form-group-product">
+                            <label>Danh mục</label>
+                            <select name="category_id" required>
+                                @foreach ($danhSachPhanLoai as $phanLoai)
+                                    <option value="{{ $phanLoai->id }}" {{ $phanLoai->id == $sanPham->category_id ? 'selected' : '' }}>
+                                        {{ $phanLoai->name }}
+                                    </option>
                                 @endforeach
+<<<<<<< HEAD
                             </div> --}}
                             @csrf
                             @method('put')
@@ -136,6 +158,8 @@
                                         {{ $phanLoai->name }}
                                     </option>
                                 @endforeach
+=======
+>>>>>>> giang
                             </select>
                         </div>
                         <div class="form-group-product">
@@ -227,7 +251,10 @@
                         <button>Cập nhật</button>
                         <button type="reset">Đặt lại</button>
                         <button type="button"><a href="{{ route('admin.product') }}">&laquo; Trở lại</a></button>
+<<<<<<< HEAD
 >>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
+=======
+>>>>>>> giang
                     </div>
                 </div>
             </div>
@@ -244,7 +271,11 @@
             <input type="text" id="toppingName" name="name" required>
 
             <label for="toppingPrice">Giá Topping</label>
+<<<<<<< HEAD
             <input type="number" id="toppingPrice" name="price" required>
+=======
+            <input type="text" id="toppingPrice" name="price" required>
+>>>>>>> giang
 
             <button type="submit">Thêm Topping</button>
         </form>
@@ -255,7 +286,11 @@
             <input type="text" id="sizeName" name="name" required>
 
             <label for="sizePrice">Giá Size</label>
+<<<<<<< HEAD
             <input type="number" id="sizePrice" name="price" required>
+=======
+            <input type="text" id="sizePrice" name="price" required>
+>>>>>>> giang
 
             <button type="submit">Thêm Size</button>
         </form>

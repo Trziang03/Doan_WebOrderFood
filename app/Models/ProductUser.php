@@ -210,7 +210,7 @@ class ProductUser extends Model
         ->groupBy('products.id', 'products.name', 'order_items.slug_product','products.rating','product_variants.product_id')
         ->orderBy(DB::raw('SUM(order_items.quantity)'),'desc')
         ->where('products.status',1)
-        ->where('order_status_id',6)
+        ->where('order_status_id',3)
         ->take(8)->get();
     }
     public static function LayThongTinSanPham($category){
