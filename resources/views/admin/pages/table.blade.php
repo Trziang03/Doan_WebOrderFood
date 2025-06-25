@@ -137,11 +137,15 @@
                         </option>
                     @endforeach
                 </select>
+                <label for="access_limit">Số lượt truy cập cho phép</label>
+                <input
+                style="width: 40%;"
+                type="number"
+                id="access_limit"
+                name="access_limit"
 
-                <div class="form-check">
-                    <label for="editQR">Đổi mã QR</label>
-                    <input type="checkbox" id="editQR" name="regen_qr">
-                </div>
+                value="{{ $table->access_limit }}"
+            >
 
                 <label>URL gọi món</label>
                 <p id="editQrUrl" style="font-size: 13px; word-break: break-word;">

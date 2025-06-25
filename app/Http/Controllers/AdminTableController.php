@@ -11,6 +11,7 @@ use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\QrCode;
 use Illuminate\Support\Facades\Storage;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
 
 class AdminTableController extends Controller
 {
@@ -31,6 +32,7 @@ class AdminTableController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:tables,name',
             'table_status_id' => 'required|exists:table_status,id',
+            'access_limit' => 'required|integer|min:1',
         ]);
        // 1. Tạo token ngẫu nhiên
         $token = Str::random(32);
@@ -41,6 +43,8 @@ class AdminTableController extends Controller
         $table->name = $request->name;
         $table->token = $token;
         $table->table_status_id = $request->table_status_id;
+        $table->access_limit = $request->access_limit;
+        $table->access_count = 0;
         $table->save(); // để có id bàn
 
         // 2. Tạo link cần encode QR
@@ -70,37 +74,109 @@ class AdminTableController extends Controller
 
     public function update(Request $request, $id)
     {
+           // 1. Lấy bàn cần sửa
         $table = Table::findOrFail($id);
 
+        // 2. Validate dữ liệu gửi lên
+        $request->validate([
+            'name' => 'required|string|max:255|unique:tables,name,' . $id,
+            'table_status_id' => 'required|exists:table_status,id',
+            'access_limit' => 'required|integer|min:1',
+        ]);
+
+
+        // 3. Cập nhật thông tin bàn
         $table->name = $request->name;
         $table->table_status_id = $request->table_status_id;
+        $table->access_limit = $request->access_limit;
 
-        // Nếu đổi về trạng thái "trống" hoặc check "Đổi QR"
-        if ($request->table_status_id == 1 || $request->has('regen_qr')) {
+        $now = Carbon::now();
+        $shouldRefreshQR = false;
+
+        // Trường hợp tự động cập nhật nếu trạng thái = 2 và đã quá 15 phút
+        if (
+            !$request->has('regen_qr') && // không tick thủ công
+            $request->table_status_id == 2 // đang sử dụng
+        ) {
+            $last = $table->qr_refreshed_at ?? $table->updated_at;
+            //if ($now->diffInSeconds($last) >= 30) ////refresh trong 30 giây
+            //if ($now->diffInSeconds($last) >= 30) ////refresh sau 15 phút
+            if ($now->diffInSeconds($last) >= 10) { //refresh sau 15 phút
+                $shouldRefreshQR = true;
+            }
+        }
+
+
+        // Nếu trạng thái là "Trống" (id = 1) thì tạo lại QR và token
+        if ((int)$request->table_status_id === 1) {
             $token = Str::random(32);
-            $url = url('/table/checkin?token=' . $token);
+            // Tạo lại đường dẫn QR mới
+            $url = route('order.table', ['id' => $table->id]);
 
-            $qr = QrCode::fromText($url)
-            ->withEncoding(new Encoding('UTF-8'))
-            ->withErrorCorrectionLevel(new ErrorCorrectionLevelHigh())
-            ->withSize(300)
-            ->withMargin(10);
+            // Tạo QR mới
+            $builder = new Builder(
+                writer: new PngWriter(),
+                data: $url,
+                size: 300,
+                margin: 10
+            );
 
-            // Xoá QR cũ nếu có
+            $result = $builder->build();
+
+            // Tạo tên file mới (hoặc giữ nguyên tên cũ)
+            $filename = 'qr_table_' . $table->id . '_' . Str::random(5) . '.png';
+
+            // Xoá file QR cũ nếu có
             if ($table->qr_code && Storage::disk('public')->exists('qr-codes/' . $table->qr_code)) {
                 Storage::disk('public')->delete('qr-codes/' . $table->qr_code);
             }
 
-            $filename = 'qr_' . $table->id . '_' . time() . '.svg';
-            Storage::disk('public')->put('qr-codes/' . $filename, $qr->getString());
+            // Lưu QR mới
+            Storage::disk('public')->put('qr-codes/' . $filename, $result->getString());
 
-            $table->token = $token;
+            // Cập nhật tên file QR
             $table->qr_code = $filename;
+            $table->token = $token;
+            $table->access_count = 0; // reset lượt truy cập
+            $table->qr_refreshed_at = $now;
+        }
+        // Reset access_count nếu chuyển về trạng thái Trống (id = 1)
+        if ($request->table_status_id == 1) {
+            $table->access_count = 0;
         }
 
+        // 5. Lưu thay đổi
         $table->save();
 
-        return back()->with('success', 'Cập nhật bàn thành công');
+        return redirect()->back()->with('message', 'Cập nhật bàn thành công');
+    }
+
+
+    public function checkin(Request $request)
+    {
+        $token = $request->query('token');
+        $table = Table::where('token', $token)->first();
+
+        if (!$table) {
+            return abort(404, 'Không tìm thấy bàn');
+        }
+
+        // Nếu bàn đang dọn dẹp → block
+        if ($table->table_status_id == 3) {
+            return response()->view('table.blocked');
+        }
+
+        // Nếu đã quá số lượt truy cập
+        if ($table->access_count >= $table->access_limit) {
+            return response()->view('table.too-many', ['table' => $table]);
+        }
+        
+        // Tăng lượt truy cập
+        $table->access_count += 1;
+        $table->save();
+
+        // Tiếp tục truy cập menu gọi món
+        return view('order.menu', ['table' => $table]);
     }
 
 
@@ -192,24 +268,6 @@ class AdminTableController extends Controller
         ]);
     }
 
-    public function checkin(Request $request)
-{
-    $token = $request->query('token');
-
-    $session = TableSession::where('token', $token)
-        ->where('status', 'active')
-        ->where('expired_at', '>', now())
-        ->first();
-
-    if (!$session) {
-        return response('❌ Mã QR đã hết hạn hoặc không hợp lệ', 403);
-    }
-
-    // Đánh dấu bàn đang sử dụng
-    $session->table->update(['status' => 'su_dung']);
-
-    return view('table.menu', ['table' => $session->table]);
-}
 
 
     public function destroy($id)
