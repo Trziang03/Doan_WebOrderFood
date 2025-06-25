@@ -38,10 +38,10 @@ class Product extends Model
     {
         return $this->hasMany(ProductSpecification::class);
     }
-    public function ratings():HasMany
-    {
-        return $this->belongsToMany(Topping::class, 'product_topping')->withPivot('quantity');
-    }
+    // public function ratings():HasMany
+    // {
+    //     return $this->hasMany(Topping::class, 'product_topping')->withPivot('quantity');
+    // }
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class, 'food_id');

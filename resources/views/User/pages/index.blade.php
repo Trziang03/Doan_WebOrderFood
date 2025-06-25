@@ -65,11 +65,11 @@
         }
         .product_best_seller_item_info li a {
             font-weight: 600;
-            color: var(--text-dark);
+            color: var(--white);
             text-decoration: none;
         }
         .product_best_seller_item_info li a:hover {
-            color: var(--orange);
+            color: var(--light-orange);
         }
         .product_best_seller_item_info button {
             background-color: var(--orange);
@@ -79,6 +79,7 @@
             padding: 0.5rem 1rem;
             cursor: pointer;
             font-size: 0.9rem;
+
         }
         .product_best_seller_item_info button:hover {
             background-color: #e65c00;
@@ -215,7 +216,8 @@
                                         </li>
                                         <li>{{ $danhSachBanChay[$i]->rating }} <i class="fas fa-star"></i></li>
                                             <li>
-                                                <button onclick="buyNow({{ $danhSachBanChay[$i]->variants }})">Đặt món ngay</button>
+                                                <button><a
+                                                    href="{{ route('detail', [$danhSachBanChay[$i]->slug]) }}">Xem chi tiết</a></button>
                                             </li>
                                     </ul>
                                 </div>
@@ -241,7 +243,8 @@
                                         </li>
                                         <li>{{ $danhSachBanChay[$i]->rating }} <i class="fas fa-star"></i></li>
                                         <li>
-                                            <button onclick="buyNow({{ $danhSachBanChay[$i]->variants }})">Đặt món ngay</button>
+                                            <button><a
+                                                href="{{ route('detail', [$danhSachBanChay[$i]->slug]) }}">Xem chi tiết</a></button>
                                         </li>
                                     </ul>
                                 </div>
@@ -289,7 +292,8 @@
                                             </li>
                                             <li>{{ $danhSachLapTopMoi[$i]->rating }}<i class="fas fa-star"></i></li>
                                             <li>
-                                                <button onclick="buyNow({{ $danhSachLapTopMoi[$i]->variants }})">Đặt món ngay</button>
+                                                <button ><a
+                                                    href="{{ route('detail', [$danhSachLapTopMoi[$i]->slug]) }}">Xem chi tiết</a></button>
                                             </li>
                                         </ul>
                                     </div>
@@ -315,8 +319,10 @@
                                         </li>
                                         <li>{{ $danhSachLapTopMoi[$i]->rating }}<i class="fas fa-star"></i></li>
                                         <li>
-                                            <button onclick="buyNow({{ $danhSachLapTopMoi[$i]->variants }})">
-                                                Đặt món ngay</button>
+                                            <button >
+                                                <a
+                                                href="{{ route('detail', [$danhSachLapTopMoi[$i]->slug]) }}">Xem chi tiết</a>
+                                        </button>
                                         </li>
                                     </ul>
                                 </div>
@@ -365,7 +371,9 @@
                                     </li>
                                     <li>{{ $danhSachDTHot[$i]->rating }} <i class="fas fa-star"></i></li>
                                     <li>
-                                        <button onclick="buyNow({{ $danhSachDTHot[$i]->variants }})">Đặt món ngay</button>
+                                        <button ><a
+                                            href="{{ route('detail', [$danhSachDTHot[$i]->slug]) }}">Xem chi tiết</a>
+                                    </button>
                                     </li>
                                 </ul>
                             </div>
@@ -391,7 +399,8 @@
                                     </li>
                                     <li>{{ $danhSachDTHot[$i]->rating }} <i class="fas fa-star"></i></li>
                                     <li>
-                                        <button onclick="buyNow({{ $danhSachDTHot[$i]->variants }})">Đặt món ngay</button>
+                                        <button ><a
+                                            href="{{ route('detail', [$danhSachDTHot[$i]->slug]) }}">Xem chi tiết</a>
                                     </li>
                                 </ul>
                             </div>

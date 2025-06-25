@@ -37,7 +37,6 @@
     <style>
         /* Base Reset */
         .container_css {
-            padding: 16px;
             max-width: 1200px;
             margin: auto;
         }
@@ -552,7 +551,7 @@
     });
 </script>
 
-<script>
+{{-- <script>
     function loadRating(sao, id, btn) {
         const button_rating = document.querySelectorAll('#button_rating button');
         if (button_rating) {
@@ -604,7 +603,7 @@
                 }
             });
     }
-</script>
+</script> --}}
 <script>
     function addToCart(id) {
         const quantity = $('#number_input').val().trim();
@@ -713,7 +712,7 @@
             })
     }
 </script>
-<script>
+{{-- <script>
     function buyNowSame(variantId) {
         const quantity = 1;
         $.ajax({
@@ -747,8 +746,8 @@
                 }
             })
     }
-</script>
-{{-- long --}}
+</script> --}}
+
 <script>
     function LayThongTinSanPhamTheoMau(slug, internal_memory, color, btn) {
         const button_color = document.querySelectorAll('.product_detail_right_color button')
@@ -828,7 +827,7 @@
             });
     }
 </script>
-<script>
+{{-- <script>
     function CapNhatYeuThich(sanpham, user) {
         $.ajax({
             type: "GET",
@@ -852,7 +851,7 @@
             }
         });
     }
-</script>
+</script> --}}
 <script>
     function showPopup() {
         const popupOrderHistory = document.getElementById("popup_order_history");

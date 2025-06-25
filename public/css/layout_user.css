@@ -325,6 +325,10 @@ img{
     padding-left:30px !important;
     transition: border linear 0.2s;
 }
+.logo-mobile-only {
+    display: none;
+}
+
 @media only screen and (max-width: 1220px){
     header{
         width: 1240px;
@@ -345,7 +349,10 @@ img{
     footer{
         width: 100%;
     }
-
+    /* Khi ở mobile (max-width 768px), hiện logo */ 
+    .logo-mobile-only {
+        display: block;
+    }
     .navbar-top, .navbar-bottom .navbar_item_first ul {
         display: none;
     }
@@ -934,7 +941,6 @@ footer{
     background-color: #ff9933;     /* Màu cam nổi bật */
     color: #fff;                   /* Màu icon trắng */
     border: none;
-    border-radius: 50%;           /* Bo tròn nút */
     width: 40px;
     height: 40px;
     display: flex;
@@ -960,7 +966,6 @@ footer{
     transition: all 0.3s ease;
     padding: 6px 10px;
     border: 1px solid #ccc;
-    border-radius: 20px;
     font-size: 14px;
     background: white;
     margin-left: 8px;
@@ -975,14 +980,16 @@ footer{
         width: 200px !important;
         opacity: 1 !important;
     }
-
-    .search-toggle {
-        display: none;
-    }
 }
 
 /*---------------------------------responsive Mobile footer-----------------------------------*/
 @media only screen and (max-width: 768px){
+    .search-btn{
+        border-radius: 50%;
+    }
+    .search-input{
+        border-radius: 20px;
+    }
     .popup_payment_base {
         width: 100%;
        }

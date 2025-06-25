@@ -88,15 +88,19 @@
             $emptySlots = $totalSlots - $tableCount;
         @endphp
 
-        <div class="grid-container">
+        <div class="grid-container" >
             {{-- Hiển thị bàn thật --}}
             @foreach ($tables as $table)
                 <div class="table-box">
                     <div class="table-title">{{ $table->name }}</div>
                     <div class="table-status">{{ $table->status->name }}</div>
                     @if ($table->qr_image_path)
-                        <div class="table-qr">
+                        {{-- <div class="table-qr">
                             <img src="{{ asset('storage/' . $table->qr_image_path) }}" width="80">
+                        </div> --}}
+                        <div class="table-qr">
+                            <img src="{{ asset('storage/qr-codes/' . $table->qr_code) }}" width="80">
+                                <p>Link: {{ url('/table/checkin?token=' . $table->token) }}</p>
                         </div>
                     @endif
                     <div class="table-actions">
@@ -116,7 +120,7 @@
 
     <!-- Popup sửa bàn ăn -->
     <div id="optionPopup" style="display: none;">
-        <div class="popup-content" style="padding: 5px 20px;">
+        <div class="popup-content" style="padding: 5px 20px;" id="qr_container">
             <button class="btn-close-popup" onclick="closeEditPopup()">×</button>
             <h4>Cập nhật bàn ăn</h4>
 
@@ -231,4 +235,19 @@
         // Dữ liệu bàn từ Laravel truyền vào JavaScript
         window.tables = @json($tables);
     </script>
+    <script>
+        function fetchQR() {
+            fetch('/table/1/generate-qr') // thay số 1 bằng id thực tế
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('qr_container').innerHTML = data.qr_svg;
+                    console.log('QR Token:', data.token);
+                });
+        }
+        
+        fetchQR();
+        
+        // Làm mới QR mỗi 30 phút
+        setInterval(fetchQR, 30 * 60 * 1000);
+        </script>
 @endsection

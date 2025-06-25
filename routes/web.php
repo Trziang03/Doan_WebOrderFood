@@ -16,6 +16,8 @@ use App\Http\Controllers\AdminContactController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AdminStaffController;
+
 
 Route::controller(UserController::class)->group(function () {
     Route::get('/gioithieu', "GioiThieu")->name('user.blog');
@@ -76,13 +78,13 @@ Route::middleware(['role:QL,NV'])->group(function () {
     );
 
     //Route profile
-    Route::get('/admin/profile', [AdminController::class, 'profile'])->name('admin.profile');
+    Route::get('/admin/profile/{id}', [AdminController::class, 'profile'])->name('admin.profile');
     Route::post('/admin/editProfile', [AdminController::class, 'editProfile'])->middleware(AdminRoleMiddleware::class)->name('admin.editProfile');
     Route::post('/admin/editAvatar', [AdminController::class, 'editAvatar'])->middleware(AdminRoleMiddleware::class)->name('admin.editAvatar');
     Route::get('/admin/changepw', [AdminController::class, 'changepw'])->name('admin.changepw');
     Route::post('/checkpw', [AdminController::class, 'IsPasswordChange'])->name('profile.checkpw');
     Route::post('/changepw', [AdminController::class, 'UpdatePassword'])->name('profile.changepw');
-
+    
     //Route dashboard
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::post('/admin/editWebsite', [AdminController::class, 'editWebsite'])->middleware(AdminRoleMiddleware::class)->name('admin.editWebsite');
@@ -135,9 +137,31 @@ Route::middleware(['role:QL,NV'])->group(function () {
    Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');
    // Sửa bàn
    Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
-   // Xoá bàn
-   Route::get('/admin/table/delete/{id}', [AdminTableController::class, 'destroy'])->name('admin.table.destroy');
-   
+   //Tạo QR Động
+   Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
+   Route::get('/table/checkin', function (Request $request) {
+    $token = $request->query('token');
+
+    $table = Table::where('token', $token)->first();
+
+    if (!$table || !$table->qr_code) {
+        return response()->view('table.qr_expired', [], 403);
+    }
+
+    // Nếu trạng thái là "trống" (id = 1), chuyển sang "đang sử dụng" (id = 2)
+    if ($table->table_status_id == 1) {
+        $table->table_status_id = 2; // 2 = đang sử dụng
+        $table->save();
+    }
+
+
+    // Hiển thị giao diện trang chủ 
+    return view('user.pages.index', ['table' => $table]);
+});
+
+
+
+
    //Route quản lí món ăn
    Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
    Route::get('/admin/products/category/{id}', [AdminProductController::class, 'filterByCategory']);
@@ -155,11 +179,20 @@ Route::middleware(['role:QL,NV'])->group(function () {
 
    Route::resource('/admin/product-variant', AdminProductVariantController::class)->except(['index']);
    Route::resource('/admin/product', AdminProductController::class);    
+
+   
 });
 
 
 //Phân quyền quản lý
-Route::middleware(['role:QL'])->group(function () { });
+Route::middleware(['role:QL'])->group(function () {
+    //quản lý nhân viên
+   Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');    
+   Route::get('/admin/staff/{id}', [AdminStaffController::class, 'Profile'])->name('admin.staff.profile');
+   Route::post('/admin/staff/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
+   
+ 
+ });
 
 
 
@@ -173,7 +206,7 @@ Route::middleware(['role:QL,NV,KH'])->group(function () { });
     // Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
     Route::get('/table/{id}', 'orderByTable')->name('order.table');
 });
-
+Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
 //phân quyền khách hàng
 Route::middleware(['role:KH'])->group(function () {
 

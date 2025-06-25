@@ -69,7 +69,7 @@
                 <a href=""><img src="{{asset('images/'.$lienKetWebsite->logo)}}" style="max-width: 100%" alt="Lỗi hiển thị"></a>
             </div>
             <div class="footer_top_slogan">
-                <h1 class="slogan">NGON NHANH <br> NO GỌN!</h1>
+                <h1 class="slogan">NGON NHANH <br>- NO GỌN!</h1>
             </div>
         </div>
     </div>

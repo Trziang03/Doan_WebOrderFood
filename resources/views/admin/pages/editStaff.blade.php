@@ -8,8 +8,8 @@
     </div>
     <div class="separator_x"></div>
     <div class="area">
-        <div class="infor">
-            <form action="{{ route('admin.editProfile') }}" method="POST">
+        <div class="infor">        
+            <form action="{{ route('admin.staff.update', ['id' => $staff->id]) }}"  method="POST">
                 @csrf
                 <div>
                     <p>Tài khoản : </p><input name="username" value="{{$staff->username}}">
@@ -35,7 +35,7 @@
                 @error('phone')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>
                 @enderror
-                <div style="justify-content: start; gap: 100px">
+                <div style="justify-content: start;">
                     <p>Giới tính :
                         <input type="radio" name="gender" value="male" {{($staff->gender == 'Nam') ? 'checked' : ''}}
                             style="width: 15px; margin-left: 55px;"> Nam
@@ -49,7 +49,7 @@
                             <option value="QL" {{ $staff->role == 'QL' ? 'selected' : '' }}>Quản trị viên</option>
                         </select>
                     </div>
-                </div>        
+                </div>
                 @error('gender')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>
                 @enderror

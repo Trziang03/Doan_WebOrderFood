@@ -43,37 +43,22 @@
         <a href="{{ route('product.create') }}" class="btn">
             <i class="fa-solid fa-plus"></i> Thêm món ăn</a>
         <select onchange="findProduct(this)">
-<<<<<<< HEAD
-<<<<<<< HEAD
             <option value="all">Tất cả</option>
             <option value="banh-trang">Bánh Tráng</option>
             <option value="nuoc-giai-khat">Nước giải khát</option>
-=======
-=======
->>>>>>> giang
+
             <option value="all" {{ request()->is('admin/products') ? 'selected' : '' }}>Danh mục</option>
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}" {{ request()->is('admin/products/category/' . $category->id) ? 'selected' : '' }}>
                     {{ $category->name }}
                 </option>
             @endforeach
-<<<<<<< HEAD
->>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
-=======
->>>>>>> giang
+
         </select>
         <table>
             <thead>
                 <tr>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    <th style="width: 48px;">ID</th>
-                    <th>Tên sản phẩm</th>
-                    <th style="width: 48px;">Sửa</th>
-                    <th style="width: 48px;">Ẩn</th>
-=======
-=======
->>>>>>> giang
+
                     <th style="width: 20px;">Hình ảnh</th>
                     <th style="width: 40px;">Tên món</th>
                     <th style="width: 25px;">Danh mục</th>
@@ -82,10 +67,7 @@
                     <th style="width: 20px;">Giá</th>
                     <th style="width: 10px;">Sửa</th>
                     <!-- <th style="width: 10px;">Ẩn</th> -->
-<<<<<<< HEAD
->>>>>>> 521da537225f710a7f10e4c2ea3d0c804cd43cb5
-=======
->>>>>>> giang
+
                 </tr>
             </thead>
 <tbody>

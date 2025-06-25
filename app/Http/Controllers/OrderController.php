@@ -208,6 +208,8 @@ class OrderController extends Controller
                 : 'Đặt hàng thành công! Cảm ơn bạn đã mua hàng!',
             'url' => route('user.index')
         ]);
+        dd($req->all());
+
     }
 
 
