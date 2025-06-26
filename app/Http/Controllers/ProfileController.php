@@ -100,17 +100,17 @@ class ProfileController extends Controller
         }
         return redirect()->back();
     }
-    public function favourite_product()
-    {
-        return view('user.profile.favourite_product')->with('products', Product::whereIn('id', LikeProduct::where('user_id', Auth::user()->id)->pluck('product_id'))->orderBy('updated_at', 'desc')->get());
-    }
-    public function unLike($id)
-    {
-        $like = LikeProduct::where('user_id', Auth::user()->id)->where('product_id', $id)->first();
-        if ($like)
-            $like->delete();
-        return redirect()->back();
-    }
+    // public function favourite_product()
+    // {
+    //     return view('user.profile.favourite_product')->with('products', Product::whereIn('id', LikeProduct::where('user_id', Auth::user()->id)->pluck('product_id'))->orderBy('updated_at', 'desc')->get());
+    // }
+    // public function unLike($id)
+    // {
+    //     $like = LikeProduct::where('user_id', Auth::user()->id)->where('product_id', $id)->first();
+    //     if ($like)
+    //         $like->delete();
+    //     return redirect()->back();
+    // }
     public function review_history()
     {
         return view('user.profile.review_history')->with('reviews', Rating::where('user_id', Auth::user()->id)->orderBy('updated_at', 'desc')->get());

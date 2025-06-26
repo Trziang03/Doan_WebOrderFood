@@ -40,12 +40,12 @@
         <div class="navbar_item_first">
             <div style="width:190px">
                 <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
-                        style="width:100%;height:40px;margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
+                        style="width:100%; height:55px; margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
                         alt="Lỗi hiển thị"></a>
             </div>
             <ul style="padding-left:0">
                 <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                <li>Menu<i class="" style="margin-left:5px" href=""></i>
+                <li><a href="{{route('user.menu')}}">Menu</a></li>
                 </li>
             </ul>
         </div>

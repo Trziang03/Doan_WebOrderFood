@@ -36,7 +36,7 @@
 .profile .row_profile .col_profile .col_profile_1 .item:hover {
     border-radius: 15px;
     border: 1px solid rgb(196, 218, 210);
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     color: white;
 }
 
@@ -111,7 +111,7 @@
     transform: translate(-50%,-50%);
     margin-top: 20px;
     border: none;
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     color: white;
 }
 
@@ -121,7 +121,7 @@
     border: none;
     margin-top: 30px;
     margin-left: 60px;
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     color: white;
 }
 
@@ -166,7 +166,7 @@
 .favourite_product .row_favourite_product .col_favourite_product .col_favourite_product_1 .item:hover {
     border-radius: 15px;
     border: 1px solid rgb(196, 218, 210);
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     color: white;
 }
 
@@ -233,7 +233,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     border-bottom: 1px solid #c7c7c7;
 }
 
@@ -255,7 +255,7 @@
 .favourite_product_table .body_favourite_product_table .table_item>button {
     float: inline-end;
     padding: 5px 25px;
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     transition: padding linear 0.3s;
 
 }
@@ -323,7 +323,7 @@
 .ratting .row_ratting .col_ratting .col_ratting_1 .item:hover {
     border-radius: 15px;
     border: 1px solid rgb(196, 218, 210);
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     color: white;
 }
 
@@ -378,7 +378,7 @@
 
 
 .ratting .row_ratting .col_ratting .col_ratting_2 .tab>button:hover {
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     color: white;
     border-radius: 5px;
 }
@@ -392,7 +392,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     border-bottom: 1px solid #c7c7c7;
 }
 
@@ -465,7 +465,7 @@
     text-align: center;
     padding: 5px 0px 10px 0px;
     margin-bottom: 30px;
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     color: white;
 }
 
@@ -611,7 +611,7 @@
 .shopping_cart_bottom_voucher .shopping_cart_voucher_discount>button{
     width: 30%;
     border: none;
-    background-color: rgb(22, 66, 60);
+    background-color: rgb(240, 145, 55);
     color: white;
     border-radius: 5px;
 }

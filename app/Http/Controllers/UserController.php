@@ -9,6 +9,7 @@ use App\Models\Blog;
 use App\Models\ProductUser;
 use App\Models\Brand;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\LikeProduct;
 use App\Models\Rating;
 use App\Models\Contact;
@@ -25,33 +26,37 @@ class UserController extends Controller
 
     public function index()
     {
-        $thuongHieu = Brand::index();
-        $danhSachDTHot = ProductUser::LayThongTinSanPham('Điện Thoại');
-        $danhSachLapTopMoi = ProductUser::LayThongTinSanPham('Laptop');
-        $danhSachBanChay = ProductUser::SanPhamBanChay();
-        return View('User.pages.index')->with([
-            "thuongHieu" => $thuongHieu,
-            "danhSachDTHot" => $danhSachDTHot,
-            "danhSachLapTopMoi" => $danhSachLapTopMoi,
-            "danhSachBanChay" => $danhSachBanChay
+
+        $danhSachMonAn = ProductUser::LayThongTinSanPham('Món chính');
+        $danhSachDoUong = ProductUser::LayThongTinSanPham('Món phụ');
+        // $danhSachBanChay = ProductUser::SanPhamBanChay();
+        return view('User.pages.index')->with([
+            "danhSachMonAn" => $danhSachMonAn,
+            "danhSachDoUong" => $danhSachDoUong,
+            // "danhSachBanChay" => $danhSachBanChay
         ]);
+    }
+    public function menu()
+    {
+        $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
+        return view('user.pages.menu', ['layTatCaSanPham' => $layTatCaSanPham]);
     }
 
     public function TimKiemSanPhamFH($slug, $id = null)
     {
-        $danhSachSanPham = ProductUser::TimKiemSanPham($slug, $id);
-        return view('user.pages.search')->with('danhSachSanPham', $danhSachSanPham);
+        $danhSachSanPham = ProductUser::TimKiemSanPham($slug);
+        return view('user.pages.menu')->with('danhSachSanPham', $danhSachSanPham);
     }
     public function TimKiemTheoTuKhoa(Request $request)
     {
         $request->validate([
-            'seachbykey'=>'required',
-        ],[
-            'seachbykey.required'=>"Vui lòng nhập từ khóa tìm kiếm",
+            'seachbykey' => 'required',
+        ], [
+            'seachbykey.required' => "Vui lòng nhập từ khóa tìm kiếm",
         ]);
         $key = str_replace('$', '', $request->input('seachbykey'));
         $danhSachSanPham = ProductUser::TimKiemTheoTuKhoa($key);
-        return view('user.pages.search')->with('danhSachSanPham', $danhSachSanPham);
+        return view('user.pages.menu')->with('danhSachSanPham', $danhSachSanPham);
     }
 
     //Trang Giới Thiệu
@@ -74,6 +79,7 @@ class UserController extends Controller
         return view('user.pages.contact');
     }
 
+    //Trang Đăng Ký
     public function DangKy(Request $request)
     {
         $request->validate(
@@ -146,80 +152,59 @@ class UserController extends Controller
     }
 
     public function ChiTietSanPham($slug)
-    {
+{
+    $product = Product::where('slug', $slug)->first();
 
-        $product = Product::where('slug', $slug)->first();
-        if ($product == null || $product->status != 1) {
-            return view('User.pages.404');
-        }
-        ProductUser::UpdateView($slug);
-
-        $danhSachDanhGia = $product->ratings;
-        $diemDanhGia = ProductUser::DiemDanhGia($slug);
-        $danhSachAnh = ProductUser::HinhAnhSamPham($slug);
-        $danhSachBoNho = ProductUser::BoNhoTrongSanPham($slug);
-        $thongTinSanPham = ProductUser::ThongTinSanPham($slug);
-        $sanPhamTuongTu = ProductUser::SanPhamTuongDuong($thongTinSanPham[0]->slug, $thongTinSanPham[0]->brand, $slug);
-        $laySanPhamTheoDanhMuc = ProductUser::LayDanhSachSanPhamTheoDanhMuc($thongTinSanPham[0]->slug, $slug, $thongTinSanPham[0]->brand);
-        $arr = array_merge($sanPhamTuongTu->toArray(), $laySanPhamTheoDanhMuc->toArray());
-        $thongSoKiThuatSanPham = $product->product_specification;
-        $boNhoNhoNhat = ProductUser::LayBoNhoNhoNhat($slug);
-        $mauSanPham = ProductUser::MauSanPham($slug, $boNhoNhoNhat->internal_memory);
-        $luotThichSanPham = ProductUser::LuotThichSanPham($slug);
-        return View('user.pages.detail')->with([
-
-            'slug'=>$slug,
-            "danhSachAnh"=>$danhSachAnh,
-            "danhSachAnhVariant"=>$product->product_variants,
-            "danhSachBoNho"=>$danhSachBoNho,
-            "thongTinSanPham"=>$thongTinSanPham[0],
-            "thongSoKiThuatSanPham"=>$thongSoKiThuatSanPham,
-            "luotThichSanPham"=>$luotThichSanPham,
-            "mauSanPham"=>$mauSanPham,
-            "sanPhamTuongTu"=>$arr,
-            "danhSachDanhGia"=>$danhSachDanhGia,
-            "diemDanhGia"=>$diemDanhGia,
-        ]);
+    if (!$product || $product->status != 1) {
+        return view('user.pages.404');
     }
 
-    public function getRating($id,$sao=0){
+    $thongTinSanPham = ProductUser::ThongTinSanPham($slug);
+    $danhSachTopping = ProductUser::DanhSachTopping($slug);
+    $danhSachSize = ProductUser::DanhSachSize($slug);
 
-        $rating = Rating::HienThiRating($id,$sao);
-        return response()->json([
-            'data'=>$rating
-        ]);
+    if (!$thongTinSanPham) {
+        return view('user.pages.404');
     }
+
+    return view('user.pages.detail')->with([
+        'slug' => $slug,
+        'danhSachTopping' => $danhSachTopping,
+        'danhSachSize' => $danhSachSize,
+        'thongTinSanPham' => $thongTinSanPham,
+
+    ]);
+}
+
+
     public function LayMauSanPhamTheoBoNho($slug, $internal_memory)
     {
         $danhSachMau = ProductUser::MauSanPham($slug, $internal_memory);
         return $danhSachMau;
     }
-    public function ChiTietSanPhamTheoBoNho($slug, $internal_memory)
-    {
+    // public function ChiTietSanPhamTheoBoNho($slug, $internal_memory)
+    // {
 
-        $danhSachAnh = ProductUser::HinhAnhSamPham($slug);
-        $danhSachBoNho = ProductUser::BoNhoTrongSanPham($slug);
-        $thongTinSanPham = ProductUser::ThongTinSanPham($slug);
-        $thongSoKiThuatSanPham = ProductUser::ThongSoKiThuatSanPham($slug);
-        $mauSanPham = ProductUser::MauSanPham($slug, $internal_memory);
-        $luotThichSanPham = ProductUser::LuotThichSanPham($slug);
-        return View('user.pages.detail')->with([
-            'slug' => $slug,
-            "danhSachAnh" => $danhSachAnh,
-            "danhSachBoNho" => $danhSachBoNho,
-            "thongTinSanPham" => $thongTinSanPham[0],
-            "thongSoKiThuatSanPham" => $thongSoKiThuatSanPham[0],
-            "luotThichSanPham" => $luotThichSanPham,
-            "mauSanPham" => $mauSanPham,
-        ]);
-    }
+    //     $danhSachAnh = ProductUser::HinhAnhSamPham($slug);
+    //     $danhSachBoNho = ProductUser::BoNhoTrongSanPham($slug);
+    //     $thongTinSanPham = ProductUser::ThongTinSanPham($slug);
+    //     $thongSoKiThuatSanPham = ProductUser::ThongSoKiThuatSanPham($slug);
+    //     $mauSanPham = ProductUser::MauSanPham($slug, $internal_memory);
+    //     $luotThichSanPham = ProductUser::LuotThichSanPham($slug);
+    //     return View('user.pages.detail')->with([
+    //         'slug' => $slug,
+    //         //"danhSachBoNho" => $danhSachBoNho,
+    //         "thongTinSanPham" => $thongTinSanPham[0],
+    //         "thongSoKiThuatSanPham" => $thongSoKiThuatSanPham[0],
+    //         "luotThichSanPham" => $luotThichSanPham,
+    //         "mauSanPham" => $mauSanPham,
+    //     ]);
+    // }
     public function LayThongTinSanPhamTheoMau($slug, $internal_memory, $color)
     {
         $data = ProductUser::LayThongTinSanPhamTheoMau($slug, $internal_memory, $color);
         return response()->json([
             "variant_id" => $data->id,
-            "image" => $data->image,
-            "stock" => $data->stock,
             "price" => $data->price
         ]);
     }
@@ -256,6 +241,14 @@ class UserController extends Controller
         $data->phone = $req['phone'];
         $data->save();
         return redirect()->route('user.contact')->with('msg', 'Gửi liên hệ thành công!');
+    }
+
+    public function getRating($id, $sao = 0)
+    {
+        $rating = Rating::HienThiRating($id, $sao);
+        return response()->json([
+            'data' => $rating
+        ]);
     }
     public function CapNhapSanPhamYeuThich($sanpham, $user)
     {
@@ -323,10 +316,10 @@ class UserController extends Controller
             }
         }
         DB::table('order_items')
-        ->where('product_variant_id',$request->id)
-        ->update([
-            'status'=>1,
-        ]);
+            ->where('product_variant_id', $request->id)
+            ->update([
+                'status' => 1,
+            ]);
 
 
         return response()->json([

@@ -4,7 +4,7 @@
 }
 body{
     font-family: 'Roboto', sans-serif;
-    background-color:rgb(196, 218, 210);
+    /* background-color:rgb(196, 218, 210); */
 }
 header{
     background-color: rgb(240, 145, 55);
@@ -66,7 +66,7 @@ p{
     font-size: 14px;
     line-height:1.5;
     padding:10px 12px;
-    transition: all linear 0.3s;
+    /* transition: all linear 0.3s; */
 }
 .navbar > div > ul > li > a{
     color: rgb(233, 239, 236);
@@ -74,12 +74,18 @@ p{
 }
 .navbar-top div > ul > li:hover {
     cursor: pointer;
-    background-color: rgb(233, 239, 236);
+    /* background-color: rgb(233, 239, 236); */
     border-radius: 10px;
 }
-.navbar-top div > ul > li:hover a{
+/* .navbar-top div > ul > li:hover a{
     color: black;
-}
+} */
+
+.navbar > div > ul > li > a:hover {
+    background-color: rgb(233, 239, 236); /* Nền trắng */
+    color: #000000;             /* Chữ đen */
+    border-radius: 5px;         /* Tùy chọn: bo góc cho đẹp */
+  }
 
 .dropbox_login {
     display: none;
