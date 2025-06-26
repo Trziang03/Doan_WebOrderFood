@@ -76,7 +76,7 @@ img{
 .navbar > div > ul > li{
     font-size: 14px;
     line-height:1.5;
-    /* padding:10px 12px; */
+    padding:10px 12px;
     /* transition: all linear 0.3s; */
 }
 .navbar > div > ul > li > a{
@@ -85,10 +85,10 @@ img{
 }
 .navbar-top div > ul > li:hover {
     cursor: pointer;
-    /* background-color: rgb(233, 239, 236);  */
+    /* background-color: rgb(233, 239, 236); */
     border-radius: 10px;
 }
-/* .navbar-top div > ul > li >a:hover {
+/* .navbar-top div > ul > li:hover a{
     color: black;
 } */
 
