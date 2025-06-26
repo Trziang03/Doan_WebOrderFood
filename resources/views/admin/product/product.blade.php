@@ -43,22 +43,16 @@
         <a href="{{ route('product.create') }}" class="btn">
             <i class="fa-solid fa-plus"></i> Thêm món ăn</a>
         <select onchange="findProduct(this)">
-            <option value="all">Tất cả</option>
-            <option value="banh-trang">Bánh Tráng</option>
-            <option value="nuoc-giai-khat">Nước giải khát</option>
-
             <option value="all" {{ request()->is('admin/products') ? 'selected' : '' }}>Danh mục</option>
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}" {{ request()->is('admin/products/category/' . $category->id) ? 'selected' : '' }}>
                     {{ $category->name }}
                 </option>
             @endforeach
-
         </select>
         <table>
             <thead>
                 <tr>
-
                     <th style="width: 20px;">Hình ảnh</th>
                     <th style="width: 40px;">Tên món</th>
                     <th style="width: 25px;">Danh mục</th>
@@ -67,7 +61,6 @@
                     <th style="width: 20px;">Giá</th>
                     <th style="width: 10px;">Sửa</th>
                     <!-- <th style="width: 10px;">Ẩn</th> -->
-
                 </tr>
             </thead>
 <tbody>

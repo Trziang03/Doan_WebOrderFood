@@ -360,7 +360,7 @@
             $emptySlots = $totalSlots - $tableCount;
         @endphp
 
-        <div class="grid-container" >
+        <div class="grid-container">
             {{-- Hiển thị bàn thật --}}
             @foreach ($tables as $table)
                 <div class="table-box">
@@ -424,7 +424,7 @@
                 name="access_limit"
                 min="1"
                 value="{{ $table->access_limit }}"
-            >
+                >
 
                 <label>URL gọi món</label>
                 <p id="editQrUrl" style="font-size: 13px; word-break: break-word;">
