@@ -148,10 +148,15 @@ Route::middleware(['role:QL,NV'])->group(function () {
         return response()->view('table.qr_expired', [], 403);
     }
 
-    // Nếu trạng thái là "trống" (id = 1), chuyển sang "đang sử dụng" (id = 2)
-    if ($table->table_status_id == 1) {
-        $table->table_status_id = 2; // 2 = đang sử dụng
-        $table->save();
+    if (!$table) {
+        abort(404, 'Không tìm thấy bàn.');
+    }
+
+    //  cấm truy cập nếu trạng thái = 3
+    if ((int)$table->table_status_id === 3) {
+        return response()->view('errors.access_denied', [
+            'message' => 'Bàn đang được dọn dẹp. Vui lòng chọn bàn khác.'
+        ], 403);
     }
 
 

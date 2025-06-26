@@ -47,16 +47,288 @@
     .close-btn:hover {
         color: red;
     }
+
+    /* popup cập nhật bàn */
+
+    /* Overlay nền xám mờ */
+    #optionPopup {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Nội dung popup */
+    #optionPopup .popup-content {
+        background-color: #ffa726; /* cam đậm */
+        padding: 25px 30px;
+        border-radius: 12px;
+        width: 350px;
+        position: relative;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        color: #212121;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Tiêu đề */
+    #optionPopup h4 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 22px;
+        font-weight: bold;
+        text-align: center;
+        color: #212121;
+    }
+
+    /* Nút đóng */
+    .btn-close-popup {
+        position: absolute;
+        top: 12px;
+        right: 15px;
+        background: #ef6c00;
+        color: white;
+        border: none;
+        font-size: 18px;
+        font-weight: bold;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        line-height: 26px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-close-popup:hover {
+        background-color: #e65100;
+    }
+
+    /* Input và select */
+    #optionPopup input,
+    #optionPopup select {
+        width: 100%;
+        padding: 8px 10px;
+        margin-bottom: 15px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        box-shadow: inset 0 0 0 1px #ccc;
+        transition: 0.2s;
+    }
+    #optionPopup input:focus,
+    #optionPopup select:focus {
+        outline: none;
+        box-shadow: inset 0 0 0 2px #29b6f6;
+    }
+
+    /* Label */
+    #optionPopup label {
+        font-weight: 500;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    /* Nút lưu */
+    #optionPopup button[type="submit"] {
+        background-color: #43a047; /* xanh lá */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-weight: bold;
+        font-size: 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: 0.2s;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #optionPopup button[type="submit"]:hover {
+        background-color: #2e7d32;
+    }
+
+    /* Đoạn URL */
+    #optionPopup p#editQrUrl {
+        font-size: 13px;
+        color: #fff;
+        word-break: break-word;
+        margin-bottom: 0;
+    }
+
+
+    /* popup thêm bàn */
+    /* Nền overlay */
+    .popup-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Nội dung popup */
+    .popup-content {
+        background: #fff;
+        border-radius: 12px;
+        padding: 30px 35px;
+        width: 250px;
+        position: relative;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Nút đóng */
+    .btn-close-popup {
+        position: absolute;
+        top: 12px;
+        right: 15px;
+        background: #f57c00;
+        color: white;
+        border: none;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        line-height: 26px;
+        text-align: center;
+        transition: 0.2s;
+    }
+    .btn-close-popup:hover {
+        background: #e65100;
+    }
+
+    /* Tiêu đề */
+    .popup-content h4 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* Form labels */
+    .popup-content label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    /* Form inputs */
+    .popup-content input,
+    .popup-content select {
+        width: 100%;
+        padding: 8px 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+    .popup-content input:focus,
+    .popup-content select:focus {
+        border-color: #f57c00;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(245, 124, 0, 0.2);
+    }
+
+    /* Buttons */
+    .popup-content .btn {
+        background-color: #f57c00;
+        color: white;
+        border: none;
+        padding: 10px 0;
+        width: 100%;
+        font-size: 15px;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 5px;
+        transition: 0.2s;
+    }
+    .popup-content .btn:hover {
+        background-color: #e65100;
+    }
+
+    .popup-content .form-buttons {
+        display: flex;
+        margin-top: 10px;
+    }
+
+    .popup-content .btn {
+        background-color: #f57c00;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        width: auto; /* ✅ Không còn chiếm full width */
+    }
+
+    .popup-content .btn:hover {
+        background-color: #e65100;
+    }
+
+
 </style>
 @section('content')
     <div class="content" id="banan">
         <div class="head">
             <div class="title">Quản Lý bàn ăn</div>
-            <button id="toggleForm" class="btn-toggle">Thêm bàn</button>
+            {{-- <button id="toggleForm" class="btn-toggle">Thêm bàn</button> --}}
         </div>
         <div class="separator_x"></div>
-        <!-- Form nhập bàn ăn -->
-        <form method="POST" action="{{ route('admin.table.store') }}">
+
+        <!-- Popup thêm bàn -->
+        <div id="addTablePopup" class="popup-overlay" style="display: none;">
+            <div class="popup-content">
+                <button class="btn-close-popup" onclick="hideForm()">×</button>
+                <h4>Thêm bàn ăn</h4>
+
+                <form method="POST" action="{{ route('admin.table.store') }}">
+                    @csrf
+                    <div class="form-group-table">
+                        <label for="tableNumber">Số bàn</label>
+                        <input type="text" name="name" id="tableNumber" class="form-control" placeholder="Nhập số bàn" required>
+                    </div>
+
+                    <div class="form-group-table">
+                        <label for="statusSelect">Trạng thái</label>
+                        <select name="table_status_id" id="statusSelect" class="form-control" required>
+                            @foreach ($statuses as $status)
+                                <option value="{{ $status->id }}">{{ $status->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group-table">
+                        <label for="access_limit">Số lượt truy cập cho phép</label>
+                        <input type="number" name="access_limit" id="access_limit" class="form-control" min="1" value="1" required>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button class="btn" type="submit">Thêm</button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+        
+
+
+        {{-- <form method="POST" action="{{ route('admin.table.store') }}">
             @csrf
             <div id="tableForm" class="form-section" style="display: none;">
                 <div class="form-group-tablee">
@@ -80,7 +352,7 @@
                     </div>
                 </div>
             </div>
-        </form>
+        </form> --}}
 
         @php
             $totalSlots = 12;
@@ -124,10 +396,17 @@
             <button class="btn-close-popup" onclick="closeEditPopup()">×</button>
             <h4>Cập nhật bàn ăn</h4>
 
-            <form id="editTableForm" method="POST" action="{{ route('admin.table.update', ['id' => $table->id]) }}">
+            <form style="padding: 5px 20px;" id="editTableForm" method="POST" action="{{ route('admin.table.update', ['id' => $table->id]) }}">
                 @csrf
                 <label for="editName">Số hiệu bàn</label>
-                <input type="text" id="editName" name="name" value="{{ $table->name }}">
+                <div class="col">
+                    <input type="text" id="editName"placeholder="Tên bàn" name="name" value="{{ $table->name }}">
+                    <div class="alert_error_validate">
+                        <span style="color: red; font-size:12px;margin-left: 10px" >
+                            @error('name'){{$message}}@enderror
+                        </span>
+                    </div>
+                </div>
 
                 <label for="editStatus">Trạng thái</label>
                 <select id="editStatus" name="table_status_id">
@@ -137,13 +416,13 @@
                         </option>
                     @endforeach
                 </select>
-                <label for="access_limit">Số lượt truy cập cho phép</label>
+                <label style="margin-top: 10px;" for="access_limit">Số lượt truy cập cho phép</label>
                 <input
                 style="width: 40%;"
                 type="number"
                 id="access_limit"
                 name="access_limit"
-
+                min="1"
                 value="{{ $table->access_limit }}"
             >
 
@@ -240,18 +519,12 @@
         window.tables = @json($tables);
     </script>
     <script>
-        function fetchQR() {
-            fetch('/table/1/generate-qr') // thay số 1 bằng id thực tế
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('qr_container').innerHTML = data.qr_svg;
-                    console.log('QR Token:', data.token);
-                });
+        document.getElementById("toggleForm").onclick = function () {
+            document.getElementById("addTablePopup").style.display = "flex";
         }
-        
-        fetchQR();
-        
-        // Làm mới QR mỗi 30 phút
-        setInterval(fetchQR, 30 * 60 * 1000);
-        </script>
+    
+        function hideForm() {
+            document.getElementById("addTablePopup").style.display = "none";
+        }
+    </script>
 @endsection

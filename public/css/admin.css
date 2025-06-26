@@ -534,7 +534,7 @@ table tr td {
 .alert_error_validate {
     color: red;
     font-size: 14px;
-    margin-left: 175px;
+    /* margin-left: 175px; */
     padding: 3px;
 }
 
@@ -665,7 +665,7 @@ table tr td {
     background: orange;
     padding: 24px 20px;
     border-radius: 10px;
-    width: 315px;
+    width: 270px;
     margin: 100px auto;
     position: relative;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
@@ -673,7 +673,7 @@ table tr td {
 
 /* Title */
 #optionPopup h4 {
-    margin-bottom: 20px;
+    margin: 20px;
     font-size: 30px;
     font-weight: 600;
     text-align: center;
