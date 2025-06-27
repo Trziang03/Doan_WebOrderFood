@@ -77,120 +77,77 @@ class AdminTableController extends Controller
     public function update(Request $request, $id)
     {
            // 1. Lấy bàn cần sửa
-        $table = Table::findOrFail($id);
+           $table = Table::findOrFail($id);
 
-        // 2. Validate dữ liệu gửi lên
-        $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:tables,name,' . $id,
-                'regex:/^[a-zA-Z0-9\s]+$/',], 
-            'table_status_id' => 'required|exists:table_status,id',
-            'access_limit' => 'required|integer|min:1',
-        ],[
-            'name.regex' => 'Tên bàn không được chứa ký tự đặc biệt.',
-        ]);
+           $regenQR = $request->has('regen_qr');
+
+           $request->validate([
+               'name' => [
+                   'required',
+                   'string',
+                   'max:255',
+                   'unique:tables,name,' . $id,
+                   'regex:/^[a-zA-Z0-9\s]+$/',
+               ],
+               'table_status_id' => 'required|exists:table_status,id',
+               'access_limit' => 'required|integer|min:1',
+           ], [
+               'name.regex' => 'Tên bàn không được chứa ký tự đặc biệt.',
+           ]);
+
+           $regenQR = $request->has('regen_qr');
+           $now = Carbon::now();
+           $last = $table->qr_refreshed_at ?? $table->updated_at;
+       
+           // Cập nhật dữ liệu cơ bản
+           $table->name = $request->name;
+           $table->table_status_id = $request->table_status_id;
+           $table->access_limit = $request->access_limit;
+
+        // Kiểm tra trạng thái = 2 (đang sử dụng)
+        if ($request->has('regen_qr')) {
+            $this->generateQrForTable($table, $now);
+        }
+       
+           // Nếu chuyển về trạng thái "Trống" (id = 1) thì reset QR và token
+           if ((int)$request->table_status_id === 1) {
+               $this->generateQrForTable($table, $now);
+               $table->access_count = 0;
+           }
+       
+           $table->save();
+       
+           return redirect()->back()->with('message', 'Cập nhật bàn thành công');
+       }
 
 
-        // 3. Cập nhật thông tin bàn
-        $table->name = $request->name;
-        $table->table_status_id = $request->table_status_id;
-        $table->access_limit = $request->access_limit;
+    //Hàm xử lý sinh QR riêng
+    private function generateQrForTable(&$table, $now)
+    {
+        $token = Str::random(32);
+        $url = route('order.table', ['id' => $table->id]);
 
-        $now = Carbon::now();//lấy 
-        $shouldRefreshQR = false;
+        $builder = new Builder(
+            writer: new PngWriter(),
+            data: $url,
+            size: 300,
+            margin: 10
+        );
 
-        // Trường hợp tự động cập nhật nếu trạng thái = 2 và đã quá 15 phút
-        if ((int)$request->table_status_id === 2 // đang sử dụng
-        ) {
-            $last = $table->qr_refreshed_at ?? $table->updated_at;
-            //if ($now->diffInSeconds($last) >= 30) ////refresh trong 30 giây
-            //if ($now->diffInMinutes($last) >= 15) ////refresh sau 15 phút
-            if ($now->diffInSeconds($last) >= 10) {
-                $shouldRefreshQR = true;
-            }
+        $result = $builder->build();
+
+        // Xoá QR cũ nếu có
+        if ($table->qr_code && Storage::disk('public')->exists('qr-codes/' . $table->qr_code)) {
+            Storage::disk('public')->delete('qr-codes/' . $table->qr_code);
         }
 
-        //làm mới QR nếu đủ điều kiện trạng thái đang sử dụng (id=2)
-        if ($shouldRefreshQR){
+        $filename = 'qr_table_' . $table->id . '_' . Str::random(5) . '.png';
+        Storage::disk('public')->put('qr-codes/' . $filename, $result->getString());
 
-            $token = Str::random(32);
-            // Tạo lại đường dẫn QR mới
-            $url = route('order.table', ['id' => $table->id]);
-
-             // Tạo QR mới
-             $builder = new Builder(
-                writer: new PngWriter(),
-                data: $url,
-                size: 300,
-                margin: 10
-            );
-            $result = $builder->build();
-
-
-             // Xoá file QR cũ nếu có
-             if ($table->qr_code && Storage::disk('public')->exists('qr-codes/' . $table->qr_code)) {
-                Storage::disk('public')->delete('qr-codes/' . $table->qr_code);
-            }
-
-            // Lưu QR mới
-            $filename = 'qr_table_' . $table->id . '_' . Str::random(5) . '.png';
-            Storage::disk('public')->put('qr-codes/' . $filename, $result->getString());
-
-
-            // Cập nhật DB
-            $table->qr_code = $filename;
-            $table->token = $token;
-            $table->access_count = 0;
-            $table->qr_refreshed_at = $now;
-            $table->save();
-        }
-
-        // Nếu trạng thái là "Trống" (id = 1) thì tạo lại QR và token
-        if ((int)$request->table_status_id === 1) {
-
-            // Reset access_count nếu chuyển về trạng thái Trống (id = 1)
-            $table->access_count = 0;
-
-            $token = Str::random(32);
-            // Tạo lại đường dẫn QR mới
-            $url = route('order.table', ['id' => $table->id]);
-
-            // Tạo QR mới
-            $builder = new Builder(
-                writer: new PngWriter(),
-                data: $url,
-                size: 300,
-                margin: 10
-            );
-
-            $result = $builder->build();
-
-            // Tạo tên file mới (hoặc giữ nguyên tên cũ)
-            $filename = 'qr_table_' . $table->id . '_' . Str::random(5) . '.png';
-
-            // Xoá file QR cũ nếu có
-            if ($table->qr_code && Storage::disk('public')->exists('qr-codes/' . $table->qr_code)) {
-                Storage::disk('public')->delete('qr-codes/' . $table->qr_code);
-            }
-
-            // Lưu QR mới
-            Storage::disk('public')->put('qr-codes/' . $filename, $result->getString());
-
-            // Cập nhật tên file QR
-            $table->qr_code = $filename;
-            $table->token = $token;
-            $table->access_count = 0; // reset lượt truy cập
-            $table->qr_refreshed_at = $now;
-        }
-        // 5. Lưu thay đổi
-        $table->save();
-
-        return redirect()->back()->with('message', 'Cập nhật bàn thành công');
+        // Gán lại thông tin
+        $table->qr_code = $filename;
+        $table->token = $token;
     }
-
 
     public function checkin(Request $request)
     {

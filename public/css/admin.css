@@ -689,7 +689,7 @@ table tr td {
 
 /* Select fields */
 #optionPopup select {
-    width: 60%;
+    width: 100%;
     padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 6px;

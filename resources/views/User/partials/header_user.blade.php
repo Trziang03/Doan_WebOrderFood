@@ -74,10 +74,10 @@
                         <li><a href="" onclick="handleLogin(event)"><i class="far fa-user-circle"
                                     style="margin-right:5px"></i>Đăng nhập</a></li>
                     @endguest --}}
-                    @auth
+                    {{-- @auth
                         <li><a href="{{ route('profile.index') }} ">Thông tin cá nhân</a></li>
                         <li><a href="{{ route('logout') }}">Đăng xuất</a></li>
-                    @endauth
+                    @endauth --}}
 
                 </ul>
             </nav>

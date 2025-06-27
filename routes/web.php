@@ -116,6 +116,10 @@ Route::middleware(['role:QL,NV'])->group(function () {
    Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
    //Tạo QR Động
    Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
+  
+//    Route::post('/tables/auto-refresh', [AdminTableController::class, 'autoRefresh'])->name('tables.autoRefresh');
+
+   
    Route::get('/table/checkin', function (Request $request) {
     $token = $request->query('token');
 
@@ -139,12 +143,8 @@ Route::middleware(['role:QL,NV'])->group(function () {
 
     // Hiển thị giao diện trang chủ 
     return view('user.pages.index', ['table' => $table]);
-});
 
-
-
-
-   //Route quản lí món ăn
+     //Route quản lí món ăn
    Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
    Route::get('/admin/products/category/{id}', [AdminProductController::class, 'filterByCategory']);
    Route::get('/admin/product/active/{id}', [AdminProductController::class, 'active'])->middleware(AdminRoleMiddleware::class)->name('admin.product.active');
@@ -161,6 +161,12 @@ Route::middleware(['role:QL,NV'])->group(function () {
 
    Route::resource('/admin/product-variant', AdminProductVariantController::class)->except(['index']);
    Route::resource('/admin/product', AdminProductController::class);    
+});
+
+
+
+
+  
 
    
 });
@@ -172,13 +178,7 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/admin/table/delete/{id}', [AdminTableController::class, 'destroy'])->name('admin.table.destroy');
 
 
-    //nhân viên
-    Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');
-    Route::get('/admin/staff/create', [AdminStaffController::class, 'create'])->name('admin.staff.create');
-    Route::post('/admin/staff/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
-    Route::get('/admin/staff/edit/{id}', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
-    Route::post('/admin/staff/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-    Route::delete('/admin/staff/delete/{id}', [AdminStaffController::class, 'destroy'])->name('admin.staff.destroy');
+   
 
 
 //Phân quyền quản lý
@@ -187,7 +187,13 @@ Route::middleware(['role:QL'])->group(function () {
    Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');    
    Route::get('/admin/staff/{id}', [AdminStaffController::class, 'Profile'])->name('admin.staff.profile');
    Route::post('/admin/staff/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-   
+    //nhân viên
+    Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');
+    Route::get('/admin/staff/create', [AdminStaffController::class, 'create'])->name('admin.staff.create');
+    Route::post('/admin/staff/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
+    Route::get('/admin/staff/edit/{id}', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
+    Route::post('/admin/staff/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
+    Route::delete('/admin/staff/delete/{id}', [AdminStaffController::class, 'destroy'])->name('admin.staff.destroy');
  
  });
 
@@ -203,8 +209,6 @@ Route::middleware(['role:QL,NV,KH'])->group(function () { });
 });
 Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
 //phân quyền khách hàng
-Route::middleware(['role:KH'])->group(function () {
-
     //xác nhận đặt hàng và thanh toán
     Route::controller(OrderController::class)->group(function () {
         Route::get('/payment', 'index')->name('user.payment');
@@ -231,7 +235,6 @@ Route::middleware(['role:KH'])->group(function () {
         Route::post('/kiemtrapassword', 'IsPasswordChange')->name('profile.ispassword');
         Route::post('/submitchange', 'UpdatePassword')->name('profile.submitchange');
     });
-});
 //Route quan li danh mục
 Route::controller(AdminCategoryController::class)->group(
     function () {

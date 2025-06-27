@@ -319,7 +319,7 @@
                     </div>
 
                     <div class="form-buttons">
-                        <button class="btn" type="submit">Thêm</button>
+                        <button class="btn" type="submit">Lưu thay đổi</button>
                     </div>
                     
                 </form>
@@ -363,7 +363,7 @@
         <div class="grid-container">
             {{-- Hiển thị bàn thật --}}
             @foreach ($tables as $table)
-                <div class="table-box">
+                <div class="table-box" id="table-box">
                     <div class="table-title">{{ $table->name }}</div>
                     <div class="table-status">{{ $table->status->name }}</div>
                     @if ($table->qr_image_path)
@@ -426,6 +426,10 @@
                 value="{{ $table->access_limit }}"
                 >
 
+                <div class="form-check">
+                    <label for="editQR">Đổi mã QR</label>
+                    <input type="checkbox" id="editQR" name="regen_qr">
+                </div>
                 <label>URL gọi món</label>
                 <p id="editQrUrl" style="font-size: 13px; word-break: break-word;">
                     {{ asset('storage/qr-codes/' . $table->qr_code) }}
@@ -459,18 +463,21 @@
 
 @section('script')
     <script>
-        const btn = document.getElementById('toggleForm');
-        const form = document.getElementById('tableForm');
+        document.addEventListener('DOMContentLoaded', function (){
+            const btn = document.getElementById('toggleForm');
+            const form = document.getElementById('tableForm');
 
-        btn.addEventListener('click', () => {
-            if (form.style.display === 'none') {
-                form.style.display = 'block';
-                btn.textContent = 'Ẩn thêm';
-            } else {
-                form.style.display = 'none';
-                btn.textContent = 'Thêm bàn';
-            }
+            btn.addEventListener('click', () => {
+                if (form.style.display === 'none') {
+                    form.style.display = 'block';
+                    btn.textContent = 'Ẩn thêm';
+                } else {
+                    form.style.display = 'none';
+                    btn.textContent = 'Thêm bàn';
+                }
+            });
         });
+        
 
         function openEditPopup(table) {
             const form = document.getElementById('editTableForm');
@@ -518,7 +525,15 @@
         // Dữ liệu bàn từ Laravel truyền vào JavaScript
         window.tables = @json($tables);
     </script>
-    <script>
+    {{-- <script>
+        function copyToClipboard(selector) {
+            const text = document.querySelector(selector).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Đã sao chép URL vào clipboard');
+            });
+        }
+    </script> --}}
+    {{-- <script>
         document.getElementById("toggleForm").onclick = function () {
             document.getElementById("addTablePopup").style.display = "flex";
         }
@@ -526,5 +541,6 @@
         function hideForm() {
             document.getElementById("addTablePopup").style.display = "none";
         }
-    </script>
+    </script> --}}
+    
 @endsection

@@ -311,7 +311,7 @@
             @endif
         </div>
     </section>
-
+{{-- 
     <section class="container_css product_best_seller">
         <h4 >CÁC LOẠI ĐỒ UỐNG NỔI BẬT</h4>
         <div id="carouselExampleControlsNoTouching" class="carousel slide carousel-dark" data-bs-touch="false">
@@ -389,7 +389,7 @@
             </div>
             @endif
         </div>
-    </section>
+    </section> --}}
 
 <!-- Điện thoại mới nhất -->
 <section class="container_css product_best_seller">
