@@ -400,13 +400,24 @@
                 @csrf
                 <label for="editName">Số hiệu bàn</label>
                 <div class="col">
-                    <input type="text" id="editName"placeholder="Tên bàn" name="name" value="{{ $table->name }}">
+                    <input 
+                        type="text" 
+                        id="editName" 
+                        placeholder="Tên bàn" 
+                        name="name" 
+                        value="{{ $table->name }}"
+                        oninput="validateName()"
+                    >
                     <div class="alert_error_validate">
-                        <span style="color: red; font-size:12px;margin-left: 10px" >
+                        <span 
+                            id="name_error" 
+                            style="color: red; font-size:12px;margin-left: 10px"
+                        >
                             @error('name'){{$message}}@enderror
                         </span>
                     </div>
                 </div>
+                
 
                 <label for="editStatus">Trạng thái</label>
                 <select id="editStatus" name="table_status_id">
@@ -418,14 +429,18 @@
                 </select>
                 <label style="margin-top: 10px;" for="access_limit">Số lượt truy cập cho phép</label>
                 <input
-                style="width: 40%;"
-                type="number"
-                id="access_limit"
-                name="access_limit"
-                min="1"
-                value="{{ $table->access_limit }}"
+                    style="width: 40%;"
+                    type="number"
+                    id="access_limit"
+                    name="access_limit"
+                    min="1"
+                    max="10"
+                    value="{{ $table->access_limit }}"
+                    oninput="checkAccessLimit(this)"
                 >
-
+                <small id="access_limit_error" style="color: red; display: none;">
+                    Số lượt truy cập không được vượt quá 10.
+                </small>
                 <div class="form-check">
                     <label for="editQR">Đổi mã QR</label>
                     <input type="checkbox" id="editQR" name="regen_qr">
@@ -525,6 +540,47 @@
         // Dữ liệu bàn từ Laravel truyền vào JavaScript
         window.tables = @json($tables);
     </script>
+    <script>
+        function checkAccessLimit(input) {
+            const min = 1;
+            const max = 10;
+            const value = parseInt(input.value);
+            const error = document.getElementById('access_limit_error');
+
+            if (value < min) {
+                error.textContent = 'Số lượt truy cập không được nhỏ hơn 1.';
+                error.style.display = 'inline';
+                input.value = min;
+            } else if (value > max) {
+                error.textContent = 'Số lượt truy cập không được vượt quá 10.';
+                error.style.display = 'inline';
+                input.value = max;
+            } else {
+                error.style.display = 'none';
+            }
+        }
+    </script>
+
+    {{-- kiểm tra dữ liệu ngay khi nhập --}}
+    <script>
+        function validateName() {
+            const input = document.getElementById('editName');
+            const error = document.getElementById('name_error');
+            const value = input.value.trim();
+    
+            if (value === '') {
+                error.textContent = 'Tên bàn không được để trống.';
+            } else if (value.length > 50) {
+                error.textContent = 'Tên bàn không được dài quá 50 ký tự.';
+            } else if (!/^[\w\s\-]+$/.test(value)) { // ví dụ: chỉ cho chữ, số, gạch ngang và khoảng trắng
+                error.textContent = 'Tên bàn chỉ được chứa chữ, số, dấu cách và gạch ngang.';
+            } else {
+                error.textContent = '';
+            }
+        }
+    </script>    
+
+
     {{-- <script>
         function copyToClipboard(selector) {
             const text = document.querySelector(selector).textContent;

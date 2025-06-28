@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckAccessToken;
 use App\Http\Middleware\AdminRoleMiddleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Request;
@@ -140,6 +141,10 @@ Route::middleware(['role:QL,NV'])->group(function () {
         ], 403);
     }
 
+    //kiểm tra Token mỗi lần request
+    Route::middleware([CheckAccessToken::class])->group(function () {
+        Route::get('/table/access', 'App\Http\Controllers\TableController@access');
+    });
 
     // Hiển thị giao diện trang chủ 
     return view('user.pages.index', ['table' => $table]);

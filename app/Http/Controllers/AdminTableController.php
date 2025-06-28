@@ -45,7 +45,7 @@ class AdminTableController extends Controller
         $table->token = $token;
         $table->access_limit = $request->access_limit;
         $table->access_count = 0;
-        $table->qr_refreshed_at = Carbon::now();
+        $table->token_expires_at = Carbon::now();
         $table->save(); // để lấy ID trước khi đặt tên file QR
 
 
@@ -91,29 +91,32 @@ class AdminTableController extends Controller
                ],
                'table_status_id' => 'required|exists:table_status,id',
                'access_limit' => 'required|integer|min:1',
-           ], [
-               'name.regex' => 'Tên bàn không được chứa ký tự đặc biệt.',
            ]);
 
            $regenQR = $request->has('regen_qr');
            $now = Carbon::now();
-           $last = $table->qr_refreshed_at ?? $table->updated_at;
+           $last = $table->token_expires_at ?? $table->updated_at;
        
            // Cập nhật dữ liệu cơ bản
            $table->name = $request->name;
            $table->table_status_id = $request->table_status_id;
            $table->access_limit = $request->access_limit;
 
-        // Kiểm tra trạng thái = 2 (đang sử dụng)
-        if ($request->has('regen_qr')) {
-            $this->generateQrForTable($table, $now);
-        }
+
+            // Kiểm tra trạng thái = 2 (đang sử dụng)
+            if ($request->has('regen_qr')) {
+                $this->generateQrForTable($table, $now);
+            }
        
            // Nếu chuyển về trạng thái "Trống" (id = 1) thì reset QR và token
            if ((int)$request->table_status_id === 1) {
                $this->generateQrForTable($table, $now);
                $table->access_count = 0;
            }
+           if ((int)$request->table_status_id === 3) {
+                $table->access_token = Str::random(40); // tạo token mới
+                $table->token_expires_at = Carbon::now()->addMinutes(30); // TTL 30 phút 
+           }    
        
            $table->save();
        
@@ -124,7 +127,7 @@ class AdminTableController extends Controller
     //Hàm xử lý sinh QR riêng
     private function generateQrForTable(&$table, $now)
     {
-        $token = Str::random(32);
+        $token = Str::random(40);
         $url = route('order.table', ['id' => $table->id]);
 
         $builder = new Builder(
