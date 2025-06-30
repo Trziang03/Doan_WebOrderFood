@@ -58,7 +58,7 @@
                     <img src="/images/nv2.png" alt="icon">
                 </div>
                 <div class="number">
-                    <p class="num">{{count(App\Models\Brand::all())}}</p>
+                    
                     <p>Nhân viên</p>
                 </div>
             </div>

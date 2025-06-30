@@ -48,7 +48,7 @@
                             <p><strong>Tổng tiền:</strong> {{ number_format($order->total_price, 0, ',', '.') }}đ</p>
                         </div>
                     </div>
-    
+
                     <h4>Danh sách món:</h4>
                     <ul class="list-group mb-3">
                         @foreach($order->orderItems as $item)
@@ -113,8 +113,6 @@
                                         <p>Ngân hàng : SACOMBANK</p>
                                         <p>Số tài khoản : 060277266401</p>
                                         <p>Chủ tài khoản : NGUYEN THUY ANH THU</p>
-
-
                                     </td>
                                 </tr>
                             </tbody>
@@ -127,6 +125,6 @@
         </div>
     </div>
 @endsection
-@section('script')
+@section('script')  
 
 @endsection
