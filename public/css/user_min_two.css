@@ -507,8 +507,8 @@
 .cart_item_img {
     width: 20%;
 }
-.cart_item_img > a > img {
-    padding:20px;
+.cart_item_img img {
+    padding: 20px;
     max-width: 100%;
 }
 .cart_item_info {

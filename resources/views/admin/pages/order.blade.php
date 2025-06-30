@@ -91,7 +91,7 @@
                                 @endphp
                                 {{ number_format($total, 0, '.', '.') }}đ
                             </td>
-                            <td style="text-align: center;">{{ $order->status->name }}</td>
+                            <td style="text-align: center;">{{ $order->statusStatus->name }}</td>
                             <td style="text-align: center;">{{ $order->created_at->format('d/m/Y H:i:s') }}</td>
                             <td style="text-align: center;">
                                 <!-- Nút 1: Thay đổi trạng thái -->

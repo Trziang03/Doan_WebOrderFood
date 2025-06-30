@@ -113,11 +113,19 @@ class AdminTableController extends Controller
         return redirect()->back()->with('message', 'Cập nhật bàn thành công');
     }
 
-
-    public function destroy($id)
+    public function handleQr(Request $request)
     {
-        Table::destroy($id);
-        return redirect()->route('table.index');
+        $tableId = $request->query('table_id');
+
+        if (!$tableId || !Table::find($tableId)) {
+            return abort(404, 'Bàn không tồn tại');
+        }
+
+        // Lưu table_id vào session
+        session(['table_id' => $tableId]);
+
+        // Chuyển hướng về trang gọi món (hoặc trang chính)
+        return redirect('/'); // có thể đổi thành route của trang thực đơn
     }
 
 }

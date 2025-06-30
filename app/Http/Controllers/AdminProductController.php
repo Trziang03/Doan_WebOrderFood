@@ -91,8 +91,8 @@ class AdminProductController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/products'), $imageName);
-            $image_food = 'uploads/products/' . $imageName;
+            $image->move(public_path('images/'), $imageName);
+            $image_food = 'images/' . $imageName;
         }
 
         // Tạo sản phẩm
@@ -103,7 +103,7 @@ class AdminProductController extends Controller
             'category_id' => $request->input('category_id'),
             'status' => $request->input('status'),
             'price' => $request->input('price'),
-            'image_food' => $image_food ?? 'uploads/products/default.png',
+            'image_food' => $image_food ?? 'images/default.png',
         ]);
 
         // Gắn sizes nếu có
@@ -207,14 +207,14 @@ class AdminProductController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/products'), $imageName);
+            $image->move(public_path('images/'), $imageName);
 
             // Xóa ảnh cũ nếu có
             if ($product->image_food && file_exists(public_path($product->image_food))) {
                 unlink(public_path($product->image_food));
             }
 
-            $product->image_food = 'uploads/products/' . $imageName;
+            $product->image_food = 'images/' . $imageName;
         }
 
         // Sau khi xử lý xong, lưu lại

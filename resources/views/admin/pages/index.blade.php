@@ -58,7 +58,7 @@
                     <img src="/images/nv2.png" alt="icon">
                 </div>
                 <div class="number">
-                    <p class="num">{{count(App\Models\Brand::all())}}</p>
+                    <p class="num">{{count(App\Models\User::all())}}</p>
                     <p>Nhân viên</p>
                 </div>
             </div>
@@ -72,7 +72,7 @@
                     <img src="/images/icontable.png" alt="icon">
                 </div>
                 <div class="number">
-                    <p class="num">{{count(App\Models\Rating::all())}}</p>
+                    <p class="num">{{count(App\Models\Table::all())}}</p>
                     <p>Bàn ăn</p>
                 </div>
             </div>
