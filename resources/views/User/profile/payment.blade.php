@@ -22,7 +22,6 @@
                 <p>Thực đơn của bạn đã được ghi nhận</p>
                 <p>Cảm ơn bạn đã tin tưởng sử dụng dịch vụ tại GiDu Food</p>
                 <div class="content_banking">
-                    <p>Nội dung chuyển khoản: {{ $code }}</p>
                         <a href=""><img src="./images/QR.jpg" alt="Lỗi" style="height: 100px;"></a>
                 </div>
             </div>
@@ -48,7 +47,7 @@
                             <p><strong>Tổng tiền:</strong> {{ number_format($order->total_price, 0, ',', '.') }}đ</p>
                         </div>
                     </div>
-    
+
                     <h4>Danh sách món:</h4>
                     <ul class="list-group mb-3">
                         @foreach($order->orderItems as $item)
@@ -62,14 +61,12 @@
                                         @endif
                                         <p>Topping</p>
                                         @if ($item->toppings->count())
-                                            <ul>
                                                 @foreach ($item->toppings as $topping)
                                                     <li>
                                                         {{ $topping->name }} ({{ $topping->pivot->quantity }} x
                                                         {{ number_format($topping->pivot->price) }}đ)
                                                     </li>
                                                 @endforeach
-                                            </ul>
                                         @endif
                                         <p>Số lượng: {{ $item->quantity }}</p>
                                         <p>Ghi chú: {{ $item->note }}</p>
@@ -107,16 +104,7 @@
                                             (Banking)</label>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td colspan="3">
-                                        <p>Thông tin thanh toán của Sinh Viên Nghiêm Túc</p>
-                                        <p>Ngân hàng : SACOMBANK</p>
-                                        <p>Số tài khoản : 060277266401</p>
-                                        <p>Chủ tài khoản : NGUYEN THUY ANH THU</p>
-
-
-                                    </td>
-                                </tr>
+                               
                             </tbody>
                         </table>
                     </div>
@@ -127,5 +115,6 @@
         </div>
     </div>
 @endsection
-@section('script')
+@section('script')  
+
 @endsection

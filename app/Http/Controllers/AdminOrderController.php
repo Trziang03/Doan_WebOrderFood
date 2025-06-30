@@ -18,7 +18,7 @@ class AdminOrderController extends Controller
     {
         $keyword = $request->keyword;
 
-        $orders = Order::with(['table', 'paymentMethod', 'status', 'orderItems.product', 'orderItems.size'])
+        $orders = Order::with(['table', 'paymentMethod', 'orderStatus', 'orderItems.product', 'orderItems.size'])
             ->when($keyword, function ($query) use ($keyword) {
                 $query->where(function ($q) use ($keyword) {
                     $dateExact = null;
@@ -133,17 +133,22 @@ class AdminOrderController extends Controller
 
     public function ajaxDetail($id)
     {
-        $order = Order::with([
-            'table',
-            'paymentMethod',
-            'status',
-            'orderItems.product',
-            'orderItems.size',
-            'orderItems.toppings',
-            'orderItems.orderItemToppings'
-        ])->findOrFail($id);
+        try {
+            $order = Order::with([
+                'table',
+                'paymentMethod',
+                'orderStatus',
+                'orderItems.product',
+                'orderItems.size',
+                'orderItems.toppings',
+                'orderItems.orderItemToppings'
+            ])->findOrFail($id);
 
-        return view('admin.pages.orderdetail', compact('order'));
+            return view('admin.pages.orderdetail', compact('order'));
+
+        } catch (\Exception $e) {
+            return response('<b>Lỗi:</b> ' . $e->getMessage(), 500);
+        }
     }
     public function update(Request $request, $id)
     {

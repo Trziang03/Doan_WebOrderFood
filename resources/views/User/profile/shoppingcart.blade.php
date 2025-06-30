@@ -23,7 +23,7 @@
                             <div class="cart_item_img">
                                 <img src="{{ asset($item->product->image_food) }}" alt="">
                             </div>
-                            <div class="cart_item_info">
+                            <div class="cart_item_info" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
                                 <div class="cart_item_info_top">
                                     <h4>{{ $item->product->name }} - Size {{ $item->size->name }}</h4>
                                     <button class="btn-delete-item" data-id="{{ $item->id }}">
@@ -34,7 +34,7 @@
                                 @if ($item->toppings->isNotEmpty())
                                     <div>
                                         <p>Topping:</p>
-                                        <ul class="topping-list" style="margin-left: 15px;">
+                                        <ul class="topping-list" style="margin-left: 15px; font-weight: bold;">
                                             @foreach ($item->toppings as $topping)
                                                 @if ($topping->topping)
                                                     <li>{{ $topping->topping->name }} x {{ $topping->quantity }}</li>
@@ -49,7 +49,7 @@
                                     <p>Ghi chú: {{ $item->note }}</p>
                                 @endif
 
-                                <div class="cart_item_info_bottom">
+                                <div class="cart_item_info_bottom" style="margin-top: auto; display: flex; justify-content: space-between; align-items: center;">
                                     <div>Giá: {{ number_format($totalPrice) }} <sup>đ</sup></div>
                                     <div>
                                         <button class="btn-decrease" data-id="{{ $item->id }}">
@@ -89,7 +89,15 @@
                             </p>
                             <form action="{{ route('cart.submit') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-primary">Gửi đơn hàng</button>
+                                <button type="submit" class="btn" 
+                                style="background-color: rgb(240, 145, 55);
+                                width: 100%;
+                                border: none;
+                                background-color: rgb(240, 145, 55);
+                                color: white;
+                                padding: 10px;
+                                border-radius: 5px;
+                                transition: all linear 0.3s;">Gửi đơn hàng</button>
                             </form>
                         </div>
                     </div>
