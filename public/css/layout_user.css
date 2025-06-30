@@ -938,7 +938,6 @@ footer{
    }
    .payment_left {
     width: 100%;
-    border-bottom: 2px solid black;
    }
    .payment_right {
     border: none;

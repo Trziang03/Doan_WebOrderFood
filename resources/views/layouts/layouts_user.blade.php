@@ -37,7 +37,7 @@
     <!-- Header -->
     <div class="cskh">
         <i id="scroll" class="far fa-hand-point-up"></i>
-        <a href="" id="room_chat"><i class="fas fa-robot"></i></a>
+        <!-- <a href="" id="room_chat"><i class="fas fa-robot"></i></a> -->
     </div>
     {{-- chat --}}
     @include('user.partials.chat')

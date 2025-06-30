@@ -20,12 +20,7 @@ class OrderController extends Controller
     {
         $table_id = session('table_id');
 
-        $order = Order::with([
-            'orderItems.product',
-            'orderItems.size',
-            'orderItems.toppings', // dùng quan hệ belongsToMany để lấy topping + pivot
-            'orderStatus'
-        ])
+        $order = Order::with('orderStatus') // chỉ lấy status ở đây
             ->where('table_id', $table_id)
             ->latest()
             ->first();
@@ -34,19 +29,17 @@ class OrderController extends Controller
             return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
         }
 
-        return view('User.profile.payment', ['order' => $order]);
+        // Tách phân trang cho orderItems riêng
+        $orderItems = OrderItem::with(['product', 'size', 'toppings'])
+            ->where('order_id', $order->id)
+            ->paginate(3);
+
+        return view('User.profile.payment', [
+            'order' => $order,
+            'orderItems' => $orderItems,
+        ]);
     }
-    // public function index()
-    // {
-    //     $code = Order::generateTimestamp();
-    //     if (session('buy-now') != null) {
-    //         return view('User.profile.payment', ['code' => $code]);
-    //     }
-    //     //hiển thị các sản phẩm trong giỏ hàng
-    //     if (session('cart') == null)
-    //         return redirect()->route('user.index');
-    //     return view('User.profile.payment', ['code' => $code]);
-    // }
+
     public function orderByTable($id)
     {
         $table = Table::with('status')->find($id);
