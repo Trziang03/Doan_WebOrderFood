@@ -208,7 +208,7 @@
             name = name.trim();
             if (name === "") {
                 issetSpan.style.color = "red";
-                issetSpan.textContent = "Tên món ăn không được bỏ trống";
+                issetSpan.textContent = "Tên sản phẩm không được bỏ trống";
             } else {
                 $.ajax({
                     method: "POST",
@@ -220,10 +220,10 @@
                 }).done((data) => {
                     if (data == 0) {
                         issetSpan.style.color = "green";
-                        issetSpan.textContent = "Tên món ăn hợp lệ!";
+                        issetSpan.textContent = "Tên sản phẩm hợp lệ!";
                     } else {
                         issetSpan.style.color = "red";
-                        issetSpan.textContent = "Tên món ăn đã tồn tại!";
+                        issetSpan.textContent = "Tên sản phẩm đã tồn tại!";
                     }
                 });
             }

@@ -10,7 +10,7 @@
                 <p style="text-align: center;padding:0 0 10px 0;font-size: 20px; font-weight: bold;">Thanh Toán</p>
                 <div style=" display: flex; justify-content: space-around;">
                     <img style="width: 80px; background-color: rgb(233, 239, 236); padding: 5px;"
-                        src="{{asset('/images/d4bbea4570b93bfd5fc652ca82a262a8.png')}}" alt="Lỗi hiển thị">
+                        src="{{asset('/images/banking.png')}}" alt="Lỗi hiển thị">
                     <img style="width: 85px; background-color: rgb(233, 239, 236); padding: 2px;" src="{{asset('/images/cod.png')}}"
                         alt="Lỗi hiển thị">
                 </div>
@@ -69,7 +69,7 @@
                 <a href=""><img src="{{asset('images/'.$lienKetWebsite->logo)}}" style="max-width: 100%" alt="Lỗi hiển thị"></a>
             </div>
             <div class="footer_top_slogan">
-                <h1 class="slogan">NGON NHANH <br> NO GỌN!</h1>
+                <h1 class="slogan">NGON NHANH <br>- NO GỌN!</h1>
             </div>
         </div>
     </div>

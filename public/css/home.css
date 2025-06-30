@@ -1,3 +1,9 @@
+/* Ẩn thanh cuộn bên phải ở all page user*/
+html {
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
 .active_tab {
     background-color:rgb(240, 145, 55) !important;
     color: white;
@@ -160,9 +166,9 @@
     align-items: center;
 }
 .product_best_seller_item_info > ul > li:nth-child(4) > button {
-    width: 100%;
+    width: 80%;
     padding:5px 0;
-    font-size: 13px;
+    font-size: 15px;
     border: none;
     font-weight: 800;
 }
@@ -783,7 +789,15 @@
     justify-content: space-between;
     align-items: center;
 }
-
+.product_search_list_item_info > ul > li:nth-child(4) button{
+    width: 100%;
+    padding: 5px 0;
+    font-size: 13px;
+    border: none;
+    font-weight: 800;
+    color: #ffffff;
+    background-color:rgb(240, 145, 55);
+}
 .product_search_list_item_info > ul > li:nth-child(4) div a {
     color: rgb(22, 66, 60);
 }
@@ -850,7 +864,7 @@
     .product_best_seller_item {
         width: 49%;
         margin-bottom: 6px;
-        height: 420px;
+        height: 400px;
         margin-left: 0;
     }
     .product_lt_new_items {

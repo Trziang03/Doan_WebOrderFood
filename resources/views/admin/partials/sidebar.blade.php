@@ -6,5 +6,7 @@
     <a href="{{ route('admin.order') }}"><div class="@yield('active-order')">Quản lý Đơn hàng</div></a>
     <a href="{{ route('admin.static') }}"><div class="@yield('active')">Quản lý Thống kê</div></a>
     <a href="{{ route('admin.contact') }}"><div class="@yield('active-contact')">Quản lý Liên hệ</div></a>
-    <a href="{{ route('admin.staff') }}"><div class="@yield('active-staff')">Quản lý Nhân Viên</div></a>
+    @if ( Auth::user()->role === 'QL')
+         <a href="{{ route('admin.staff') }}"><div class="@yield('active-staff')">Quản lý Nhân Viên</div></a>
+    @endif
 </div>

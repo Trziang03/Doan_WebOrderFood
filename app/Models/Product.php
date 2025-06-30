@@ -14,8 +14,8 @@ class Product extends Model
     //
     use HasFactory;
     protected $fillable = ['name', 'slug', 'category_id', 'image_food', 'description', 'price', 'status'];
-
-
+    
+    
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
@@ -30,7 +30,18 @@ class Product extends Model
     {
         return $this->belongsToMany(Size::class, 'product_size');
     }
-
+    public function image_products():HasMany
+    {
+        return $this->hasMany(ImageProduct::class);
+    }
+    public function product_specification():HasMany
+    {
+        return $this->hasMany(ProductSpecification::class);
+    }
+    // public function ratings():HasMany
+    // {
+    //     return $this->hasMany(Topping::class, 'product_topping')->withPivot('quantity');
+    // }
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class, 'food_id');

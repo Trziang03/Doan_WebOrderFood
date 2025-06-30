@@ -12,9 +12,7 @@ class OrderItem extends Model
     use HasFactory;
     protected $fillable = ['quantity', 'note', 'total_price', 'order_id', 'size_id', 'product_id'];
     public $timestamps = false;
-
-    public function order()
-    {
+    public function order(){
         return $this->belongsTo(Order::class, 'order_id');
     }
 

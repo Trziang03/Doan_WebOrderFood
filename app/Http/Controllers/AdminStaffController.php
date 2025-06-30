@@ -11,7 +11,6 @@
     use Illuminate\Support\Facades\DB;
     use Illuminate\Validation\Rule;
 
-
     class AdminStaffController extends Controller
     {
         public function index()

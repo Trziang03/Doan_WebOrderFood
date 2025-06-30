@@ -262,7 +262,6 @@ table tr td {
     text-decoration: none;
     border-radius: 4px;
 }
-
 .pagination a:hover {
     background-color: orange;
 }
@@ -278,7 +277,6 @@ table tr td {
     pointer-events: none;
     border: 1px solid #eee;
 }
-
 .static {
     display: flex;
     justify-content: space-between;
@@ -424,10 +422,6 @@ table tr td {
     width: 50%;
 }
 
-.col {
-    margin: 8px 0;
-}
-
 .form-group:nth-child(2) {
     width: 20%;
 }
@@ -435,7 +429,6 @@ table tr td {
 .form-group:nth-child(3) {
     width: 20%;
 } */
-
 .col {
     margin: 8px 0;
 }
@@ -464,6 +457,9 @@ table tr td {
     width: 100%;
     display: flex;
     justify-content: flex-start;
+}
+.input-description {
+    padding: 50px;
 }
 
 .btn-goback button {
@@ -534,13 +530,11 @@ table tr td {
 
 .button-delete {
     background-color: white;
-    color: rgb(0, 0, 0)
-}
-
+    color: rgb(0, 0, 0)}
 .alert_error_validate {
     color: red;
     font-size: 14px;
-    margin-left: 175px;
+    /* margin-left: 175px; */
     padding: 3px;
 }
 
@@ -554,7 +548,6 @@ table tr td {
     top: 22px;
     display: none;
 }
-
 .form-group-row {
     display: flex;
     gap: 140px;
@@ -576,6 +569,7 @@ table tr td {
 .form-group-product textarea {
     width: 100%;
     padding: 10px;
+    border-radius:5px;
     box-sizing: border-box;
     font-size: 14px;
     margin-top: 2px;
@@ -673,7 +667,7 @@ table tr td {
     background: orange;
     padding: 24px 20px;
     border-radius: 10px;
-    width: 315px;
+    width: 270px;
     margin: 100px auto;
     position: relative;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
@@ -681,7 +675,7 @@ table tr td {
 
 /* Title */
 #optionPopup h4 {
-    margin-bottom: 20px;
+    margin: 20px;
     font-size: 30px;
     font-weight: 600;
     text-align: center;
@@ -696,7 +690,7 @@ table tr td {
 
 /* Select fields */
 #optionPopup select {
-    width: 60%;
+    width: 100%;
     padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
@@ -912,6 +906,14 @@ table tr td {
         font-size: 13px;
     }
 } */
+/* form group thêm*/
+.form-section {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
 
 /* form group thêm*/
 .form-section {

@@ -58,12 +58,12 @@
                     <img src="/images/nv2.png" alt="icon">
                 </div>
                 <div class="number">
-                    <p class="num">{{count(App\Models\User::all())}}</p>
+                    <p class="num">{{ \App\Models\User::where('role', 'NV')->count() }}</p>
                     <p>Nhân viên</p>
                 </div>
             </div>
             <div class="go">
-                <a href="{{route('admin.category')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="{{route('admin.staff')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
         <div class="count">

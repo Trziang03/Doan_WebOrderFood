@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckAccessToken;
 use App\Http\Middleware\AdminRoleMiddleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
@@ -8,15 +9,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\AdminTableController;
 use App\Http\Controllers\AdminProductController;
 use App\Http\Controllers\AdminStaticController;
 use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\AdminCategoryController;
 use App\Http\Controllers\AdminContactController;
-use App\Http\Controllers\AdminTableController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+
 
 Route::controller(UserController::class)->group(function () {
     Route::get('/gioithieu', "GioiThieu")->name('user.blog');
@@ -71,12 +73,18 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::delete('/admin/deletecategory/{id}', [AdminCategoryController::class, 'deleteCategory'])->name('admin.delete.category');
 
     //Route profile
-    Route::get('/admin/profile', [AdminController::class, 'profile'])->name('admin.profile');
+    Route::get('/admin/profile/{id}', [AdminController::class, 'profile'])->name('admin.profile');
     Route::post('/admin/editProfile', [AdminController::class, 'editProfile'])->middleware(AdminRoleMiddleware::class)->name('admin.editProfile');
     Route::post('/admin/editAvatar', [AdminController::class, 'editAvatar'])->middleware(AdminRoleMiddleware::class)->name('admin.editAvatar');
     Route::get('/admin/changepw', [AdminController::class, 'changepw'])->name('admin.changepw');
     Route::post('/checkpw', [AdminController::class, 'IsPasswordChange'])->name('profile.checkpw');
     Route::post('/changepw', [AdminController::class, 'UpdatePassword'])->name('profile.changepw');
+
+    
+    //Route dashboard
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::post('/admin/editWebsite', [AdminController::class, 'editWebsite'])->middleware(AdminRoleMiddleware::class)->name('admin.editWebsite');
+    Route::post('/admin/editLogo', [AdminController::class, 'editLogo'])->middleware(AdminRoleMiddleware::class)->name('admin.editLogo');
 
     //Route quản lí đơn hàng
     Route::get('/admin/order', [AdminOrderController::class, 'index'])->name('admin.order');
@@ -104,16 +112,84 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/admin/contact/update/{id}', [AdminContactController::class, 'updateContact'])->name('contact.update');
 
 
+
+   //quản lý bàn ăn
+   Route::get('/admin/table', [AdminTableController::class, 'index'])->name('admin.table');
+   // Thêm bàn mới
+   Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');
+   // Sửa bàn
+   Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
+   //Tạo QR Động
+   Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
+  
+//    Route::post('/tables/auto-refresh', [AdminTableController::class, 'autoRefresh'])->name('tables.autoRefresh');
+
+   
+   Route::get('/table/checkin', function (Request $request) {
+    $token = $request->query('token');
+
+    $table = Table::where('token', $token)->first();
+
+    if (!$table || !$table->qr_code) {
+        return response()->view('table.qr_expired', [], 403);
+    }
+
+    if (!$table) {
+        abort(404, 'Không tìm thấy bàn.');
+    }
+
+    //  cấm truy cập nếu trạng thái = 3
+    if ((int)$table->table_status_id === 3) {
+        return response()->view('errors.access_denied', [
+            'message' => 'Bàn đang được dọn dẹp. Vui lòng chọn bàn khác.'
+        ], 403);
+    }
+
+    //kiểm tra Token mỗi lần request
+    Route::middleware([CheckAccessToken::class])->group(function () {
+        Route::get('/table/access', 'App\Http\Controllers\TableController@access');
+    });
+
+    // Hiển thị giao diện trang chủ 
+    return view('user.pages.index', ['table' => $table]);
+
+     //Route quản lí món ăn
+   Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
+   Route::get('/admin/products/category/{id}', [AdminProductController::class, 'filterByCategory']);
+   Route::get('/admin/product/active/{id}', [AdminProductController::class, 'active'])->middleware(AdminRoleMiddleware::class)->name('admin.product.active');
+   Route::get('/admin/product/deactive/{id}', [AdminProductController::class, 'deactive'])->middleware(AdminRoleMiddleware::class)->name('admin.product.deactive');
+   Route::get('/admin/product/search', [AdminProductController::class, 'search'])->name('admin.product.search');
+   Route::get('/admin/proudct/list-product-unapproved', [AdminProductController::class, 'getListProductsUnapproved'])->middleware(AdminRoleMiddleware::class)->name('admin.product.unapproved');
+   Route::get('/admin/product/filter', [AdminProductController::class, 'filter'])->name('admin.product.filter');
+   Route::get('/admin/product-variant/{id}', [AdminProductVariantController::class, 'index'])->name('admin.product_variant.index');
+   Route::get('/admin/product-variant-hidden/{id}', [AdminProductVariantController::class, 'showListVariantsHide'])->name('product_variant_hide');
+   Route::PUT('/admin/product-variant/active/{id}', [AdminProductVariantController::class, 'active'])->middleware(AdminRoleMiddleware::class);
+   Route::post('/admin/product/is_isset', [AdminProductController::class, 'isIssetProduct']);
+   Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
+   Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
+
+   Route::resource('/admin/product-variant', AdminProductVariantController::class)->except(['index']);
+   Route::resource('/admin/product', AdminProductController::class);    
+});
+
+
+
+
+  
+
+   
+});
+
     //quản lý bàn ăn
     Route::get('/admin/table', [AdminTableController::class, 'index'])->name('admin.table');
     Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');
     Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
     Route::get('/admin/table/delete/{id}', [AdminTableController::class, 'destroy'])->name('admin.table.destroy');
 
-    
-});
 
-//Phân quyền quản lý
+   
+
+
 //Phân quyền quản lý
 Route::middleware(['role:QL'])->group(function () {
     //quản lý nhân viên
@@ -131,16 +207,41 @@ Route::middleware(['role:QL'])->group(function () {
 //Phân quyền quản lý , nhân viên và khách hàng
 Route::middleware(['role:QL,NV,KH'])->group(function () { });
 
-//phân quyền khách hàng
-
-//xác nhận đặt hàng và thanh toán
-Route::controller(OrderController::class)->group(function () {
+ //xác nhận đặt hàng và thanh toán
+ Route::controller(OrderController::class)->group(function () {
     Route::get('/payment', 'index')->name('user.payment');
-    Route::post('/payment', 'completePayment')->name('complete-payment');
-    Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
+    Route::post('/payment/complete', 'completePayment')->name('complete-payment');
+    // Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
     Route::get('/table/{id}', 'orderByTable')->name('order.table');
-    Route::post('/order/pay/{order}', [OrderController::class, 'payOrder'])->name('order.pay');
 });
+Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
+//phân quyền khách hàng
+    //xác nhận đặt hàng và thanh toán
+    Route::controller(OrderController::class)->group(function () {
+        Route::get('/payment', 'index')->name('user.payment');
+        Route::post('/payment', 'completePayment')->name('complete-payment');
+        Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
+        Route::get('/table/{id}', 'orderByTable')->name('order.table');
+
+    });
+
+    Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('add.to.cart');
+    Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
+
+    //Route profile
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/trangcanhan', 'index')->name('profile.index');
+        Route::post('/trangcanhan/editInfo', 'editInfo')->name('profile.editInfo');
+        Route::post('/trangcanhan/editImage', 'editImage')->name('profile.editImage');
+        Route::get('/lichsudonhang', 'order_history')->name('profile.order_history');
+        Route::put('/lichsudonhang/cancel/{id}', 'cancel')->name('profile.cancel');
+        Route::get('/sanphamyeuthich', 'favourite_product')->name('profile.favourite_product');
+        Route::get('/sanphamyeuthich/unLike/{id}', 'unLike')->name('profile.unLike');
+        Route::get('/lichsudanhgia', 'review_history')->name('profile.review_history');
+        Route::get('/doimatkhau', 'ChangePwd')->name('profile.changepassword');
+        Route::post('/kiemtrapassword', 'IsPasswordChange')->name('profile.ispassword');
+        Route::post('/submitchange', 'UpdatePassword')->name('profile.submitchange');
+    });
 //Route quan li danh mục
 Route::controller(AdminCategoryController::class)->group(
     function () {

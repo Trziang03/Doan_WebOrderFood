@@ -58,7 +58,7 @@
                     <div class="form-group-row">
                         <div class="form-group-product">
                             <label>Mô tả</label>
-                            <textarea name="description" rows="4" required>{{ $sanPham->description }}</textarea>
+                            <textarea style="width:300px; height:150px; " name="description" rows="4" required>{{ $sanPham->description }}</textarea>
                         </div>
                         <div class="form-group-product short-input">
                             <label>Giá tiền</label>

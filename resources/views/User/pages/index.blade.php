@@ -65,11 +65,11 @@
         }
         .product_best_seller_item_info li a {
             font-weight: 600;
-            color: var(--text-dark);
+            color: var(--white);
             text-decoration: none;
         }
         .product_best_seller_item_info li a:hover {
-            color: var(--orange);
+            color: var(--light-orange);
         }
         .product_best_seller_item_info button {
             background-color: var(--orange);
@@ -79,6 +79,7 @@
             padding: 0.5rem 1rem;
             cursor: pointer;
             font-size: 0.9rem;
+
         }
         .product_best_seller_item_info button:hover {
             background-color: #e65c00;
@@ -310,6 +311,85 @@
             @endif
         </div>
     </section>
+{{-- 
+    <section class="container_css product_best_seller">
+        <h4 >CÁC LOẠI ĐỒ UỐNG NỔI BẬT</h4>
+        <div id="carouselExampleControlsNoTouching" class="carousel slide carousel-dark" data-bs-touch="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active" data-bs-interval="10000">
+                    <div class="product_best_seller_items">
+                        @if (isset($danhSachLapTopMoi))
+                            @for ($i = 0; $i < count($danhSachLapTopMoi); $i++)
+                                @if ($i > 3)
+                                    @break
+                                @endif
+                                <div class="product_best_seller_item">
+                                    <a href="{{ route('detail', [$danhSachLapTopMoi[$i]->slug]) }}"><img
+                                            src="{{ asset('images/' . $danhSachLapTopMoi[$i]->image) }} "
+                                            alt="Lỗi hiển thị"></a>
+                                    <div class="product_best_seller_item_info">
+                                        <ul>
+                                            <li><a
+                                                    href="{{ route('detail', [$danhSachLapTopMoi[$i]->slug]) }}">{{ $danhSachLapTopMoi[$i]->name }}</a>
+                                            </li>
+                                            <li>{{ number_format($danhSachLapTopMoi[$i]->price, 0, ',', '.') }}
+                                                <sup>đ</sup>
+                                            </li>
+                                            <li>{{ $danhSachLapTopMoi[$i]->rating }}<i class="fas fa-star"></i></li>
+                                            <li>
+                                                <button ><a
+                                                    href="{{ route('detail', [$danhSachLapTopMoi[$i]->slug]) }}">Xem chi tiết</a></button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            @endfor
+                        @endif
+                </div>
+            </div>
+            @if (isset($danhSachLapTopMoi) && count($danhSachLapTopMoi) > 4)
+                <div class="carousel-item" data-bs-interval="2000">
+                    <div class="product_best_seller_items">
+                        @for ($i = 4; $i < count($danhSachLapTopMoi); $i++)
+                            <div class="product_best_seller_item">
+                                <a href=""><img src="{{ asset('images/' . $danhSachLapTopMoi[$i]->image) }} "
+                                        alt="Lỗi hiển thị"></a>
+                                <div class="product_best_seller_item_info">
+                                    <ul>
+                                        <li><a
+                                                href="{{ route('detail', [$danhSachLapTopMoi[$i]->slug]) }}">{{ $danhSachLapTopMoi[$i]->name }}</a>
+                                        </li>
+                                        <li>{{ number_format($danhSachLapTopMoi[$i]->price, 0, ',', '.') }}
+                                            <sup>đ</sup>
+                                        </li>
+                                        <li>{{ $danhSachLapTopMoi[$i]->rating }}<i class="fas fa-star"></i></li>
+                                        <li>
+                                            <button >
+                                                <a
+                                                href="{{ route('detail', [$danhSachLapTopMoi[$i]->slug]) }}">Xem chi tiết</a>
+                                        </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        @endfor
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button"
+                    data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button"
+                    data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            @else
+            </div>
+            @endif
+        </div>
+    </section> --}}
 
 <!-- Điện thoại mới nhất -->
 <section class="container_css product_best_seller">
