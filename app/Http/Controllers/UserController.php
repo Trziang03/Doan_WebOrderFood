@@ -176,38 +176,6 @@ class UserController extends Controller
     ]);
 }
 
-
-    public function LayMauSanPhamTheoBoNho($slug, $internal_memory)
-    {
-        $danhSachMau = ProductUser::MauSanPham($slug, $internal_memory);
-        return $danhSachMau;
-    }
-    // public function ChiTietSanPhamTheoBoNho($slug, $internal_memory)
-    // {
-
-    //     $danhSachAnh = ProductUser::HinhAnhSamPham($slug);
-    //     $danhSachBoNho = ProductUser::BoNhoTrongSanPham($slug);
-    //     $thongTinSanPham = ProductUser::ThongTinSanPham($slug);
-    //     $thongSoKiThuatSanPham = ProductUser::ThongSoKiThuatSanPham($slug);
-    //     $mauSanPham = ProductUser::MauSanPham($slug, $internal_memory);
-    //     $luotThichSanPham = ProductUser::LuotThichSanPham($slug);
-    //     return View('user.pages.detail')->with([
-    //         'slug' => $slug,
-    //         //"danhSachBoNho" => $danhSachBoNho,
-    //         "thongTinSanPham" => $thongTinSanPham[0],
-    //         "thongSoKiThuatSanPham" => $thongSoKiThuatSanPham[0],
-    //         "luotThichSanPham" => $luotThichSanPham,
-    //         "mauSanPham" => $mauSanPham,
-    //     ]);
-    // }
-    public function LayThongTinSanPhamTheoMau($slug, $internal_memory, $color)
-    {
-        $data = ProductUser::LayThongTinSanPhamTheoMau($slug, $internal_memory, $color);
-        return response()->json([
-            "variant_id" => $data->id,
-            "price" => $data->price
-        ]);
-    }
     public function addContact(Request $req)
     {
         $validate = $req->validate([
@@ -250,27 +218,27 @@ class UserController extends Controller
             'data' => $rating
         ]);
     }
-    public function CapNhapSanPhamYeuThich($sanpham, $user)
-    {
-        $luotThich = LikeProduct::TongLuotThichSanPham($sanpham);
-        $tenSanPham = ProductUser::LayTenSanPhamTheoId($sanpham);
-        $status = LikeProduct::TrangThai($sanpham, $user);
-        if ($status > 0) {
-            LikeProduct::XoaSanPhamYeuThich($sanpham, $user);
-            return response()->json([
-                'status' => 0,
-                'tenSanPham' => $tenSanPham,
-                'luotThich' => $luotThich,
-            ]);
-        } else {
-            LikeProduct::ThemSanPhamYeuThich($sanpham, $user);
-            return response()->json([
-                'status' => 1,
-                'tenSanPham' => $tenSanPham,
-                'luotThich' => $luotThich,
-            ]);
-        }
-    }
+    // public function CapNhapSanPhamYeuThich($sanpham, $user)
+    // {
+    //     $luotThich = LikeProduct::TongLuotThichSanPham($sanpham);
+    //     $tenSanPham = ProductUser::LayTenSanPhamTheoId($sanpham);
+    //     $status = LikeProduct::TrangThai($sanpham, $user);
+    //     if ($status > 0) {
+    //         LikeProduct::XoaSanPhamYeuThich($sanpham, $user);
+    //         return response()->json([
+    //             'status' => 0,
+    //             'tenSanPham' => $tenSanPham,
+    //             'luotThich' => $luotThich,
+    //         ]);
+    //     } else {
+    //         LikeProduct::ThemSanPhamYeuThich($sanpham, $user);
+    //         return response()->json([
+    //             'status' => 1,
+    //             'tenSanPham' => $tenSanPham,
+    //             'luotThich' => $luotThich,
+    //         ]);
+    //     }
+    // }
     public function GetDanhSachDanhGia($user, $code)
     {
         $danhSach = Rating::DanhGia($user, $code);

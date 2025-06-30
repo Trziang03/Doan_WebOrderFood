@@ -157,13 +157,8 @@ class AdminOrderController extends Controller
             $order = Order::create([
                 'order_code' => Order::generateTimestamp(),
                 'table_id' => $request->table_id,
-                'full_name' => $request->full_name,
-                'phone' => $request->phone,
-                'address' => $request->address,
                 'total_price' => 0,
                 'payment_method_id' => $request->payment_method_id,
-                'user_id' => $request->user_id ?? null,
-                'voucher_id' => $request->voucher_id ?? null,
                 'order_status_id' => $request->order_status_id,
             ]);
 
@@ -208,7 +203,7 @@ class AdminOrderController extends Controller
                         'order_item_id' => $orderItem->id,
                         'topping_id' => $topping->id,
                         'quantity' => $toppingData['quantity'] ?? 1,
-                        'topping_price' => $topping->price,
+                        'price' => $topping->price,
                         'note' => $toppingData['note'] ?? null,
                     ]);
                 }

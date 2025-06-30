@@ -2,7 +2,9 @@
 
 use App\Http\Middleware\AdminRoleMiddleware;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Http;
+// use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminOrderController;
@@ -41,10 +43,12 @@ Route::controller(UserController::class)->group(function () {
 
 Route::controller(CartController::class)->group(function () {
     Route::get('/shopping-cart', "index")->name('user.shoppingcart');
-    Route::get('/add-to-cart/{id}/{quantity}', "addToCart")->name('cart.add');
-    Route::get('/cart-delete-item/{id}', 'deleteItemCart')->name('cart.delete_item');
-    Route::get('/cart-delete-all', 'deleteAllItem');
-    Route::get('/cart-minus-one-variant/{id}', 'minusOnQuantity');
+    Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
+    Route::delete('/cart/delete-item/{cart_item_id}', 'deleteItemCart');
+    Route::delete('/cart/delete-all', 'deleteAllItem');
+    Route::patch('/cart/increase/{cart_item_id}', 'increaseOnQuantity');
+    Route::patch('/cart/minus/{cart_item_id}', 'minusOnQuantity');
+    Route::post('/cart/submit', 'submitCart')->name('cart.submit');
 });
 
 // Route::get('/admin/check-stock-variant/{id}', [AdminProductVariantController::class, 'checkStock']);
@@ -122,32 +126,44 @@ Route::middleware(['role:QL'])->group(function () { });
 Route::middleware(['role:QL,NV,KH'])->group(function () { });
 
 //phân quyền khách hàng
-Route::middleware(['role:KH'])->group(function () {
-    //xác nhận đặt hàng và thanh toán
-    Route::controller(OrderController::class)->group(function () {
-        Route::get('/payment', 'index')->name('user.payment');
-        Route::post('/payment', 'completePayment')->name('complete-payment');
-        Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
-        Route::get('/table/{id}', 'orderByTable')->name('order.table');
 
-    });
-
-    Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('add.to.cart');
-    Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
-
-    //Route profile
-    Route::controller(ProfileController::class)->group(function () {
-        Route::get('/trangcanhan', 'index')->name('profile.index');
-        Route::post('/trangcanhan/editInfo', 'editInfo')->name('profile.editInfo');
-        Route::post('/trangcanhan/editImage', 'editImage')->name('profile.editImage');
-        Route::get('/lichsudonhang', 'order_history')->name('profile.order_history');
-        Route::put('/lichsudonhang/cancel/{id}', 'cancel')->name('profile.cancel');
-        Route::get('/sanphamyeuthich', 'favourite_product')->name('profile.favourite_product');
-        Route::get('/sanphamyeuthich/unLike/{id}', 'unLike')->name('profile.unLike');
-        Route::get('/lichsudanhgia', 'review_history')->name('profile.review_history');
-        Route::get('/doimatkhau', 'ChangePwd')->name('profile.changepassword');
-        Route::post('/kiemtrapassword', 'IsPasswordChange')->name('profile.ispassword');
-        Route::post('/submitchange', 'UpdatePassword')->name('profile.submitchange');
-    });
+//xác nhận đặt hàng và thanh toán
+Route::controller(OrderController::class)->group(function () {
+    Route::get('/payment', 'index')->name('user.payment');
+    Route::post('/payment', 'completePayment')->name('complete-payment');
+    Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
+    Route::get('/table/{id}', 'orderByTable')->name('order.table');
+    Route::post('/order/pay/{order}', [OrderController::class, 'payOrder'])->name('order.pay');
 });
 
+Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
+
+//Route profile
+Route::controller(ProfileController::class)->group(function () {
+    Route::get('/trangcanhan', 'index')->name('profile.index');
+    Route::post('/trangcanhan/editInfo', 'editInfo')->name('profile.editInfo');
+    Route::post('/trangcanhan/editImage', 'editImage')->name('profile.editImage');
+    Route::get('/lichsudonhang', 'order_history')->name('profile.order_history');
+    Route::put('/lichsudonhang/cancel/{id}', 'cancel')->name('profile.cancel');
+    Route::get('/sanphamyeuthich', 'favourite_product')->name('profile.favourite_product');
+    Route::get('/sanphamyeuthich/unLike/{id}', 'unLike')->name('profile.unLike');
+    Route::get('/lichsudanhgia', 'review_history')->name('profile.review_history');
+    Route::get('/doimatkhau', 'ChangePwd')->name('profile.changepassword');
+    Route::post('/kiemtrapassword', 'IsPasswordChange')->name('profile.ispassword');
+    Route::post('/submitchange', 'UpdatePassword')->name('profile.submitchange');
+});
+
+// Route::get('/test-add-cart', function (Request $request) {
+//     $tableId = $request->input('table_id', 1);
+
+//     $fakeRequest = new Request([
+//         'table_id'   => $tableId,
+//         'product_id' => 1,
+//         'size_id'    => 2,
+//         'note'       => 'Ít đá',
+//         'quantity'   => 1,
+//     ]);
+
+//     return (new CartController)->addToCart($fakeRequest);
+// });
+Route::get('/qr', [AdminTableController::class, 'handleQr']);

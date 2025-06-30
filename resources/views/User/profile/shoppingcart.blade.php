@@ -2,67 +2,96 @@
 @section('title', 'Trang giỏ hàng')
 @section('content')
     <div class="shopping_cart container_css" id="shopping_cart">
-        @if (session('cart') == null)
+        @if ($cartItems->isEmpty())
             <h3 style="height:150px; text-align:center; margin-top:69px">Giỏ hàng chưa có sản phẩm</h3>
         @else
             <div class="shopping_cart_main" id="cart-main">
-                <div class="shopping_cart_items" id="list-product-variant">
-                    @foreach (session('cart')->listProductVariants as $item)
-                        <div id="variant-{{ $item['variant_info']->id }}" class="shopping_cart_item">
+                <div class="shopping_cart_items" id="list-product">
+                    @foreach ($cartItems as $item)
+                        @php
+                            $sizePrice = $item->size ? $item->size->price : 0;
+                            $productPrice = $item->product->price + $sizePrice;
+
+                            $toppingTotal = $item->toppings->sum(function ($t) {
+                                return $t->topping->price * $t->quantity;
+                            });
+
+                            $totalPrice = ($productPrice + $toppingTotal) * $item->quantity;
+                        @endphp
+
+                        <div id="cart-item-{{ $item->id }}" class="shopping_cart_item">
                             <div class="cart_item_img">
-                                <a href="{{route('detail',['slug'=>$item['product_info']->slug])}}"><img src="{{ asset('images/' . $item['variant_info']->image) }}"
-                                        alt=""></a>
+                                <img src="{{ asset($item->product->image_food) }}" alt="">
                             </div>
                             <div class="cart_item_info">
                                 <div class="cart_item_info_top">
-                                    <h4>{{ $item['product_info']->name }}</h4>
-                                    <button data-id="{{ $item['variant_info']->id }}"
-                                        onclick="deleteItemCart(this.dataset.id)"><i class="fas fa-trash"></i></button>
+                                    <h4>{{ $item->product->name }} - Size {{ $item->size->name }}</h4>
+                                    <button class="btn-delete-item" data-id="{{ $item->id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                                <p>{{ $item['variant_info']->color }}, {{ $item['variant_info']->internal_memory }}</p>
-                                <div class="cart_item_info_bottom">
-                                    <div>{{ number_format($item['variant_info']->price) }} <sup>đ</sup></div>
-                                    <div>
-                                        <button class="minus amount" id="minus-{{$item['variant_info']->id }}"
-                                            onclick="minusOneQuantity({{ $item['variant_info']->id }})"><i
-                                                class="fas fa-minus"></i></button>
-                                        <input class="amount" disabled type="text" min="1"
-                                            value="{{ $item['quantity'] }}"
-                                            id="quantity-variant-{{ $item['variant_info']->id }}">
-                                        <button class="plus amount" id="add-{{$item['variant_info']->id }}"
-                                            onclick="addOneQuantity({{ $item['variant_info']->id }})"><i
-                                                class="fas fa-plus"></i></button>
 
+                                @if ($item->toppings->isNotEmpty())
+                                    <div>
+                                        <p>Topping:</p>
+                                        <ul class="topping-list" style="margin-left: 15px;">
+                                            @foreach ($item->toppings as $topping)
+                                                @if ($topping->topping)
+                                                    <li>{{ $topping->topping->name }} x {{ $topping->quantity }}</li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
+                                {{-- Ghi chú (nếu có) --}}
+                                @if (!empty($item->note))
+                                    <p>Ghi chú: {{ $item->note }}</p>
+                                @endif
+
+                                <div class="cart_item_info_bottom">
+                                    <div>Giá: {{ number_format($totalPrice) }} <sup>đ</sup></div>
+                                    <div>
+                                        <button class="btn-decrease" data-id="{{ $item->id }}">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input class="amount" disabled type="text" value="{{ $item->quantity }}">
+                                        <button class="btn-increase" data-id="{{ $item->id }}">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     @endforeach
-
                 </div>
-                <div class="page" id="page"></div>
-                <div class="shopping_cart_bottom" id="cart-bottom">
 
+                <div class="shopping_cart_bottom" id="cart-bottom">
                     <div class="shopping_cart_bottom_left">
-                        <button onclick="deleteAll()">xóa tất cả</button>
+                        <button id="btn-delete-all">Xóa tất cả</button>
                     </div>
+
                     <div class="shopping_cart_bottom_right_voucher">
-                        {{--     <div class="shopping_cart_bottom_voucher">
-                        <div class="shopping_cart_voucher_discount">
-                            <input type="text" placeholder="Điền mã giảm giá của bạn!">
-                            <button>Sử dụng</button>
-                        </div>
-                        <div class="shopping_cart_voucher_discount_bottom">
-                            <h5>Giảm giá</h5>
-                            <p>-5.000.000 <sup>đ</sup></p>
-                        </div>
-                    </div> --}}
                         <div class="shopping_cart_bottom_price">
                             <h4>Tổng cộng</h4>
-                            <p id="total-price"> {{ number_format(session('cart')->totalPrice) }}<sup>đ</sup></p>
-                            <button><a href="{{route('user.payment')}}">Thanh toán</a></button>
-                        </div>
+                            <p id="item-total">
+                                {{ number_format(
+                $cartItems->sum(function ($item) {
+                    $sizePrice = $item->size ? $item->size->price : 0;
+                    $productPrice = $item->product->price + $sizePrice;
 
+                    $toppingTotal = $item->toppings->sum(function ($t) {
+                        return $t->topping->price * $t->quantity;
+                    });
+                    return ($productPrice + $toppingTotal) * $item->quantity;
+                })
+            ) }} <sup>đ</sup>
+                            </p>
+                            <form action="{{ route('cart.submit') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">Gửi đơn hàng</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,106 +100,118 @@
 
 @endsection
 @section('script')
-<script>
-    function payment(){
-        window.location.href = "{{route('user.payment')}}";
-    }
-</script>
     <script>
-        //xóa một sản phẩm
-        function deleteItemCart(id) {
-            $.ajax({
-                method: "GET",
-                url: `/cart-delete-item/${id}`
-            }).done((data) => {
-                $(`#list-product-variant #variant-${id}`).remove();
-                if ($('#list-product-variant').children().length == 0)
-                    afterDeleteAll();
-                else
-                {
-                    console.log(data);
-                    $(`#total-price`).text(formatNumber(data.cart.totalPrice)).append($('<sup>').text('đ'));
-                    $(`cart-quantity`).text(data.totalPrice);
+        $(document).ready(function () {
+            // CSRF token setup
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
+            });
 
-            })
-        }
-        //xóa tất cả sản phẩm
-        function deleteAll() {
-            $.ajax({
-                method: "GET",
-                url: `/cart-delete-all`
-            }).done((data) => {
-                alertify.success(data);
-                $('#list-product-variant').empty();
-                afterDeleteAll();
-            })
-        }
-        //xử lý giao diện khi xóa sản phẩm
-        function afterDeleteAll() {
-            $('#cart-quantity').text(0);
-            $('#cart-main #cart-bottom').remove();
-            $('#cart-main #page').remove();
-            $('#shopping_cart').empty();
-            $('#shopping_cart')
-                .append($('<h3>')
-                    .text('Giỏ hàng chưa có sản phẩm')
-                    .css({
-                        height: '150px',
-                        textAlign: 'center',
-                        marginTop: '69px'
-                    }));
-        }
-
-        function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
-        //Thêm số lượng là một khi nhấn nút +
-        function addOneQuantity(id) {
-            $(`#quantity-variant-${id}`).val(parseInt($(`#quantity-variant-${id}`).val()) + 1);
-            $.ajax({
-                    method: "GET",
-                    url: `/add-to-cart/${id}/1`
-                })
-                .done((data) => {
-                    if(data.success===true){
-                        $('#total-price').text(formatNumber(data.cart.totalPrice)).append($('<sup>').text('đ'));
-                        $('#cart-quantity').text(`${data.cart.totalQuantity}`);
-                    }else{
-                        alertify.error(data.message);
-                        console.log(data.cart.listProductVariants[id].quantity)
-                        $(`#quantity-variant-${id}`).val(data.cart.listProductVariants[id].quantity);
-                    }
-                });
-        }
-        //Trừ một số lượng khi nhấn nút -
-        function minusOneQuantity(id) {
-            if ($(`#quantity-variant-${id}`).val() > 1){
-                $(`#quantity-variant-${id}`).val(parseInt($(`#quantity-variant-${id}`).val()) - 1);
+            // Xóa một item
+            $('.btn-delete-item').click(function () {
+                const id = $(this).data('id');
                 $.ajax({
-                        method: "GET",
-                        url: `/cart-minus-one-variant/${id}`
-                    })
-                    .done((data) => {
-                        $('#total-price').text(formatNumber(data.cart.totalPrice)).append($('<sup>').text('đ'));
-                        $('#cart-quantity').text(`${data.cart.totalQuantity}`);
-                        $(`#add-${id}`).attr('disabled',false);
-                    });
-            }
-        }
+                    url: `/cart/delete-item/${id}`,
+                    type: 'DELETE',
+                    success: res => {
+                        if (res.success) {
+                            alertify.success(res.message);
+                            $(`#cart-item-${id}`).remove();
+                            updateAfterChange(res.cart);
+                            checkIfEmpty();
+                        } else alertify.error(res.message);
+                    },
+                    error: () => alertify.error("Xóa không thành công!")
+                });
+            });
 
-        function checkStock(variant_id,quantity) {
-        $.ajax({
-                method: "GET",
-                url: `/admin/check-stock-variant/${variant_id}`
-            })
-            .done((data) => {
-                if(parseInt(data)===0)
-                    $(`#add-${variant_id}`).attr('disabled',true);
-                else
-                    $(`#add-${variant_id}`).attr('disabled',false);
-            })
-        }
+            // Xóa toàn bộ giỏ hàng
+            $('#btn-delete-all').click(function () {
+                if (!confirm('Xóa toàn bộ giỏ hàng?')) return;
+                $.ajax({
+                    url: '/cart/delete-all',
+                    type: 'DELETE',
+                    success: res => {
+                        if (res.success) {
+                            alertify.success(res.message);
+                            afterDeleteAll();
+                        } else alertify.error(res.message);
+                    },
+                    error: () => alertify.error("Không thể xóa giỏ hàng!")
+                });
+            });
+
+            // Giảm số lượng
+            $('.btn-decrease').click(function () {
+                const id = $(this).data('id');
+                $.ajax({
+                    url: `/cart/minus/${id}`,
+                    type: 'PATCH',
+                    success: res => {
+                        if (res.success) {
+                            if (res.item.quantity <= 0) {
+                                $(`#cart-item-${id}`).remove();
+                                checkIfEmpty();
+                            } else {
+                                updateItem(id, res.item);
+                            }
+                            updateAfterChange(res.cart);
+                        } else alertify.error(res.message);
+                    },
+                    error: () => alertify.error("Không giảm được!")
+                });
+            });
+
+            // Tăng số lượng
+            $('.btn-increase').click(function () {
+                const id = $(this).data('id');
+                $.ajax({
+                    url: `/cart/increase/${id}`,
+                    type: 'PATCH',
+                    success: res => {
+                        if (res.success) {
+                            updateItem(id, res.item);
+                            updateAfterChange(res.cart);
+                        } else alertify.error(res.message);
+                    },
+                    error: () => alertify.error("Không tăng được!")
+                });
+            });
+
+            // Cập nhật số lượng + tổng tiền của từng item
+            function updateItem(id, item) {
+                // Tổng tiền mỗi sản phẩm
+                const total = (item.price + item.topping_total) * item.quantity;
+                const itemRow = $(`#cart-item-${id}`);
+                itemRow.find('.amount').val(item.quantity);
+                itemRow.find('.item-total').text(formatNumber(total) + ' đ');
+            }
+
+            function updateAfterChange(cart) {
+                $('#cart-quantity').text(cart.totalQuantity);
+                $('#item-total').text(formatNumber(Number(cart.totalPrice)) + ' đ');
+            }
+
+            // Hiển thị giao diện trống nếu không còn item nào
+            function checkIfEmpty() {
+                if ($('.shopping_cart_item').length === 0) {
+                    afterDeleteAll();
+                }
+            }
+
+            // Hiển thị lại khi giỏ trống
+            function afterDeleteAll() {
+                $('#cart-quantity').text(0);
+                $('#cart-main').empty().append('<h3 style="text-align:center;margin-top:50px">Giỏ hàng trống</h3>');
+            }
+
+            // Format tiền
+            function formatNumber(number) {
+                return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        });
     </script>
     <script>
         // Phân trang
