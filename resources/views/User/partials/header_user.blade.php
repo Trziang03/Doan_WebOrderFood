@@ -80,7 +80,7 @@
             <ul>
                 <li class="search-wrapper">
 
-                    <form action="{{ route('timkiemtheotukhoa') }}" method="GET" class="search-form">
+                    <form action="" method="GET" class="search-form">
                         <input type="search" name = "seachbykey" placeholder="Tìm kiếm..."
                             value="{{ request('seachbykey') }}" class="search-input">
                         <button type="submit" class="search-btn">

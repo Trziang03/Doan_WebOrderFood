@@ -114,38 +114,38 @@ class ProductUser extends Model
 
         return $danhSachSanPham;
     }
-    public static function TimKiemTheoTuKhoa($key)
-    {
-        // Tách từ khóa
-        $keywords = preg_split('/\s+/', trim($key));
+    // public static function TimKiemTheoTuKhoa($key)
+    // {
+    //     // Tách từ khóa
+    //     $keywords = preg_split('/\s+/', trim($key));
 
-        $danhSachSanPham = DB::table('products')
-            ->select(
-                'products.id',
-                'products.name',
-                'products.slug',
-                'categories.name as category_name',
-                DB::raw('MIN(image_products.image) as image'), // Lấy hình ảnh đầu tiên
-                // Lấy giá thấp nhất
-            )
-            ->join('image_products', 'products.id', '=', 'image_products.product_id')
-            ->join('categories', 'brands.category_id', '=', 'categories.id')
-            ->where('products.status', 1)
-            ->where(function ($query) use ($keywords) {
-                foreach ($keywords as $word) {
-                    $query->where(function ($q) use ($word) {
-                        $q->whereRaw('LOWER(categories.name COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"])
-                            ->orWhereRaw('LOWER(products.name COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"])
-                            ->orWhereRaw('LOWER(products.description COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"]);
-                    });
-                }
-            })
-            ->groupBy('products.id', 'products.name', 'products.slug', 'categories.name')
-            ->orderBy('products.name')
-            ->get();
+    //     $danhSachSanPham = DB::table('products')
+    //         ->select(
+    //             'products.id',
+    //             'products.name',
+    //             'products.slug',
+    //             'categories.name as category_name',
+    //             DB::raw('MIN(image_products.image) as image'), // Lấy hình ảnh đầu tiên
+    //             // Lấy giá thấp nhất
+    //         )
+    //         ->join('image_products', 'products.id', '=', 'image_products.product_id')
+    //         ->join('categories', 'brands.category_id', '=', 'categories.id')
+    //         ->where('products.status', 1)
+    //         ->where(function ($query) use ($keywords) {
+    //             foreach ($keywords as $word) {
+    //                 $query->where(function ($q) use ($word) {
+    //                     $q->whereRaw('LOWER(categories.name COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"])
+    //                         ->orWhereRaw('LOWER(products.name COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"])
+    //                         ->orWhereRaw('LOWER(products.description COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"]);
+    //                 });
+    //             }
+    //         })
+    //         ->groupBy('products.id', 'products.name', 'products.slug', 'categories.name')
+    //         ->orderBy('products.name')
+    //         ->get();
 
-        return $danhSachSanPham;
-    }
+    //     return $danhSachSanPham;
+    // }
 
     public static function HinhAnhSamPham($slug)
     {

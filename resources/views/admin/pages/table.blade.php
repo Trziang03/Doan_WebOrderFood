@@ -287,7 +287,7 @@
     <div class="content" id="banan">
         <div class="head">
             <div class="title">Quản Lý bàn ăn</div>
-            {{-- <button id="toggleForm" class="btn-toggle">Thêm bàn</button> --}}
+            <button id="toggleForm" class="btn-toggle">Thêm bàn</button>
         </div>
         <div class="separator_x"></div>
 
@@ -327,8 +327,8 @@
         </div>
         
 
-
-        {{-- <form method="POST" action="{{ route('admin.table.store') }}">
+{{-- 
+        <form method="POST" action="{{ route('admin.table.store') }}">
             @csrf
             <div id="tableForm" class="form-section" style="display: none;">
                 <div class="form-group-tablee">
@@ -645,16 +645,7 @@
     <script>
         
     </script>
-        
-    {{-- <script>
-        function copyToClipboard(selector) {
-            const text = document.querySelector(selector).textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Đã sao chép URL vào clipboard');
-            });
-        }
-    </script> --}}
-    {{-- <script>
+    <script>
         document.getElementById("toggleForm").onclick = function () {
             document.getElementById("addTablePopup").style.display = "flex";
         }
@@ -662,6 +653,6 @@
         function hideForm() {
             document.getElementById("addTablePopup").style.display = "none";
         }
-    </script> --}}
+    </script>
     
 @endsection

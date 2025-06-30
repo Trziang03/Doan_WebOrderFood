@@ -25,9 +25,8 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/addContact', 'addContact');
     Route::get('/', "index")->name('user.index');
     Route::get('/menu', "menu")->name('user.menu');
-    Route::get('seach/{slug}/{id?}', "TimKiemSanPhamFH")->name('timkiemsanpham');
-    Route::get('seach', "TimKiemTheoTuKhoa")->name('timkiemtheotukhoa');
-    Route::get('/search', "search")->name('user.search');
+    Route::get('/menu/{slug}', "timKiemSanPham")->name('timkiemsanpham');
+
     Route::post('/dangky', "DangKy")->name('dangky');
     Route::post('/dangnhap', "DangNhap")->name('dangnhap');
     Route::get('/logout', "Logout")->name('logout');
@@ -118,29 +117,21 @@ Route::middleware(['role:QL,NV'])->group(function () {
    //Tạo QR Động
    Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
   
-//    Route::post('/tables/auto-refresh', [AdminTableController::class, 'autoRefresh'])->name('tables.autoRefresh');
-
-   
    Route::get('/table/checkin', function (Request $request) {
     $token = $request->query('token');
-
     $table = Table::where('token', $token)->first();
-
     if (!$table || !$table->qr_code) {
         return response()->view('table.qr_expired', [], 403);
     }
-
     if (!$table) {
         abort(404, 'Không tìm thấy bàn.');
     }
-
     //  cấm truy cập nếu trạng thái = 3
     if ((int)$table->table_status_id === 3) {
         return response()->view('errors.access_denied', [
             'message' => 'Bàn đang được dọn dẹp. Vui lòng chọn bàn khác.'
         ], 403);
     }
-
     Route::get('/check-table-name', [AdminTableController::class, 'checkDuplicateName']);
 
 
@@ -165,11 +156,6 @@ Route::middleware(['role:QL,NV'])->group(function () {
    Route::resource('/admin/product', AdminProductController::class);    
 });
 
-
-
-
-  
-
    
 });
 
@@ -179,13 +165,6 @@ Route::middleware(['role:QL'])->group(function () {
    Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');    
    Route::get('/admin/staff/{id}', [AdminStaffController::class, 'Profile'])->name('admin.staff.profile');
    Route::post('/admin/staff/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-    //nhân viên
-    Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');
-    Route::get('/admin/staff/create', [AdminStaffController::class, 'create'])->name('admin.staff.create');
-    Route::post('/admin/staff/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
-    Route::get('/admin/staff/edit/{id}', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
-    Route::post('/admin/staff/update/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-    Route::delete('/admin/staff/delete/{id}', [AdminStaffController::class, 'destroy'])->name('admin.staff.destroy');
  
  });
 
@@ -196,12 +175,10 @@ Route::middleware(['role:QL,NV,KH'])->group(function () { });
  Route::controller(OrderController::class)->group(function () {
     Route::get('/payment', 'index')->name('user.payment');
     Route::post('/payment/complete', 'completePayment')->name('complete-payment');
-    // Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
     Route::get('/table/{id}', 'orderByTable')->name('order.table');
 });
-Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
-//phân quyền khách hàng
-    //xác nhận đặt hàng và thanh toán
+    Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
+
     Route::controller(OrderController::class)->group(function () {
         Route::get('/payment', 'index')->name('user.payment');
         Route::post('/payment', 'completePayment')->name('complete-payment');

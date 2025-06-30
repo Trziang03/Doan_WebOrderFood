@@ -302,6 +302,7 @@ img{
     overflow-y: auto;
     z-index: 1000;
     transition: transform 0.3s ease, left 0.3s ease;
+    width:50%;
 }
 .checkbox_input_hidden:checked ~ .navbar_hidden_mb_tl {
     transform: translateX(0);
@@ -314,10 +315,10 @@ img{
     padding:10px 0 15px 15px;
     transition: border linear 0.2s;
 }
-.navbar_item_second .navbar_hidden_mb_tl > ul > li:hover {
+/* .navbar_item_second .navbar_hidden_mb_tl > ul > li:hover {
     border-bottom: 1px solid grey;
     cursor: pointer;
-}
+} */
 .navbar_item_second .navbar_hidden_mb_tl > ul > li > a {
     color: black;
 }

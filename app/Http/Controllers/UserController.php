@@ -47,17 +47,38 @@ class UserController extends Controller
         $danhSachSanPham = ProductUser::TimKiemSanPham($slug);
         return view('user.pages.menu')->with('danhSachSanPham', $danhSachSanPham);
     }
-    public function TimKiemTheoTuKhoa(Request $request)
+
+
+    public function timKiemSanPham($slug)
     {
-        $request->validate([
-            'seachbykey' => 'required',
-        ], [
-            'seachbykey.required' => "Vui lòng nhập từ khóa tìm kiếm",
+        // Tìm danh mục theo slug
+        $category = Category::where('slug', $slug)->first();
+
+        if (!$category) {
+            return redirect()->back()->with('error', 'Không tìm thấy danh mục.');
+        }
+
+        // Lấy các sản phẩm thuộc danh mục
+        $layTatCaSanPham = Product::where('category_id', $category->id)->where('status', 1)->get();
+
+        // Gửi dữ liệu ra view
+        return view('User.pages.menu', [  // thay bằng tên file blade đúng
+            'layTatCaSanPham' => $layTatCaSanPham,
+            'danhSachDanhMuc' => Category::where('status', 1)->get(), // để load lại menu
         ]);
-        $key = str_replace('$', '', $request->input('seachbykey'));
-        $danhSachSanPham = ProductUser::TimKiemTheoTuKhoa($key);
-        return view('user.pages.menu')->with('danhSachSanPham', $danhSachSanPham);
     }
+
+    // public function TimKiemTheoTuKhoa(Request $request)
+    // {
+    //     $request->validate([
+    //         'seachbykey' => 'required',
+    //     ], [
+    //         'seachbykey.required' => "Vui lòng nhập từ khóa tìm kiếm",
+    //     ]);
+    //     $key = str_replace('$', '', $request->input('seachbykey'));
+    //     $danhSachSanPham = ProductUser::TimKiemTheoTuKhoa($key);
+    //     return view('user.pages.menu')->with('danhSachSanPham', $danhSachSanPham);
+    // }
 
     //Trang Giới Thiệu
     public function GioiThieu()

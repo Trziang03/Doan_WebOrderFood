@@ -126,7 +126,7 @@ class AdminTableController extends Controller
             $table->access_count = 0;
         }
         if ((int)$request->table_status_id === 3) {
-            $table->access_token = Str::random(40); // tạo token mới
+            $table->token = Str::random(40); // tạo token mới
             $table->token_expires_at = Carbon::now()->addMinutes(30); // TTL 30 phút 
         }    
     
