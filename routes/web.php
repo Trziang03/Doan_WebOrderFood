@@ -141,6 +141,10 @@ Route::middleware(['role:QL,NV'])->group(function () {
         ], 403);
     }
 
+    // routes/web.php
+    Route::get('/check-table-name', [AdminTableController::class, 'checkDuplicateName']);
+
+
     //kiểm tra Token mỗi lần request
     Route::middleware([CheckAccessToken::class])->group(function () {
         Route::get('/table/access', 'App\Http\Controllers\TableController@access');

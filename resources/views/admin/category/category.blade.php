@@ -80,15 +80,27 @@
                 </tbody>
             </table>
             <div class="popup_admin" id="popupdm">
-                <h3 style="color: white;">Bạn có thật sự muốn xóa danh mục ... ?</h3>
-                <p style="color: white;">* Danh mục bị xóa sẽ không thể khôi phục nữa *</p>
-                <p id="alert"></p>
-
+                <h3 style="color: white;">Bạn có thật sự muốn xóa danh mục này?</h3>
+                <p style="color: white;">* Danh mục bị xóa sẽ không thể khôi phục *</p>
+            
+                <label style="color:white;">
+                    Nhập từ <strong style="color: yellow;">XÓA</strong> để xác nhận:
+                </label>
+                <input type="text" id="confirmInput" placeholder="Nhập XÓA..." />
+            
+                <div style="margin-top: 10px;">
+                    <input type="checkbox" id="confirmCheckbox" />
+                    <label for="confirmCheckbox" style="color: white;">Tôi đồng ý với hành động này</label>
+                </div>
+            
+                <p id="alert" style="color: red;"></p>
+            
                 <div class="button">
-                    <button type="button" id="deleteBtn">Đồng ý </button>
+                    <button type="button" id="deleteBtn" disabled>Đồng ý</button>
                     <button onclick="cancel('dm')">Hủy</button>
                 </div>
             </div>
+            
         <div class="pagination">
             {{ $danhSachDanhMuc->links() }}
         </div>
@@ -151,28 +163,37 @@
             deleteButton.setAttribute('data-id', id);
 
             deleteButton.onclick = function () {
-                console.log('Nút Đồng ý đã được nhấn');
-                const categoryId = this.getAttribute('data-id'); // Dùng đúng tên
+                const confirmInput = document.getElementById('confirm_input').value.trim().toUpperCase();
+
+                if (confirmInput !== 'XÓA') {
+                    document.getElementById('alert').textContent = 'Bạn phải nhập chính xác "XÓA" để thực hiện.';
+                    return;
+                }
+
+                const categoryId = this.getAttribute('data-id');
 
                 fetch(`/admin/deletecategory/${categoryId}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        confirm: 'XÓA' // gửi xác nhận kèm
+                    })
+                })
+                .then(response => response.json().then(data => ({ ok: response.ok, data })))
+                .then(({ ok, data }) => {
+                    if (ok) {
+                        alertify.success(data.message);
+                        window.location.href = '/admin/category'; // reload lại trang danh sách
+                    } else {
+                        alertify.error(data.message);
                     }
                 })
-                    .then(response => response.json().then(data => ({ ok: response.ok, data })))
-                    .then(({ ok, data }) => {
-                        if (ok) {
-                            alertify.success(data.message);
-                            window.location.href = '/admin/category';
-                        } else {
-                            alert('Đã có lỗi xảy ra: ' + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                .catch(error => {
+                    console.error('Lỗi khi gửi yêu cầu xóa:', error);
+                });
             };
         }
 
@@ -181,4 +202,22 @@
             popupElement.style.display = 'none';
         }
     </script>
+    
+    {{-- Xác nhận bước 2 để xóa danh mục --}}
+    <script>
+        document.getElementById('confirm_input').addEventListener('input', function () {
+            const input = this.value.trim().toUpperCase();
+            const btn = document.getElementById('deleteBtn');
+            const alert = document.getElementById('alert');
+        
+            if (input === 'XÓA') {
+                btn.disabled = false;
+                alert.textContent = '';
+            } else {
+                btn.disabled = true;
+                alert.textContent = 'Bạn phải nhập chính xác "XÓA" để thực hiện.';
+            }
+        });
+    </script>
+        
 @endsection

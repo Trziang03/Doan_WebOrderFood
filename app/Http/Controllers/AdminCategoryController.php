@@ -13,7 +13,7 @@ class AdminCategoryController extends Controller
     public function index(Request $request)
     {
         $query = Category::query();
-
+        $query->where('status', 1);
         if ($request->has('keyword') && $request->keyword != '') {
             $keyword = strtolower(trim($request->keyword));
 
@@ -43,14 +43,16 @@ class AdminCategoryController extends Controller
     public function storeCategory(Request $request)
     {
         $validate = $request->validate([
-            'name' => 'required|unique:categories,name|max:255',
+            'name' => 'required|unique:categories,name|max:255','regex:/^[\p{L}0-9\s\-]+$/u',
             'description' => 'required|max:255',
             'status' => 'required|in:0,1',
         ], [
             'name.required' => 'Vui lòng nhập tên danh mục',
             'name.unique' => 'Tên danh mục đã tồn tại',
             'name.max' => 'Tên danh mục không vượt quá 255 ký tự',
+            'name.regex' => 'Tên danh mục chỉ được chứa chữ, số, dấu cách và gạch ngang.',
             'description' => 'Vui lòng nhập mô tả',
+            'description.max' => 'Mô tả không vượt quá 255 ký tự',
         ]);
 
         $slug = $request->input('slug') ?: Str::slug($request->input('name'));
@@ -121,14 +123,20 @@ class AdminCategoryController extends Controller
         return response()->json($danhSachDanhMuc);
     }
 
-    //xóa danh mục
-    public function deleteCategory($id)
+    //xóa(ẩn) danh mục
+    public function deleteCategory(Request $request, $id)
     {
-        $danhMucTimKiem = Category::find($id);
-        if ($danhMucTimKiem) {
-            $danhMucTimKiem->update(['status' => 0]);
-            return response()->json(['message' => 'Ẩn danh mục thành công.'], 200);
+        if (mb_strtoupper($request->input('confirm'), 'UTF-8') !== 'XÓA') {
+            return response()->json(['message' => 'Bạn phải nhập "XÓA" để xác nhận.'], 400);
         }
-        return response()->json(['message' => 'Danh mục không tồn tại.'], 404);
+
+        $danhMucTimKiem = Category::find($id);
+        if (!$danhMucTimKiem) {
+            return response()->json(['message' => 'Danh mục không tồn tại.'], 404);
+        }
+
+        $danhMucTimKiem->update(['status' => 0]);
+        return response()->json(['message' => 'Ẩn danh mục thành công.']);
     }
+
 }

@@ -30,8 +30,18 @@
                         <div class="form-group-row">
                             <div class="form-group-product">
                                 <label>Tên món ăn</label>
-                                <input type="text" class="form-control" name="name" required>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    name="name" 
+                                    id="food_name" 
+                                    oninput="validateFoodName()" 
+                                    required 
+                                    placeholder="Nhập tên món ăn">
+                            
+                                <span id="food_name_error" style="color: red; font-size: 12px;"></span>
                             </div>
+                            
                             <div class="form-group-product">
                                 <label>Danh mục</label>
                                 <select name="category_id" required>
@@ -51,11 +61,31 @@
                         <div class="form-group-row">
                             <div class="form-group-product">
                                 <label>Mô tả</label>
-                                <textarea name="description" rows="4" required></textarea>
+                                <textarea 
+                                    name="description" 
+                                    id="description" 
+                                    rows="4" 
+                                    required 
+                                    oninput="validateDescription()"
+                                    placeholder="Nhập mô tả món ăn"
+                                ></textarea>
+                            
+                                <span id="description_error" style="color:red; font-size: 12px;"></span>
                             </div>
                             <div class="form-group-product short-input">
                                 <label>Giá tiền</label>
-                                <input type="text" class="form-control" name="price" required>
+                                <input 
+                                    type="number" 
+                                    class="form-control" 
+                                    name="price" 
+                                    id="price" 
+                                    min="1000" 
+                                    max="100000" 
+                                    oninput="validatePrice()" 
+                                    required 
+                                    placeholder="Nhập giá từ 1.000 đến 100.000">
+                            
+                                <span id="price_error" style="color:red; font-size: 12px;"></span>
                             </div>
                             <div class="form-group-product short-input">
                                 <label>Hình ảnh:</label>
@@ -267,4 +297,104 @@
             document.getElementById('optionPopup').style.display = 'none';
         }
     </script>
+
+    <script>
+        //kiểm tra giá ngay lúc nhập
+        function validatePrice() {
+            const input = document.getElementById('price');
+            const error = document.getElementById('price_error');
+            const value = parseInt(input.value);
+        
+            if (!value) {
+                error.textContent = 'Vui lòng nhập giá tiền.';
+                return false;
+            }
+        
+            if (value < 1000) {
+                error.textContent = 'Giá tiền tối thiểu là 1.000.';
+                return false;
+            }
+        
+            if (value > 100000) {
+                error.textContent = 'Giá tiền tối đa là 100.000.';
+                return false;
+            }
+        
+            // ✅ Nếu hợp lệ
+            error.textContent = '';
+            return true;
+        }
+        document.getElementById('form-id').addEventListener('submit', function(event) {
+            if (!validatePrice()) {
+                event.preventDefault(); // Ngăn gửi nếu sai giá
+            }
+        });
+
+        //kiểm tra tên món ngay lúc nhập
+        function validateFoodName() {
+            const input = document.getElementById('food_name');
+            const error = document.getElementById('food_name_error');
+            const value = input.value.trim();
+
+            if (value === '') {
+                error.textContent = 'Tên món ăn không được để trống.';
+                return false;
+            }
+
+            if (value.length > 100) {
+                error.textContent = 'Tên món ăn không được vượt quá 100 ký tự.';
+                return false;
+            }
+
+            // ✅ Regex mới: KHÔNG CHO SỐ, chỉ cho chữ (có dấu), khoảng trắng và gạch ngang
+            const regex = /^[\p{L}\s\-]+$/u; //được phép nhập tiếng Việt và dấu gạch ngang - 
+
+            if (!regex.test(value)) {
+                error.textContent = 'Tên món ăn chỉ được chứa chữ, dấu cách và gạch ngang (không số, không ký tự đặc biệt).';
+                return false;
+            }
+
+            // ✅ Hợp lệ
+            error.textContent = '';
+            return true;
+        }
+
+        document.getElementById('form-id').addEventListener('submit', function(e) {
+            if (!validateFoodName()) {
+                e.preventDefault(); 
+            }
+        });
+
+    </script>
+    <script>
+        function validateDescription() {
+            const input = document.getElementById('description');
+            const error = document.getElementById('description_error');
+            const value = input.value.trim();
+        
+            if (value === '') {
+                error.textContent = 'Mô tả không được để trống.';
+                return false;
+            }
+        
+            if (value.length > 255) {
+                error.textContent = 'Mô tả không được vượt quá 255 ký tự.';
+                return false;
+            }
+        
+            // ✅ Cho phép chữ có dấu, số, dấu cách, chấm, phẩy, dấu gạch, ngoặc kép đơn giản
+            const regex = /^[\p{L}0-9\s.,\-'"()!?]+$/u;
+        
+            if (!regex.test(value)) {
+                error.textContent = 'Mô tả chỉ được chứa chữ, số, dấu cách và một số dấu cơ bản (, . - \' ")';
+                return false;
+            }
+        
+            error.textContent = '';
+            return true;
+        }
+
+        
+    </script>
+            
 @endsection

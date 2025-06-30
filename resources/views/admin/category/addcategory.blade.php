@@ -29,9 +29,11 @@
                             <label>Tên danh mục:</label>
                         </div>
                         <div class="col">
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Nhập tên danh mục">
+                            <input type="text" class="form-control" id="name" name="name"
+                                placeholder="Nhập tên danh mục" oninput="validateCategoryName()">
+                            <span id="name_error" class="text-danger" style=" color:red "></span>
                             @error('name')
-                                <span class="text-danger" style="color:red">{{ $message }}</span>
+                                <span  class="text-danger" style="color:red">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="col">
@@ -122,4 +124,34 @@
                 });
         });
     </script>
+    <script>
+       function validateCategoryName() {
+            const input = document.getElementById('name');
+            const error = document.getElementById('name_error');
+            const value = input.value.trim();
+
+            if (value === '') {
+                error.textContent = 'Tên danh mục không được để trống.';
+                return;
+            }
+
+            if (value.length > 50) {
+                error.textContent = 'Tên danh mục không được dài quá 50 ký tự.';
+                return;
+            }
+
+            // ✅ Cho phép chữ có dấu, số, khoảng trắng và dấu gạch ngang
+            const regex = /^[\p{L}0-9\s\-]+$/u;
+
+            if (!regex.test(value)) {
+                error.textContent = 'Chỉ cho phép chữ (có dấu), số, dấu cách và gạch ngang.';
+                return;
+            }
+
+            // ✅ Hợp lệ
+            error.textContent = '';
+        }
+
+    </script>
+        
 @endsection

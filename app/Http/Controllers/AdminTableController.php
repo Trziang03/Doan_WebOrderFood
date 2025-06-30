@@ -76,52 +76,64 @@ class AdminTableController extends Controller
 
     public function update(Request $request, $id)
     {
-           // 1. Lấy bàn cần sửa
-           $table = Table::findOrFail($id);
+        // 1. Lấy bàn cần sửa
+        $table = Table::findOrFail($id);
 
-           $regenQR = $request->has('regen_qr');
+        $regenQR = $request->has('regen_qr');
 
-           $request->validate([
-               'name' => [
-                   'required',
-                   'string',
-                   'max:255',
-                   'unique:tables,name,' . $id,
-                   'regex:/^[a-zA-Z0-9\s]+$/',
-               ],
-               'table_status_id' => 'required|exists:table_status,id',
-               'access_limit' => 'required|integer|min:1',
-           ]);
+        $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:tables,name,' . $id,
+                'regex:/^[a-zA-Z0-9\s]+$/',
+            ],
+            'table_status_id' => 'required|exists:table_status,id',
+            'access_limit' => 'required|integer|min:1',
+        ],[
+            'name.required' => 'Tên bàn không được để trống.',
+            'name.string' => 'Tên bàn phải là chuỗi.',
+            'name.max' => 'Tên bàn không được vượt quá 255 ký tự.',
+            'name.unique' => 'Tên bàn đã tồn tại.',
+            'name.regex' => 'Tên bàn chỉ được chứa chữ, số và khoảng trắng.',
+            
+            'table_status_id.required' => 'Vui lòng chọn trạng thái bàn.',
+            'table_status_id.exists' => 'Trạng thái bàn không hợp lệ.',
+        
+            'access_limit.required' => 'Vui lòng nhập số lượt truy cập.',
+            'access_limit.integer' => 'Số lượt truy cập phải là số.',
+            'access_limit.min' => 'Số lượt truy cập tối thiểu là 1.',
+        ]);
+        $regenQR = $request->has('regen_qr');
+        $now = Carbon::now();
+        $last = $table->token_expires_at ?? $table->updated_at;
+    
+        // Cập nhật dữ liệu cơ bản
+        $table->name = $request->name;
+        $table->table_status_id = $request->table_status_id;
+        $table->access_limit = $request->access_limit;
 
-           $regenQR = $request->has('regen_qr');
-           $now = Carbon::now();
-           $last = $table->token_expires_at ?? $table->updated_at;
-       
-           // Cập nhật dữ liệu cơ bản
-           $table->name = $request->name;
-           $table->table_status_id = $request->table_status_id;
-           $table->access_limit = $request->access_limit;
 
-
-            // Kiểm tra trạng thái = 2 (đang sử dụng)
-            if ($request->has('regen_qr')) {
-                $this->generateQrForTable($table, $now);
-            }
-       
-           // Nếu chuyển về trạng thái "Trống" (id = 1) thì reset QR và token
-           if ((int)$request->table_status_id === 1) {
-               $this->generateQrForTable($table, $now);
-               $table->access_count = 0;
-           }
-           if ((int)$request->table_status_id === 3) {
-                $table->access_token = Str::random(40); // tạo token mới
-                $table->token_expires_at = Carbon::now()->addMinutes(30); // TTL 30 phút 
-           }    
-       
-           $table->save();
-       
-           return redirect()->back()->with('message', 'Cập nhật bàn thành công');
-       }
+        // Kiểm tra trạng thái = 2 (đang sử dụng)
+        if ($request->has('regen_qr')) {
+            $this->generateQrForTable($table, $now);
+        }
+    
+        // Nếu chuyển về trạng thái "Trống" (id = 1) thì reset QR và token
+        if ((int)$request->table_status_id === 1) {
+            $this->generateQrForTable($table, $now);
+            $table->access_count = 0;
+        }
+        if ((int)$request->table_status_id === 3) {
+            $table->access_token = Str::random(40); // tạo token mới
+            $table->token_expires_at = Carbon::now()->addMinutes(30); // TTL 30 phút 
+        }    
+    
+        $table->save();
+    
+        return redirect()->back()->with('message', 'Cập nhật bàn thành công');
+    }
 
 
     //Hàm xử lý sinh QR riêng

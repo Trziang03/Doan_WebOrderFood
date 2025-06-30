@@ -400,24 +400,20 @@
                 @csrf
                 <label for="editName">Số hiệu bàn</label>
                 <div class="col">
-                    <input 
-                        type="text" 
-                        id="editName" 
-                        placeholder="Tên bàn" 
-                        name="name" 
+                    <input
+                        type="text"
+                        id="editName"
+                        name="name"
                         value="{{ $table->name }}"
-                        oninput="validateName()"
+                        oninput="validateFormat()"
+                        data-id="{{ $table->id }}"
                     >
                     <div class="alert_error_validate">
-                        <span 
-                            id="name_error" 
-                            style="color: red; font-size:12px;margin-left: 10px"
-                        >
+                        <span id="name_error" style="color: red; font-size: 12px;"></span>
                             @error('name'){{$message}}@enderror
                         </span>
                     </div>
-                </div>
-                
+                </div>                
 
                 <label for="editStatus">Trạng thái</label>
                 <select id="editStatus" name="table_status_id">
@@ -563,24 +559,93 @@
 
     {{-- kiểm tra dữ liệu ngay khi nhập --}}
     <script>
-        function validateName() {
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('updateTableForm').addEventListener('submit', validateName);
+        });
+    </script>
+
+    <script >
+        function validateFormat() {
             const input = document.getElementById('editName');
             const error = document.getElementById('name_error');
             const value = input.value.trim();
-    
+
             if (value === '') {
                 error.textContent = 'Tên bàn không được để trống.';
-            } else if (value.length > 50) {
-                error.textContent = 'Tên bàn không được dài quá 50 ký tự.';
-            } else if (!/^[\w\s\-]+$/.test(value)) { // ví dụ: chỉ cho chữ, số, gạch ngang và khoảng trắng
-                error.textContent = 'Tên bàn chỉ được chứa chữ, số, dấu cách và gạch ngang.';
-            } else {
-                error.textContent = '';
+                error.style.display = 'inline';
+                return false;
             }
+
+            if (value.length > 50) {
+                error.textContent = 'Tên bàn không được dài quá 50 ký tự.';
+                error.style.display = 'inline';
+                return false;
+            }
+
+            if (!/^[a-zA-Z0-9\s\-]+$/.test(value)) {
+                error.textContent = 'Tên bàn chỉ được chứa chữ, số, dấu cách và gạch ngang.';
+                error.style.display = 'inline';
+                return false;
+            }
+
+            // Không có lỗi
+            error.textContent = '';
+            error.style.display = 'none';
+            return true;
         }
-    </script>    
+
+        function checkNameExists(callback) {
+            const input = document.getElementById('editName');
+            const value = input.value.trim();
+            const id = input.dataset.id;
+
+            // Ẩn lỗi dưới input nếu có từ trước
+            const errorElement = document.getElementById('name_error');
+            errorElement.textContent = '';
+            errorElement.style.display = 'none';
+
+            fetch(`/check-table-name?name=${encodeURIComponent(value)}&exclude_id=${id}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Lỗi mạng');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.exists) {
+                        alertify.error('Tên bàn đã tồn tại.');
+                        callback(false);
+                    } else {
+                        callback(true);
+                    }
+                })
+                .catch(() => {
+                    alertify.error('Lỗi khi kiểm tra tên.');
+                    callback(false);
+                });
+        }
 
 
+        document.getElementById('updateTableForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            if (!validateFormat()) return;
+
+            checkNameExists(function(isValid) {
+                if (isValid) {
+                    document.getElementById('updateTableForm').submit();
+                }
+            });
+        });
+
+
+    </script>
+
+    
+
+    {{-- kiểm tra duplicate name --}}
+    <script>
+        
+    </script>
+        
     {{-- <script>
         function copyToClipboard(selector) {
             const text = document.querySelector(selector).textContent;
