@@ -54,7 +54,7 @@
             <label for="checkbox_hidden"><span class="menu-icon"><i class="fas fa-bars"></i></span></label>
             <div style="width:190px" class="logo-mobile-only">
                 <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
-                        style="width:100%;height:55px;margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
+                        style="width:125%;height:55px;margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
                         alt="Lỗi hiển thị"></a>
             </div>
             <!-- Navbar hidden moblie tablet -->
@@ -62,12 +62,8 @@
                 <label for="checkbox_hidden"><i class="fas fa-times"></i></label>
                 <ul>
                     <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                    <li id="show__category">Menu<i class="fas fa-angle-down" style="margin-left:20px"></i></li>
-                    @foreach ($danhSachDanhMuc as $category)
-                        <li class="popup__category__ml__tl"><a
-                                href="{{ route('timkiemsanpham', ['slug' => $category->slug]) }}">{{ $category->name }}</a>
-                        </li>
-                    @endforeach
+                    <li><a href="{{route('user.menu')}}">Menu</a></li>
+                    
                     <li><a href="{{ route('user.blog') }}">Giới Thiệu</a></li>
                     <li><a href="{{ route('user.contact') }}">Liên Hệ</a></li>
                     {{-- @guest

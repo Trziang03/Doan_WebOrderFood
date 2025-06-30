@@ -126,17 +126,21 @@ class AdminCategoryController extends Controller
     //xóa(ẩn) danh mục
     public function deleteCategory(Request $request, $id)
     {
-        if (mb_strtoupper($request->input('confirm'), 'UTF-8') !== 'XÓA') {
+        $confirm = $request->input('confirm');
+
+        if (mb_strtoupper($confirm, 'UTF-8') !== 'XÓA') {
             return response()->json(['message' => 'Bạn phải nhập "XÓA" để xác nhận.'], 400);
         }
 
-        $danhMucTimKiem = Category::find($id);
-        if (!$danhMucTimKiem) {
+        $danhMuc = Category::find($id);
+        if (!$danhMuc) {
             return response()->json(['message' => 'Danh mục không tồn tại.'], 404);
         }
 
-        $danhMucTimKiem->update(['status' => 0]);
+        $danhMuc->update(['status' => 0]);
+
         return response()->json(['message' => 'Ẩn danh mục thành công.']);
     }
+
 
 }

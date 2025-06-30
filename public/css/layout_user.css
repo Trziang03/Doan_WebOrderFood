@@ -402,7 +402,7 @@ img{
     .navbar-bottom > .navbar_item_second > ul > li:first-child form input{
         border: none;;
         outline: none;
-        padding: 10px 0 10px 10px;
+        padding: 10px;
         flex: 1;
         font-size: 12px;
         border-top-left-radius: 20px;

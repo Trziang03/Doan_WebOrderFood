@@ -2,7 +2,6 @@
     @php
          $lienKetWebsite = DB::table('about')->first();
          $danhSachDanhMuc = DB::table('categories')->select('categories.name','categories.slug')->get();
-         $danhSachPhanLoai = DB::table('brands')->select('brands.name')->distinct()->orderby('created_at','desc')->groupBy('brands.name')->take(6)->get();
     @endphp
     <div class="footer_top container_css">
         <div class="footer_top_left_items">

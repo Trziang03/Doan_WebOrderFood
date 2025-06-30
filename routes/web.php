@@ -141,7 +141,6 @@ Route::middleware(['role:QL,NV'])->group(function () {
         ], 403);
     }
 
-    // routes/web.php
     Route::get('/check-table-name', [AdminTableController::class, 'checkDuplicateName']);
 
 
@@ -150,8 +149,6 @@ Route::middleware(['role:QL,NV'])->group(function () {
         Route::get('/table/access', 'App\Http\Controllers\TableController@access');
     });
 
-    // Hiển thị giao diện trang chủ 
-    return view('user.pages.index', ['table' => $table]);
 
      //Route quản lí món ăn
    Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
@@ -161,14 +158,10 @@ Route::middleware(['role:QL,NV'])->group(function () {
    Route::get('/admin/product/search', [AdminProductController::class, 'search'])->name('admin.product.search');
    Route::get('/admin/proudct/list-product-unapproved', [AdminProductController::class, 'getListProductsUnapproved'])->middleware(AdminRoleMiddleware::class)->name('admin.product.unapproved');
    Route::get('/admin/product/filter', [AdminProductController::class, 'filter'])->name('admin.product.filter');
-   Route::get('/admin/product-variant/{id}', [AdminProductVariantController::class, 'index'])->name('admin.product_variant.index');
-   Route::get('/admin/product-variant-hidden/{id}', [AdminProductVariantController::class, 'showListVariantsHide'])->name('product_variant_hide');
-   Route::PUT('/admin/product-variant/active/{id}', [AdminProductVariantController::class, 'active'])->middleware(AdminRoleMiddleware::class);
    Route::post('/admin/product/is_isset', [AdminProductController::class, 'isIssetProduct']);
    Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
    Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
 
-   Route::resource('/admin/product-variant', AdminProductVariantController::class)->except(['index']);
    Route::resource('/admin/product', AdminProductController::class);    
 });
 
@@ -179,16 +172,6 @@ Route::middleware(['role:QL,NV'])->group(function () {
 
    
 });
-
-    //quản lý bàn ăn
-    Route::get('/admin/table', [AdminTableController::class, 'index'])->name('admin.table');
-    Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');
-    Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
-    Route::get('/admin/table/delete/{id}', [AdminTableController::class, 'destroy'])->name('admin.table.destroy');
-
-
-   
-
 
 //Phân quyền quản lý
 Route::middleware(['role:QL'])->group(function () {

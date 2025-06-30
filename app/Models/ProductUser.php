@@ -124,31 +124,23 @@ class ProductUser extends Model
                 'products.id',
                 'products.name',
                 'products.slug',
-                'products.rating',
                 'categories.name as category_name',
-                'brands.name as brand_name',
                 DB::raw('MIN(image_products.image) as image'), // Lấy hình ảnh đầu tiên
-                DB::raw('MIN(product_variants.price) as price'),
-                DB::raw('MIN(product_variants.id) as variants')
                 // Lấy giá thấp nhất
             )
             ->join('image_products', 'products.id', '=', 'image_products.product_id')
-            ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-            ->join('brands', 'products.brand_id', '=', 'brands.id')
             ->join('categories', 'brands.category_id', '=', 'categories.id')
             ->where('products.status', 1)
             ->where(function ($query) use ($keywords) {
                 foreach ($keywords as $word) {
                     $query->where(function ($q) use ($word) {
                         $q->whereRaw('LOWER(categories.name COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"])
-                            ->orWhereRaw('LOWER(brands.name COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"])
                             ->orWhereRaw('LOWER(products.name COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"])
-                            ->orWhereRaw('LOWER(products.description COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"])
-                            ->orWhereRaw('CAST(product_variants.price AS CHAR) LIKE ?', ["%{$word}%"]);
+                            ->orWhereRaw('LOWER(products.description COLLATE utf8mb4_unicode_ci ) LIKE ?', ["%{$word}%"]);
                     });
                 }
             })
-            ->groupBy('products.id', 'products.name', 'products.slug', 'products.rating', 'categories.name', 'brands.name')
+            ->groupBy('products.id', 'products.name', 'products.slug', 'categories.name')
             ->orderBy('products.name')
             ->get();
 

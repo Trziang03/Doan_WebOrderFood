@@ -159,17 +159,35 @@
             const popupElement = document.getElementById('popupdm');
             popupElement.style.display = 'block';
 
+            // Reset trạng thái mỗi lần mở popup
+            document.getElementById('confirmInput').value = '';
+            document.getElementById('confirmCheckbox').checked = false;
+            document.getElementById('deleteBtn').disabled = true;
+            document.getElementById('alert').textContent = '';
+
+            const input = document.getElementById('confirmInput');
+            const checkbox = document.getElementById('confirmCheckbox');
             const deleteButton = document.getElementById('deleteBtn');
-            deleteButton.setAttribute('data-id', id);
 
-            deleteButton.onclick = function () {
-                const confirmInput = document.getElementById('confirm_input').value.trim().toUpperCase();
+            function validateConfirm() {
+                const inputValue = input.value.trim();
+                const isConfirmed = checkbox.checked;
+                const isValid = inputValue === 'XÓA';
 
-                if (confirmInput !== 'XÓA') {
-                    document.getElementById('alert').textContent = 'Bạn phải nhập chính xác "XÓA" để thực hiện.';
-                    return;
+                deleteButton.disabled = !(isConfirmed && isValid);
+
+                if (inputValue !== '' && !isValid) {
+                    document.getElementById('alert').textContent = 'Bạn phải nhập chính xác "XÓA"';
+                } else {
+                    document.getElementById('alert').textContent = '';
                 }
+            }
 
+            input.addEventListener('input', validateConfirm);
+            checkbox.addEventListener('change', validateConfirm);
+
+            deleteButton.setAttribute('data-id', id);
+            deleteButton.onclick = function () {
                 const categoryId = this.getAttribute('data-id');
 
                 fetch(`/admin/deletecategory/${categoryId}`, {
@@ -178,24 +196,73 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({
-                        confirm: 'XÓA' // gửi xác nhận kèm
+                    body: JSON.stringify({ confirm: input.value })
+                })
+                    .then(response => response.json().then(data => ({ ok: response.ok, data })))
+                    .then(({ ok, data }) => {
+                        if (ok) {
+                            alertify.success(data.message);
+                            window.location.href = '/admin/category';
+                        } else {
+                            alertify.error(data.message || 'Có lỗi xảy ra.');
+                        }
                     })
-                })
-                .then(response => response.json().then(data => ({ ok: response.ok, data })))
-                .then(({ ok, data }) => {
-                    if (ok) {
-                        alertify.success(data.message);
-                        window.location.href = '/admin/category'; // reload lại trang danh sách
-                    } else {
-                        alertify.error(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Lỗi khi gửi yêu cầu xóa:', error);
-                });
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alertify.error('Lỗi kết nối server.');
+                    });
             };
         }
+
+        function cancel(action) {
+            document.getElementById('popupdm').style.display = 'none';
+        }
+
+
+
+        // function popup(action, id) {
+        //     console.log('ID nhận được:', id);
+
+        //     const popupElement = document.getElementById('popupdm');
+        //     popupElement.style.display = 'block';
+
+        //     const deleteButton = document.getElementById('deleteBtn');
+        //     deleteButton.setAttribute('data-id', id);
+
+        //     deleteButton.onclick = function () {
+        //         const confirmInput = document.getElementById('confirm_input').value.trim().toUpperCase();
+
+        //         if (confirmInput !== 'XÓA') {
+        //             document.getElementById('alert').textContent = 'Bạn phải nhập chính xác "XÓA" để thực hiện.';
+        //             return;
+        //         }
+
+        //         const categoryId = this.getAttribute('data-id');
+
+        //         fetch(`/admin/deletecategory/${categoryId}`, {
+        //             method: 'DELETE',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //             },
+        //             body: JSON.stringify({
+        //                 confirm: 'XÓA' // gửi xác nhận kèm
+        //             })
+        //         })
+        //         .then(response => response.json().then(data => ({ ok: response.ok, data })))
+        //         .then(({ ok, data }) => {
+        //             if (ok) {
+        //                 alertify.success(data.message);
+        //                 window.location.href = '/admin/category'; // reload lại trang danh sách
+        //             } else {
+        //                 alertify.error(data.message);
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error('Lỗi khi gửi yêu cầu xóa:', error);
+        //         });
+        //     };
+        // }
 
         function cancel(action) {
             const popupElement = document.getElementById('popupdm');
