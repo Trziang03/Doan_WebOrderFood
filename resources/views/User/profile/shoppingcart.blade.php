@@ -3,7 +3,8 @@
 @section('content')
     <div class="shopping_cart container_css" id="shopping_cart">
         @if ($cartItems->isEmpty())
-            <h3 style="height:150px; text-align:center; margin-top:69px">Giỏ hàng chưa có sản phẩm</h3>
+            <h3 style="height:183px; text-align:center; margin-top:105px">Chưa có món ăn nào <br>
+            <a href="{{ route('user.menu') }}" style="display:inline-block; margin-top:10px;">Đặt món ngay ?</a></h3>
         @else
             <div class="shopping_cart_main" id="cart-main">
                 <div class="shopping_cart_items" id="list-product">
@@ -11,30 +12,32 @@
                         @php
                             $sizePrice = $item->size ? $item->size->price : 0;
                             $productPrice = $item->product->price + $sizePrice;
-
                             $toppingTotal = $item->toppings->sum(function ($t) {
                                 return $t->topping->price * $t->quantity;
                             });
-
                             $totalPrice = ($productPrice + $toppingTotal) * $item->quantity;
                         @endphp
 
-                        <div id="cart-item-{{ $item->id }}" class="shopping_cart_item">
-                            <div class="cart_item_img">
+                        <div id="cart-item-{{ $item->id }}" class="shopping_cart_item"
+                            style="display: flex; gap: 10px; background-color: #FFF3E8; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+                            <div class="cart_item_img" style="flex-shrink: 0;">
                                 <img src="{{ asset($item->product->image_food) }}" alt="">
                             </div>
-                            <div class="cart_item_info">
-                                <div class="cart_item_info_top">
-                                    <h4>{{ $item->product->name }} - Size {{ $item->size->name }}</h4>
-                                    <button class="btn-delete-item" data-id="{{ $item->id }}">
+                            <div class="cart_item_info"
+                                style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div class="cart_item_info_top"
+                                    style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <h4 style="font-size: 16px;">{{ $item->product->name }} - Size {{ $item->size->name }}</h4>
+                                    <button class="btn-delete-item" data-id="{{ $item->id }}"
+                                        style="border: none; background: none;">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
 
                                 @if ($item->toppings->isNotEmpty())
                                     <div>
-                                        <p>Topping:</p>
-                                        <ul class="topping-list" style="margin-left: 15px;">
+                                        <p style="margin: 0;">Topping:</p>
+                                        <ul class="topping-list" style="margin-left: 15px; font-weight: bold; padding-left: 15px;">
                                             @foreach ($item->toppings as $topping)
                                                 @if ($topping->topping)
                                                     <li>{{ $topping->topping->name }} x {{ $topping->quantity }}</li>
@@ -44,28 +47,31 @@
                                     </div>
                                 @endif
 
-                                {{-- Ghi chú (nếu có) --}}
                                 @if (!empty($item->note))
-                                    <p>Ghi chú: {{ $item->note }}</p>
+                                    <p style="margin: 0;">Ghi chú: {{ $item->note }}</p>
                                 @endif
 
-                                <div class="cart_item_info_bottom">
-                                    <div>Giá: {{ number_format($totalPrice) }} <sup>đ</sup></div>
-                                    <div>
-                                        <button class="btn-decrease" data-id="{{ $item->id }}">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                        <input class="amount" disabled type="text" value="{{ $item->quantity }}">
-                                        <button class="btn-increase" data-id="{{ $item->id }}">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
+                                <div class="cart_item_footer"
+                                    style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; margin-top: auto; margin-bottom: 10px; width: 100%;">
+
+                                    {{-- Cột bên trái: Giá --}}
+                                    <span style="font-weight: bold; font-size: 20px;">Giá: {{ number_format($totalPrice) }} <sup>đ</sup></span>
+
+                                    {{-- Cột bên phải: Nút tăng giảm --}}
+                                    <div style="display: flex; align-items: center; gap: 10px; background-color: #F7F7F7; border-radius: 15px;">
+                                        <button class="btn-decrease" data-id="{{ $item->id }}"
+                                            style="border: none; background: none;"><i class="fas fa-minus"></i></button>
+                                        <input class="amount" disabled type="text" value="{{ $item->quantity }}"
+                                            style="width: 30px; text-align: center;">
+                                        <button class="btn-increase" data-id="{{ $item->id }}"
+                                            style="border: none; background: none;"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     @endforeach
                 </div>
-
                 <div class="shopping_cart_bottom" id="cart-bottom">
                     <div class="shopping_cart_bottom_left">
                         <button id="btn-delete-all">Xóa tất cả</button>
@@ -73,7 +79,7 @@
 
                     <div class="shopping_cart_bottom_right_voucher">
                         <div class="shopping_cart_bottom_price">
-                            <h4>Tổng cộng</h4>
+                            <h4>Tổng cộng:</h4>
                             <p id="item-total">
                                 {{ number_format(
                 $cartItems->sum(function ($item) {
@@ -89,7 +95,15 @@
                             </p>
                             <form action="{{ route('cart.submit') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-primary">Gửi đơn hàng</button>
+                                <button type="submit" class="btn" style="background-color: rgb(240, 145, 55);
+                                                        width: 100%;
+                                                        border: none;
+                                                        background-color: rgb(240, 145, 55);
+                                                        color: white;
+                                                        padding: 10px;
+                                                        border-radius: 5px;
+                                                        transition: all linear 0.3s;
+                                                        margin-left: 28px">Gửi đơn hàng</button>
                             </form>
                         </div>
                     </div>
@@ -203,7 +217,7 @@
             // Hiển thị lại khi giỏ trống
             function afterDeleteAll() {
                 $('#cart-quantity').text(0);
-                $('#cart-main').empty().append('<h3 style="text-align:center;margin-top:50px">Giỏ hàng trống</h3>');
+                $('#cart-main').empty().append('<h3 style="text-align:center;margin-top: 118px;height: 150px;">Thực đơn trống</h3>');
             }
 
             // Format tiền

@@ -2,7 +2,6 @@
     @php
          $lienKetWebsite = DB::table('about')->first();
          $danhSachDanhMuc = DB::table('categories')->select('categories.name','categories.slug')->get();
-         $danhSachPhanLoai = DB::table('brands')->select('brands.name')->distinct()->orderby('created_at','desc')->groupBy('brands.name')->take(6)->get();
     @endphp
     <div class="footer_top container_css">
         <div class="footer_top_left_items">
@@ -10,7 +9,7 @@
                 <p style="text-align: center;padding:0 0 10px 0;font-size: 20px; font-weight: bold;">Thanh Toán</p>
                 <div style=" display: flex; justify-content: space-around;">
                     <img style="width: 80px; background-color: rgb(233, 239, 236); padding: 5px;"
-                        src="{{asset('/images/d4bbea4570b93bfd5fc652ca82a262a8.png')}}" alt="Lỗi hiển thị">
+                        src="{{asset('/images/banking.png')}}" alt="Lỗi hiển thị">
                     <img style="width: 85px; background-color: rgb(233, 239, 236); padding: 2px;" src="{{asset('/images/cod.png')}}"
                         alt="Lỗi hiển thị">
                 </div>
@@ -36,7 +35,16 @@
                     <li><a href="{{$lienKetWebsite->youtube}}"><i class="fab fa-youtube"></i>Youtube</a></li>
                 </ul>
             </div>
-            <div class="footer_top_item">
+            <div class="footer_bottom">
+                <section id="lienhe" class="intro">
+                    <h2>Liên Hệ Với Gidu Food</h2>
+                    <p>📍 Địa chỉ: 65 Huỳnh Thúc Kháng, P.Bến Nghé, Q.1, Tp.HCM</p>
+                    <p>📞 Hotline: 0909 123 456</p>
+                    <p>📧 Email: lienhe@gidufood.vn</p>
+                    <p>©2025 - Bản quyền thuộc về GiDu Food</p>
+                  </section>
+            </div>
+            {{-- <div class="footer_top_item">
                 <p style="text-align: center;font-size: 20px; font-weight: bold;">Danh mục sản phẩm</p>
                 <ul>
                     @foreach ($danhSachDanhMuc as $item)
@@ -45,7 +53,7 @@
                         </li>
                     @endforeach
                 </ul>
-            </div>
+            </div> --}}
             {{-- <div class="footer_top_item">
                 <p style="text-align: center;font-size: 19px; font-weight: bold;">Thương hiệu mới nhất</p>
                 <ul>
@@ -60,14 +68,9 @@
                 <a href=""><img src="{{asset('images/'.$lienKetWebsite->logo)}}" style="max-width: 100%" alt="Lỗi hiển thị"></a>
             </div>
             <div class="footer_top_slogan">
-                <h1 class="slogan">NGON NHANH <br> NO GỌN!</h1>
+                <h1 class="slogan">NGON NHANH <br>- NO GỌN!</h1>
             </div>
         </div>
     </div>
-    <div class="footer_bottom">
-        <p>Địa chỉ: {{ $lienKetWebsite->address }} - Số điện thoại: {{ $lienKetWebsite->phone }} -
-            Email : {{ $lienKetWebsite->email }}</p>
-        <p>Chịu trách nhiệm nội dung bởi Nguyễn Trường Giang, Trần Thiện Hữu Dũng</p>
-        <p>©2025 - Bản quyền thuộc về {{ $lienKetWebsite->name }}</p>
-    </div>
+
 </footer>

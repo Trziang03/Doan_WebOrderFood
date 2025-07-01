@@ -13,6 +13,7 @@ return array(
     'App\\Http\\Controllers\\AdminOrderController' => $baseDir . '/app/Http/Controllers/AdminOrderController.php',
     'App\\Http\\Controllers\\AdminProductController' => $baseDir . '/app/Http/Controllers/AdminProductController.php',
     'App\\Http\\Controllers\\AdminProductVariantController' => $baseDir . '/app/Http/Controllers/AdminProductVariantController.php',
+    'App\\Http\\Controllers\\AdminReviewController' => $baseDir . '/app/Http/Controllers/AdminReviewController.php',
     'App\\Http\\Controllers\\AdminStaticController' => $baseDir . '/app/Http/Controllers/AdminStaticController.php',
     'App\\Http\\Controllers\\AdminTableController' => $baseDir . '/app/Http/Controllers/AdminTableController.php',
     'App\\Http\\Controllers\\CartController' => $baseDir . '/app/Http/Controllers/CartController.php',

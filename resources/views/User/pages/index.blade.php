@@ -65,11 +65,11 @@
         }
         .product_best_seller_item_info li a {
             font-weight: 600;
-            color: var(--text-dark);
+            color: var(--white);
             text-decoration: none;
         }
         .product_best_seller_item_info li a:hover {
-            color: var(--orange);
+            color: var(--light-orange);
         }
         .product_best_seller_item_info button {
             background-color: var(--orange);
@@ -79,6 +79,7 @@
             padding: 0.5rem 1rem;
             cursor: pointer;
             font-size: 0.9rem;
+
         }
         .product_best_seller_item_info button:hover {
             background-color: #e65c00;
@@ -125,27 +126,19 @@
                 </div>
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <a href="{{ route('timkiemsanpham', ['slug' => 'do-uong-cac-loai']) }}"><img
-                                src="images/banner-tra-sua-1.jpg" class="d-block w-100 img-fluid rounded" style="" alt="Lỗi hiển thị"></a>
-                    </div>
-                    {{-- {{ route('timkiemsanpham', ['slug' => 'laptop', 'id' => 'Asus']) }} --}}
-                    <div class="carousel-item">
-                        <a href="{{ route('timkiemsanpham', ['slug' => 'do-uong-cac-loai']) }}"><img
-                                src="images/banner-tra-sua-2.jpg" class="d-block w-100 img-fluid rounded" style=""
-                                alt="Lỗi hiển thị"></a>
-                                {{-- {{ route('timkiemsanpham', ['slug' => 'dien-thoai', 'id' => 'Apple']) }} --}}
+                        <a href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => 'do-uong-cac-loai']) }}"><img
+                                src="images/banner-tra-sua-7.jpg" class="d-block w-100 img-fluid rounded" style="" alt="Lỗi hiển thị"></a>
                     </div>
                     <div class="carousel-item">
-                        <a href="{{ route('timkiemsanpham', ['slug' => 'do-uong-cac-loai']) }}"><img
-                                src="images/banner-tra-sua-3.jpg" class="d-block w-100 img-fluid rounded" style=""
+                        <a href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => 'do-uong-cac-loai']) }}"><img
+                                src="images/banner-tra-sua-9.jpg" class="d-block w-100 img-fluid rounded" style=""
                                 alt="Lỗi hiển thị"></a>
-                                {{-- {{ route('timkiemsanpham', ['slug' => 'dien-thoai', 'id' => 'Samsung']) }} --}}
                     </div>
-                    {{-- <div class="carousel-item">
-                        <a href=""><img src="images/banner-tra-sua-10.jpg"
-                                class="d-block w-100" style="" alt="Lỗi hiển thị"></a>
-                    </div> --}}
-                        {{-- {{ route('timkiemsanpham', ['slug' => 'laptop']) }} --}}
+                    <div class="carousel-item">
+                        <a href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => 'do-uong-cac-loai']) }}"><img
+                                src="images/banner-tra-sua-8.jpg" class="d-block w-100 img-fluid rounded" style=""
+                                alt="Lỗi hiển thị"></a>
+                    </div>
                 </div>
                 <button class="carousel-control-prev btn-border-radius" type="button" data-bs-target="#carouselExampleControls"
                     data-bs-slide="prev">
@@ -160,84 +153,10 @@
             </div>
         </div>
     </section>
-    <!-- Sản phẩm bán chạy -->
-    <!-- <section class="container_css product_best_seller">
-        <h4 style="color:white">Món ăn nổi bật</h4>
-
-        <div id="carouselExampleIntervals" class="carousel slide carousel-dark" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active" data-bs-interval="10000">
-                    <div class="product_best_seller_items">
-                        @if (isset($danhSachBanChay))
-                            @for ($i = 0; $i < count($danhSachBanChay); $i++)
-                                @if ($i > 3)
-                                @break
-                            @endif
-                            <div class="product_best_seller_item">
-                                <a href="{{ route('detail', [$danhSachBanChay[$i]->slug]) }}"><img
-                                        src="{{ asset('images/' .DB::table('image_products')->select('image')->where('product_id', $danhSachBanChay[$i]->id)->first()->image) }}"
-                                        alt="Lỗi hiển thị"></a>
-                                <div class="product_best_seller_item_info">
-                                    <ul>
-                                        <li><a
-                                                href="{{ route('detail', [$danhSachBanChay[$i]->slug]) }}">{{ $danhSachBanChay[$i]->name }}</a>
-                                        </li>
-                                        <li>{{ number_format($danhSachBanChay[$i]->price, 0, ',', '.') }}<sup>đ</sup>
-                                        </li>
-                                        <li>{{ $danhSachBanChay[$i]->rating }} <i class="fas fa-star"></i></li>
-                                            <li>
-                                                <button onclick="buyNow({{ $danhSachBanChay[$i]->variants }})">Đặt món ngay</button>
-                                            </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        @endfor
-                    @endif
-                </div>
-            </div>
-            @if (isset($danhSachBanChay) && count($danhSachBanChay) > 4)
-                <div class="carousel-item" data-bs-interval="2000">
-                    <div class="product_best_seller_items">
-                        @for ($i = 4; $i < count($danhSachBanChay); $i++)
-                            <div class="product_best_seller_item">
-                                <a href="{{ route('detail', [$danhSachBanChay[$i]->slug]) }}"><img
-                                        src="{{ asset('uploads/products/' .DB::table('image_products')->select('image')->where('product_id', $danhSachBanChay[$i]->id)->first()->image) }}"
-                                        alt="Lỗi hiển thị"></a>
-                                <div class="product_best_seller_item_info">
-                                    <ul>
-                                        <li><a
-                                                href="{{ route('detail', [$danhSachBanChay[$i]->slug]) }}">{{ $danhSachBanChay[$i]->name }}</a>
-                                        </li>
-                                        <li>{{ number_format($danhSachBanChay[$i]->price, 0, ',', '.') }}<sup>đ</sup>
-                                        </li>
-                                        <li>{{ $danhSachBanChay[$i]->rating }} <i class="fas fa-star"></i></li>
-                                        <li>
-                                            <button onclick="buyNow({{ $danhSachBanChay[$i]->variants }})">Đặt món ngay</button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        @endfor
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIntervals"
-                    data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIntervals"
-                    data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            @else
-        </div>
-        @endif
-    </section> -->
 
     <section class="container_css product_best_seller">
         <h4 >CÁC LOẠI MÓN ĂN</h4>
-        <div id="carouselExampleControlsNoTouching" class="carousel slide carousel-dark" data-bs-touch="false">
+        <div id="carouselMonAn" class="carousel slide carousel-dark" data-bs-touch="false">
             <div class="carousel-inner">
                 <div class="carousel-item active" data-bs-interval="10000">
                     <div class="product_best_seller_items">
@@ -248,7 +167,7 @@
                                 @endif
                                 <div class="product_best_seller_item">
                                     <a href="{{ route('detail', [$danhSachMonAn[$i]->slug]) }}">
-                                        <img src="{{ asset($danhSachMonAn[$i]->image_food ?? 'uploads/products/no-image.jpg') }}" alt="Lỗi hiển thị">
+                                        <img src="{{ asset($danhSachMonAn[$i]->image_food ?? 'images/no-image.jpg') }}" alt="Lỗi hiển thị">
                                     </a>
                                     <div class="product_best_seller_item_info">
                                         <ul>
@@ -258,9 +177,8 @@
                                             <li>{{ number_format($danhSachMonAn[$i]->price, 0, ',', '.') }}
                                                 <sup>đ</sup>
                                             </li>
-                                            <!-- <li>{{ $danhSachMonAn[$i]->rating }} <i class="fas fa-star"></i></li> -->
                                             <li>
-                                                <button onclick="buyNow({{ $danhSachMonAn[$i]->id }})">Đặt món ngay</button>
+                                                <button><a href="{{ route('detail', [$danhSachMonAn[$i]->slug]) }}">Xem chi tiết</a></button>
                                             </li>
                                         </ul>
                                     </div>
@@ -275,7 +193,7 @@
                         @for ($i = 4; $i < count($danhSachMonAn); $i++)
                             <div class="product_best_seller_item">
                                 <a href="{{ route('detail', [$danhSachMonAn[$i]->slug]) }}">
-                                    <img src="{{ asset($danhSachMonAn[$i]->image_food ?? 'uploads/products/no-image.jpg') }}" alt="Lỗi hiển thị">
+                                    <img src="{{ asset($danhSachMonAn[$i]->image_food ?? 'images/no-image.jpg') }}" alt="Lỗi hiển thị">
                                 </a>
                                 <div class="product_best_seller_item_info">
                                     <ul>
@@ -285,9 +203,8 @@
                                         <li>{{ number_format($danhSachMonAn[$i]->price, 0, ',', '.') }}
                                             <sup>đ</sup>
                                         </li>
-                                        <!-- <li>{{ $danhSachMonAn[$i]->rating }}<i class="fas fa-star"></i></li> -->
-                                         <li>
-                                        <button onclick="buyNow({{ $danhSachMonAn[$i]->id }})">Đặt món ngay</button>
+                                        <li>
+                                            <button><a href="{{ route('detail', [$danhSachMonAn[$i]->slug]) }}">Xem chi tiết</a></button>
                                         </li>
                                     </ul>
                                 </div>
@@ -296,12 +213,12 @@
                     </div>
                 </div>
                 <button class="carousel-control-prev" type="button"
-                    data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="prev">
+                    data-bs-target="#carouselMonAn" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
                 <button class="carousel-control-next" type="button"
-                    data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="next">
+                    data-bs-target="#carouselMonAn" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
@@ -311,82 +228,79 @@
         </div>
     </section>
 
-<!-- Điện thoại mới nhất -->
 <section class="container_css product_best_seller">
-    <h4>CÁC LOẠI ĐỒ UỐNG</h4>
-    <div id="carouselExampleInterval" class="carousel slide carousel-dark" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active" data-bs-interval="10000">
-                <div class="product_best_seller_items">
-                    @if (isset($danhSachDoUong))
-                        @for ($i = 0; $i < count($danhSachDoUong); $i++)
-                            @if ($i > 3)
-                            @break
+        <h4 >CÁC LOẠI ĐỒ UỐNG</h4>
+        <div id="carouselDoUong" class="carousel slide carousel-dark" data-bs-touch="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active" data-bs-interval="10000">
+                    <div class="product_best_seller_items">
+                        @if (isset($danhSachDoUong))
+                            @for ($i = 0; $i < count($danhSachDoUong); $i++)
+                                @if ($i > 3)
+                                    @break
+                                @endif
+                                <div class="product_best_seller_item">
+                                    <a href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">
+                                        <img src="{{ asset($danhSachDoUong[$i]->image_food ?? 'images/no-image.jpg') }}" alt="Lỗi hiển thị">
+                                    </a>
+                                    <div class="product_best_seller_item_info">
+                                        <ul>
+                                            <li><a
+                                                    href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">{{ $danhSachDoUong[$i]->name }}</a>
+                                            </li>
+                                            <li>{{ number_format($danhSachDoUong[$i]->price, 0, ',', '.') }}
+                                                <sup>đ</sup>
+                                            </li>
+                                            <li>
+                                                <button><a href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">Xem chi tiết</a></button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            @endfor
                         @endif
-                        <div class="product_best_seller_item">
-                            <a href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">
-                                <img src="{{ asset($danhSachDoUong[$i]->image_food ?? 'uploads/products/no-image.jpg') }}" alt="lỗi hiển thị">
-                            </a>
-                            <div class="product_best_seller_item_info">
-                                <ul>
-                                    <li><a
-                                            href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">{{ $danhSachDoUong[$i]->name }}</a>
-                                    </li>
-                                    <li>{{ number_format($danhSachDoUong[$i]->price, 0, ',', '.') }}<sup>đ</sup>
-                                    </li>
-                                    <!-- <li>{{ $danhSachDoUong[$i]->rating }} <i class="fas fa-star"></i></li> -->
-                                    <li>
-                                        <button onclick="buyNow({{ $danhSachDoUong[$i]->id }})">Đặt món ngay</button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    @endfor
-                @endif
-            </div>
-        </div>
-        @if (isset($danhSachDoUong) && count($danhSachDoUong) > 2)
-            <div class="carousel-item" data-bs-interval="2000">
-                <div class="product_best_seller_items">
-                    @for ($i = 2; $i < count($danhSachDoUong); $i++)
-                        <div class="product_best_seller_item">
-                            <a href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">
-                                <img src="{{ asset($danhSachDoUong[$i]->image_food ?? 'uploads/products/no-image.jpg') }}" alt="lỗi hiển thị">
-                            </a>
-                            <div class="product_best_seller_item_info">
-                                <ul>
-                                    <li><a
-                                            href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">{{ $danhSachDoUong[$i]->name }}</a>
-                                    </li>
-                                    <li>{{ number_format($danhSachDoUong[$i]->price, 0, ',', '.') }}<sup>đ</sup>
-                                    </li>
-                                    <li>{{ $danhSachDoUong[$i]->rating }} <i class="fas fa-star"></i></li>
-                                    <li>
-                                        <button onclick="buyNow({{ $danhSachDoUong[$i]->id }})">Đặt món ngay</button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    @endfor
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
-                data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
-                data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        @else
-    </div>
-    @endif
-</div>
-</section>
-
-
+            @if (isset($danhSachDoUong) && count($danhSachDoUong) > 4)
+                <div class="carousel-item" data-bs-interval="2000">
+                    <div class="product_best_seller_items">
+                        @for ($i = 4; $i < count($danhSachDoUong); $i++)
+                            <div class="product_best_seller_item">
+                                <a href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">
+                                    <img src="{{ asset($danhSachDoUong[$i]->image_food ?? 'images/no-image.jpg') }}" alt="Lỗi hiển thị">
+                                </a>
+                                <div class="product_best_seller_item_info">
+                                    <ul>
+                                        <li><a
+                                                href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">{{ $danhSachDoUong[$i]->name }}</a>
+                                        </li>
+                                        <li>{{ number_format($danhSachDoUong[$i]->price, 0, ',', '.') }}
+                                            <sup>đ</sup>
+                                        </li>
+                                        <li>
+                                            <button><a href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">Xem chi tiết</a></button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        @endfor
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button"
+                    data-bs-target="#carouselDoUong" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button"
+                    data-bs-target="#carouselDoUong" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            @else
+            </div>
+            @endif
+        </div>
+    </section>
 
 {{-- Hiển thị thông tin dịch vụ bán hàng, vận chuyển --}}
 {{-- @include('user.partials.service') --}}

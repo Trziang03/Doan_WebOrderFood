@@ -9,24 +9,30 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
     <!-- JavaScript -->
-    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/alertify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/alertify.min.js"></script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.min.css" />
     <!-- Default theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.min.css" />
     <!-- Semantic UI theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css" />
     <!-- Bootstrap theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css" />
-    <link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css" />
+    {{-- <link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon"> --}}
+    <!-- <link rel="stylesheet" href="{{ secure_asset('bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/layout_user.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/home.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/user_min.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/user_min_two.css') }}"> -->
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout_user.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user_min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user_min_two.css') }}">
-    <title>@yield('title', 'Trang chủ')</title>
+    <title>@yield('title', 'Trang chủ') - GiDu Food</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
@@ -52,9 +58,40 @@
     @include('user.partials.footer_user')
     <!-- Footer -->
 
-    <script src="{{ asset('js/layout_user.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('js/layout_user.js') }}"></script>
     @yield('script')
+    {{-- ấn nút tìm kiếm thanh input sẽ trượt ra --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.querySelector('.search-toggle');
+            const searchInput = document.querySelector('.search-input');
+
+            if (toggleBtn && searchInput) {
+                toggleBtn.addEventListener('click', function () {
+                    searchInput.classList.toggle('active');
+                    if (searchInput.classList.contains('active')) {
+                        searchInput.focus();
+                    }
+                });
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('.search-form');
+            const input = document.querySelector('.search-input');
+
+            form.addEventListener('submit', function (e) {
+                // Nếu input chưa mở hoặc chưa nhập gì thì chỉ mở ra thôi
+                if (!input.classList.contains('active') || input.value.trim() === '') {
+                    e.preventDefault(); // Không gửi form
+                    input.classList.add('active');
+                    input.focus();
+                }
+            });
+        });
+        </script>
 </body>
 <script>
     function Login() {

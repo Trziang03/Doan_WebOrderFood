@@ -389,23 +389,4 @@ public function submitCart(Request $request)
     }
 }
 
-public function buyNow(Request $request)
-{
-    $variant = ProductVariant::find($request->id);
-    $quantity = $request->quantity;
-    if ($variant == null || $variant->status == 0 || $variant->stock == 0) {
-            return response()->json([
-                'success' => 0,
-                'message' => 'Sản phẩm hết hàng'
-            ]);
-        } else {
-            $buyNow = ['quantity' => $quantity, 'totalPrice' => $quantity * $variant->price, 'product_info' => $variant->product, 'variant_info' => $variant];
-            $request->session()->put('buy-now', $buyNow);
-            return response()->json([
-                'url' => route('user.payment'),
-                'success' => 1
-            ]);
-
-        }
-    }
 }

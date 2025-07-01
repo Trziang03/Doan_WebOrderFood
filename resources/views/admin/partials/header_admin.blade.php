@@ -11,7 +11,7 @@
         <div class="account">
             <a href=""><i class="fa-regular fa-user"></i> {{Auth::user()->username}}</a>
             <div class="dropbox">
-                <p><a href="{{route('admin.profile')}}">Trang cá nhân</a></p>
+                <p><a href="{{route('admin.profile', ['id' => Auth::user()->id])}}">Trang cá nhân</a></p>
                 <p><a href="{{route('logout')}}">Đăng xuất</a></p>
             </div>
         </div>

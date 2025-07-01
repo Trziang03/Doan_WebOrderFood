@@ -207,9 +207,9 @@ class ComposerStaticInit626b9e7ddd47fb7eff9aaa53cce0c9ad
         ),
         'phpDocumentor\\Reflection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
         ),
         'Whoops\\' => 
         array (
@@ -603,6 +603,7 @@ class ComposerStaticInit626b9e7ddd47fb7eff9aaa53cce0c9ad
         'App\\Http\\Controllers\\AdminOrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminOrderController.php',
         'App\\Http\\Controllers\\AdminProductController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminProductController.php',
         'App\\Http\\Controllers\\AdminProductVariantController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminProductVariantController.php',
+        'App\\Http\\Controllers\\AdminReviewController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminReviewController.php',
         'App\\Http\\Controllers\\AdminStaticController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminStaticController.php',
         'App\\Http\\Controllers\\AdminTableController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminTableController.php',
         'App\\Http\\Controllers\\CartController' => __DIR__ . '/../..' . '/app/Http/Controllers/CartController.php',

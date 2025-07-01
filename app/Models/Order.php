@@ -11,12 +11,9 @@ class Order extends Model
     //
     use HasFactory;
     public $timestamps = true;
-    protected $fillable = ['id', 'order_code', 'table_id', 'total_price', 'payment_method_id', 'order_status_id'];
-
-
-    //tạo mã hóa đơn order_code năm (2 chữ số), tháng, ngày, giờ phút giây và 2 số ngẫu nhiên
-    static public function generateTimestamp()
-    {
+    protected $fillable = ['id', 'order_code', 'table_id', 'full_name', 'phone', 'address', 'total_price', 'payment_method_id', 'voucher_id', 'order_status_id'];    //tạo mã hóa đơn order_code năm (2 chữ số), tháng, ngày, giờ phút giây và 2 số ngẫu nhiên
+    
+    static public function generateTimestamp() {
         // Lấy thời gian hiện tại
         $now = new \DateTime();
         // Lấy các thành phần thời gian
@@ -35,7 +32,6 @@ class Order extends Model
 
         return $timestamp;
     }
-
     public function table()
     {
         return $this->belongsTo(Table::class, 'table_id');

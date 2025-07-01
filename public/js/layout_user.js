@@ -1,15 +1,3 @@
-
-const element_category = document.querySelector('#show__category');
-const element_categorys = document.querySelectorAll('.popup__category__ml__tl')
-element_category.onclick = function () {
-    element_categorys.forEach(function (element) {
-        if (element.style.display === 'block') {
-            element.style.display = 'none';
-        } else {
-            element.style.display = 'block';
-        }
-    });
-}
 const backToTopButton = document.querySelector("#scroll");
 window.onscroll = function () {
     if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100)
@@ -23,48 +11,6 @@ backToTopButton.addEventListener("click", function () {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-// const button_like = document.querySelector('#button_like');
-// if (button_like) {
-//     button_like.onclick = function () {
-//         if (button_like.style.color !== "red")
-//             button_like.style.color = "red"
-//         else button_like.style.color = "grey"
-//     }
-// }
-
-// const button_rams = document.querySelectorAll('.product_detail_right_ram button')
-// if (button_rams) {
-//     button_rams.forEach(element => {
-//         element.onclick = function () {
-//             button_rams.forEach(btn => btn.classList.remove('color_active'));
-//             element.classList.add('color_active');
-//         }
-//     })
-// }
-
-// const button_color = document.querySelectorAll('.product_detail_right_color button')
-// if (button_color) {
-//     button_color.forEach(element => {
-//         element.onclick = function () {
-//             button_color.forEach(btn => btn.classList.remove('color_active'));
-//             element.classList.add('color_active');
-//         }
-//     })
-// }
-
-
-
-
-
-// const button_rating = document.querySelectorAll('#button_rating button');
-// if (button_rating) {
-//     button_rating.forEach((element) => {
-//         element.onclick = function () {
-//             button_rating.forEach(element => element.classList.remove('click_active_border'));
-//             this.classList.add('click_active_border');
-//         }
-//     });
-// }
 
 const category_search = document.querySelector('.product_search_list_category p');
 if (category_search) {
@@ -86,7 +32,6 @@ if (branch_search) {
     };
 }
 
-
 //API địa chỉ trang thanh toán
 
 //popup chat
@@ -96,12 +41,12 @@ const btn_close_roomchat = document.querySelector('.chat_title span');
 btn_close_roomchat.addEventListener('click', function () {
     popup_chat.style.display = "none"
 })
-room_chat.onclick = function (event) {
-    event.preventDefault();
-    if (popup_chat.style.display == "block")
-        popup_chat.style.display = "none"
-    else popup_chat.style.display = "block"
-}
+// room_chat.onclick = function (event) {
+//     event.preventDefault();
+//     if (popup_chat.style.display == "block")
+//         popup_chat.style.display = "none"
+//     else popup_chat.style.display = "block"
+// }
 
 const tabs = document.querySelectorAll('.tablinks');
 const rates = document.querySelectorAll('.rating');
@@ -222,8 +167,6 @@ icon_hs_pwd_cf_register.addEventListener('click', function () {
     }
 })
 
-
-
 /* hiển thị popup đăng nhập đăng ký */
 const login_background_hidden = document.querySelector('.overflow_hidden_login');
 const login = document.querySelector('.login');
@@ -285,9 +228,6 @@ if (btn_payment) {
         popup_payment_banking.style.display = "none";
     }
 }
-
-
-
 
 
 var btnOpen = document.querySelector('.complete-order')

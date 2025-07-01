@@ -17,7 +17,6 @@
     </style>
     @php
         $danhSachDanhMuc = DB::table('categories')->where('status', 1)->select('name', 'slug', 'id')->get();
-        $danhSachThuongHieu = DB::table('brands')->where('status', 1)->select('name')->get();
     @endphp
     <section class="container_css product_searchs">
         <div class="product_search_lists">
@@ -27,21 +26,10 @@
                     <div class="product_search product_search_list_category">
                         <p>Danh mục<i class="fas fa-sort-down"></i></p>
                         <div class="product_search_list_category_popup">
+                            <a href="{{route('user.menu')}}">Tất cả</a>
                             @foreach ($danhSachDanhMuc as $danhMuc)
-                                <a href="{{ route('timkiemsanpham', ['slug' => $danhMuc->slug]) }}">{{ $danhMuc->name }}</a>
+                                <a href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => $danhMuc->slug]) }}">{{ $danhMuc->name }}</a>
                             @endforeach
-                        </div>
-                    </div>
-                    <div class="product_search product_search_list_price">
-                        <p>Mức giá</p>
-                        <div class="product_search_list_price_popup">
-                            <button id="seachall" onclick="SeachProduct(undefined,undefined,undefined,this)"
-                                class="active_price">Tất cả</button>
-                            <button onclick="SeachProduct(0,2000000,undefined,this)">Dưới 2 triệu</button>
-                            <button onclick="SeachProduct(2000000,4000000,undefined,this)">Từ 2 đến 4 triệu</button>
-                            <button onclick="SeachProduct(4000000,8000000,undefined,this)">Từ 4 đến 8 triệu</button>
-                            <button onclick="SeachProduct(8000000,15000000,undefined,this)">Từ 8 đến 15 triệu</button>
-                            <button onclick="SeachProduct(15000000,undefined,undefined,this)">Trên 15 triệu</button>
                         </div>
                     </div>
                 </div>
@@ -52,7 +40,7 @@
                             @foreach ($layTatCaSanPham as $item)
                                 <div class="product_search_list_right_item">
                                     <a href="{{ route('detail', [$item->slug]) }}">
-                                        <img src="{{ asset($item->image) }}" alt="Lỗi hiển thị">
+                                        <img src="{{ asset(isset($item->image) ? $item->image : $item->image_food) }}" alt="Lỗi hiển thị">
                                     </a>
                                     <div class="product_search_list_item_info">
                                         <ul>

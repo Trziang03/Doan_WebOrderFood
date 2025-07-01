@@ -111,10 +111,7 @@ class ProfileController extends Controller
     //         $like->delete();
     //     return redirect()->back();
     // }
-    public function review_history()
-    {
-        return view('user.profile.review_history')->with('reviews', Rating::where('user_id', Auth::user()->id)->orderBy('updated_at', 'desc')->get());
-    }
+
     public function ChangePwd()
     {
         return view('user.profile.changepassword');

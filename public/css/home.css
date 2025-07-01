@@ -1,3 +1,9 @@
+/* Ẩn thanh cuộn bên phải ở all page user*/
+html {
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
 .active_tab {
     background-color:rgb(240, 145, 55) !important;
     color: white;
@@ -155,17 +161,16 @@
     padding:3px 0;
 }
 .product_best_seller_item_info > ul > li:nth-child(4){
-    display: flex;
+    /* display: flex; */
     justify-content: space-between;
     align-items: center;
 }
 .product_best_seller_item_info > ul > li:nth-child(4) > button {
-    width: 100%;
+    width: 80%;
     padding:5px 0;
-    font-size: 13px;
+    font-size: 15px;
     border: none;
     font-weight: 800;
-    color: #288ad6;
 }
 .product_best_seller_item_info > ul > li:nth-child(4) > div > a{
     color: rgb(240, 145, 55);
@@ -355,9 +360,9 @@
 }
 .product_detail_right_ram {
     padding:16px 0;
-    display: flex;
+    /* display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-around; */
     border-bottom:2px solid #a7a7a7 ;
 }
 .product_detail_right_ram button{
@@ -375,9 +380,9 @@
 }
 .product_detail_right_color{
     padding:10px 5px;
-    display: flex;
+    /* display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-around; */
 }
 .color_active{
     color: #dd2f2c;
@@ -385,7 +390,7 @@
     box-shadow: 0 .3rem .5rem rgba(0, 0, 0, .25);
 }
 .product_detail_right_color button {
-    display: flex;
+    /* display: flex; */
     width: 24.5%;
     align-items: center;
     padding:5px 7px;
@@ -737,7 +742,7 @@
 .product_search_list_right_item {
     width: 24%;
     background-color: white;
-    height: 390px;
+    height: 365px;
     border: 1px solid #f3f3f3;
     border-radius: 15px;
     margin-left: 9px;
@@ -784,7 +789,15 @@
     justify-content: space-between;
     align-items: center;
 }
-
+.product_search_list_item_info > ul > li:nth-child(4) button{
+    width: 100%;
+    padding: 5px 0;
+    font-size: 13px;
+    border: none;
+    font-weight: 800;
+    color: #ffffff;
+    background-color:rgb(240, 145, 55);
+}
 .product_search_list_item_info > ul > li:nth-child(4) div a {
     color: rgb(22, 66, 60);
 }
@@ -851,7 +864,7 @@
     .product_best_seller_item {
         width: 49%;
         margin-bottom: 6px;
-        height: 420px;
+        height: 400px;
         margin-left: 0;
     }
     .product_lt_new_items {
@@ -888,7 +901,7 @@
         width: 100%;
     }
     .product_search_list_right_item{
-        width: 50%;
+        width: 48%;
     }
     .product_search_list_left {
         width: 100%;

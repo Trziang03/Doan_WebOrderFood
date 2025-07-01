@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\About;
+use App\Models\Staff;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -50,9 +52,10 @@ class AdminController extends Controller
             return redirect()->back();
         }
     }
-    public function profile()
+    public function profile($id)
     {
-        return view('admin.pages.profile')->with('user', Auth::user());
+        $staff = Staff::findOrFail($id);
+        return view('admin.pages.profile',compact('staff'))->with('user', Auth::user());
     }
     public function editProfile(Request $request)
     {
@@ -100,6 +103,7 @@ class AdminController extends Controller
         $user->full_name = $request->input('fullname');
         $user->email = $request->input('email');
         $user->phone = $request->input('phone');
+        $user->role = $request->input('role');
         $user->gender = $request->input('gender') == 'male' ? 'Nam' : 'Nữ';
         $user->date_of_birth = $request->input('birthday');
         $user->save();

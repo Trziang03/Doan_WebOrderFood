@@ -40,7 +40,7 @@
         <div class="navbar_item_first">
             <div style="width:190px">
                 <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
-                        style="width:100%; height:55px; margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
+                        style="width:100%; height:55px; margin-left:6px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
                         alt="Lỗi hiển thị"></a>
             </div>
             <ul style="padding-left:0">
@@ -52,36 +52,39 @@
         <div class="navbar_item_second">
             <input type="checkbox" hidden id="checkbox_hidden" class="checkbox_input_hidden">
             <label for="checkbox_hidden"><span class="menu-icon"><i class="fas fa-bars"></i></span></label>
+            <div style="width:190px" class="logo-mobile-only">
+                <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
+                        style="width:125%;height:55px;margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
+                        alt="Lỗi hiển thị"></a>
+            </div>
             <!-- Navbar hidden moblie tablet -->
             <nav class="navbar_hidden_mb_tl">
                 <label for="checkbox_hidden"><i class="fas fa-times"></i></label>
                 <ul>
                     <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                    <li id="show__category">Danh mục<i class="fas fa-angle-down" style="margin-left:20px"></i></li>
-                    @foreach ($danhSachDanhMuc as $category)
-                        <li class="popup__category__ml__tl"><a
-                                href="{{ route('timkiemsanpham', ['slug' => $category->slug]) }}">{{ $category->name }}</a>
-                        </li>
-                    @endforeach
+                    <li><a href="{{route('user.menu')}}">Menu</a></li>
                     <li><a href="{{ route('user.blog') }}">Giới Thiệu</a></li>
                     <li><a href="{{ route('user.contact') }}">Liên Hệ</a></li>
-                    @guest
+                    {{-- @guest
                         <li><a href="" onclick="handleLogin(event)"><i class="far fa-user-circle"
                                     style="margin-right:5px"></i>Đăng nhập</a></li>
-                    @endguest
-                    @auth
+                    @endguest --}}
+                    {{-- @auth
                         <li><a href="{{ route('profile.index') }} ">Thông tin cá nhân</a></li>
                         <li><a href="{{ route('logout') }}">Đăng xuất</a></li>
-                    @endauth
+                    @endauth --}}
 
                 </ul>
             </nav>
             <ul>
-                <li>
-                    <form action="{{ route('timkiemtheotukhoa') }}" method="GET">
+                <li class="search-wrapper">
+
+                    <form action="{{ route('timkiemtheotukhoa') }}" method="GET" class="search-form">
                         <input type="search" name = "seachbykey" placeholder="Tìm kiếm..."
-                            value="{{ request('seachbykey') }}">
-                        <button type="submit"><i class="fas fa-search"></i></button>
+                            value="{{ request('seachbykey') }}" class="search-input">
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </form>
                 </li>
                 <li class="cart__header_desktop"><a href="{{ route('user.shoppingcart') }}"><i

@@ -12,42 +12,49 @@
             <form action="{{ route('admin.editProfile') }}" method="POST">
                 @csrf
                 <div>
-                    <p>Tài khoản : </p><input name="username" value="{{$user->username}}">
+                    <p>Tài khoản : </p><input name="username" value="{{$staff->username}}">
                 </div>
                 @error('username')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>
                 @enderror
                 <div>
-                    <p>Họ và tên : </p><input name="fullname" value="{{$user->full_name}}">
+                    <p>Họ và tên : </p><input name="fullname" value="{{$staff->full_name}}">
                 </div>
                 @error('fullname')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>
                 @enderror
                 <div>
-                    <p>Email : </p><input name="email" value="{{$user->email}}">
+                    <p>Email : </p><input name="email" value="{{$staff->email}}">
                 </div>
                 @error('email')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>
                 @enderror
                 <div>
-                    <p>Số điện thoại : </p><input name="phone" value="{{$user->phone}}">
+                    <p>Số điện thoại : </p><input name="phone" value="{{$staff->phone}}">
                 </div>
                 @error('phone')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>
                 @enderror
-                <div style="justify-content: start;">
+                <div style="justify-content: start; gap: 100px">
                     <p>Giới tính :
-                        <input type="radio" name="gender" value="male" {{($user->gender == 'Nam') ? 'checked' : ''}}
+                        <input type="radio" name="gender" value="male" {{($staff->gender == 'Nam') ? 'checked' : ''}}
                             style="width: 15px; margin-left: 55px;"> Nam
-                        <input type="radio" name="gender" value="female" {{($user->gender == 'Nữ') ? 'checked' : ''}}
+                        <input type="radio" name="gender" value="female" {{($staff->gender == 'Nữ') ? 'checked' : ''}}
                             style="width: 15px; margin-left: 55px;"> Nữ
                     </p>
-                </div>
+                    <div style="margin-top: 10px">
+                        <label style="margin-left: 20px;" for="role">Vai trò:</label><br>
+                        <select style="margin-left: 20px;" name="role" required>
+                            <option value="NV" {{ $staff->role == 'NV' ? 'selected' : '' }}>Nhân viên</option>
+                            <option value="QL" {{ $staff->role == 'QL' ? 'selected' : '' }}>Quản trị viên</option>
+                        </select>
+                    </div>
+                </div>        
                 @error('gender')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>
                 @enderror
                 <div>
-                    <p>Ngày sinh : </p><input type="date" name="birthday" value="{{$user->date_of_birth}}">
+                    <p>Ngày sinh : </p><input type="date" name="birthday" value="{{$staff->date_of_birth}}">
                 </div>
                 @error('birthday')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>
@@ -58,7 +65,7 @@
         <div class="separator"></div>
         <div class="avatar">
             <div>
-                <img id="imagePreview" src="{{ asset('images/' . $user->image) }}" alt="Image">
+                <img id="imagePreview" src="{{ asset('images/' . $staff->image) }}" alt="Image">
             </div>
             <form action="{{ route('admin.editAvatar') }}" method="POST" enctype="multipart/form-data">
                 @csrf

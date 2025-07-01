@@ -10,7 +10,8 @@ class PaymentMethod extends Model
 {
     //
     use HasFactory;
-    protected $fillable = ['name_method']; // các cột cho phép gán dữ liệu
+
+    protected $fillable = ['name_method']; // các cột cho phép gán dữ liệuAdd commentMore actions
     
     public function orders()
     {
