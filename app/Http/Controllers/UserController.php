@@ -62,6 +62,7 @@ class UserController extends Controller
         $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
         return view('user.pages.menu', ['layTatCaSanPham' => $layTatCaSanPham]);
     }
+
     // public function menu(Request $request)
     // {
     //     $tableId = $request->query('table_id');
@@ -82,22 +83,23 @@ class UserController extends Controller
     //         'table' => $table
     //     ]);
     // }
-    public function TimKiemTheoTuKhoa(Request $request)
+    public function timKiemToanBo(Request $request)
     {
-        // Tìm danh mục theo slug
-        $category = Category::where('slug', $slug)->first();
+        $keyword = $request->input('keyword');
 
-        if (!$category) {
-            return redirect()->back()->with('error', 'Không tìm thấy danh mục.');
-        }
 
-        // Lấy các sản phẩm thuộc danh mục
-        $layTatCaSanPham = Product::where('category_id', $category->id)->where('status', 1)->get();
+        // Tìm trong tất cả sản phẩm (không phụ thuộc danh mục)
+        $layTatCaSanPham = Product::where('status', 1)
+            ->where(function ($query) use ($keyword) {
+                $query->where('name', 'like', '%' . $keyword . '%')
+                    ->orWhere('description', 'like', '%' . $keyword . '%');
+            })
+            ->get();
 
-        // Gửi dữ liệu ra view
-        return view('User.pages.menu', [  // thay bằng tên file blade đúng
+        return view('User.pages.menu', [
             'layTatCaSanPham' => $layTatCaSanPham,
-            'danhSachDanhMuc' => Category::where('status', 1)->get(), // để load lại menu
+            'danhSachDanhMuc' => Category::where('status', 1)->get(),
+            'keyword' => $keyword,
         ]);
     }
     public function timKiemSanPhamTheoDanhMuc($slug)

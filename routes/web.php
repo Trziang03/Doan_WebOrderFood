@@ -22,24 +22,16 @@ use App\Http\Controllers\OrderController;
 
 Route::controller(UserController::class)->group(function () {
     Route::get('/gioithieu', "GioiThieu")->name('user.blog');
-    Route::get('/gioithieu/timkiem', 'timKiemBaiVietTheoTuKhoa')->name('searchBlog');
     Route::get('/contact', "LienHe")->name('user.contact');
     Route::post('/addContact', 'addContact');
     Route::get('/', "index")->name('user.index');
     Route::get('/menu', "menu")->name('user.menu');
     Route::get('/menu/{slug}', "timKiemSanPhamTheoDanhMuc")->name('timkiemsanphamtheodanhmuc');
-    Route::get('seach', "TimKiemTheoTuKhoa")->name('timkiemtheotukhoa');
-    Route::get('/search', "search")->name('user.search');
+    Route::get('/tim-kiem', [UserController::class, 'timKiemToanBo'])->name('user.search.all');
     Route::post('/dangky', "DangKy")->name('dangky');
     Route::post('/dangnhap', "DangNhap")->name('dangnhap');
     Route::get('/logout', "Logout")->name('logout');
     Route::get('detail/{slug}', "ChiTietSanPham")->name("detail");
-    Route::post('/addContact', 'addContact');
-    Route::get('/yeuthich/{sampham}/{user}', 'CapNhapSanPhamYeuThich')->name("SanPhamYeuThich");
-    Route::get('/get/{user}/{code}', 'GetDanhSachDanhGia');
-    Route::post('/them-danh-gia', 'ThemDanhGia');
-    Route::get('/get-rating/{id}/{sao?}', 'getRating');
-
 });
 
 Route::controller(CartController::class)->group(function () {
@@ -118,7 +110,7 @@ Route::middleware(['role:QL,NV'])->group(function () {
    Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
    //Tạo QR Động
    Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
-  
+
    Route::get('/table/checkin', function (Request $request) {
     $token = $request->query('token');
     $table = Table::where('token', $token)->first();
@@ -151,25 +143,21 @@ Route::middleware(['role:QL,NV'])->group(function () {
    Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
    Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
 
-   Route::resource('/admin/product', AdminProductController::class);    
+   Route::resource('/admin/product', AdminProductController::class);
 });
 
-   
+
 });
 
 //Phân quyền quản lý
 Route::middleware(['role:QL'])->group(function () {
         //quản lý nhân viên
-    Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');    
+    Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');
     Route::get('/admin/staff/{id}', [AdminStaffController::class, 'Profile'])->name('admin.staff.profile');
     Route::post('/admin/staff/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-   
- 
+
+
 });
-
-
-
-
 
 //xác nhận đặt hàng và thanh toán
 Route::controller(OrderController::class)->group(function () {

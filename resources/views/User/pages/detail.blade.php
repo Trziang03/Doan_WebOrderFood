@@ -60,8 +60,6 @@
             /* Ẩn mặc định */
         }
 
-   
-
         .product_detail {
             background-color: #fff2e6;
             display: flex;
