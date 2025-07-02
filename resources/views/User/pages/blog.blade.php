@@ -146,7 +146,7 @@
         <h2>Về Chúng Tôi</h2>
         <p>Gidu Food là cửa hàng chuyên cung cấp các món ăn nhanh hấp dẫn, phục vụ nhanh chóng, tiện lợi với giá cả hợp lý. Đội ngũ đầu bếp chuyên nghiệp và nguyên liệu sạch giúp bạn luôn an tâm khi thưởng thức.</p>
         <p>GiDu Food – Thế giới ăn vặt đậm chất Việt!
-          Chuyên bán bánh tráng, trà sữa và nước ngọt thơm ngon, giá bình dân, phục vụ nhanh – chuẩn vị học trò, sinh viên và dân văn phòng.  </p>
+          Chuyên bán bánh tráng, trà sữa các loại, giá bình dân, phục vụ nhanh – chuẩn vị học trò, sinh viên và dân văn phòng.  </p>
       </section>
     
       <section id="thucdon">
@@ -163,9 +163,9 @@
             <p>Trà thơm béo kết hợp trân châu mềm dẻo, mát lạnh sảng khoái.</p>
           </div>
           <div class="item">
-            <img src="images/pepsi.jpg" alt="Nước ngọt">
-            <h3>Nước Ngọt Có Ga</h3>
-            <p>Giải khát tức thì với Coca, Pepsi, Sting… luôn sẵn sàng phục vụ.</p>
+            <img src="images/tra-mang-cau.jpg" alt="Nước ngọt">
+            <h3>Trà mãng cầu</h3>
+            <p>Thức uống thanh mát, kết hợp giữa vị trà nhẹ và hương chua ngọt đặc trưng của mãng cầu.</p>
           </div>
         </div>
       </section>

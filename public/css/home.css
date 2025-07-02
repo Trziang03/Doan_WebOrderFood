@@ -668,7 +668,7 @@ html {
 }
 .product_search_list_category_popup > a{
     display: block;
-    font-size: 13px;
+    font-size: 20px;
     transition: all linear 0.3s;
     color: #000;
 }
@@ -901,7 +901,7 @@ html {
         width: 100%;
     }
     .product_search_list_right_item{
-        width: 50%;
+        width: 48%;
     }
     .product_search_list_left {
         width: 100%;

@@ -4,7 +4,7 @@
     <div class="content" id="dashboard">
         <div class="head">
             <div class="title">Đổi mật khẩu</div>
-            <button><a href="{{ route('admin.profile') }}">&laquo; Trở lại</a></button>
+            <button><a href="{{ route('admin.staff.profile', ['id' => $user->id]) }}">&laquo; Trở lại</a></button>
         </div>
         <div class="separator_x"></div>
         <div class="area">

@@ -13,6 +13,15 @@ class Staff extends Model
 
     // Các cột bạn cho phép đổ dữ liệu vào
     protected $fillable = [
-        'username', 'email', 'full_name', 'gender', 'date_of_birth', 'image', 'role', 'phone', 'status', 
+        'username',
+        'full_name',
+        'email',
+        'phone',
+        'role',
+        'gender',
+        'date_of_birth',
+        'password',
+        'image',
     ];
+    
 }

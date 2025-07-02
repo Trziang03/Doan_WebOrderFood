@@ -3,9 +3,9 @@
 @section('content')
     <div class="shopping_cart container_css" id="shopping_cart">
         @if (session('cart') == null)
-            <h3 style="height:150px; text-align:center; margin-top:69px">Giỏ hàng chưa có sản phẩm</h3>
+            <h3 style="height:150px; text-align:center; margin-top:69px">Giỏ hàng chưa có món ăn nào</h3>
         @else
-            <div class="shopping_cart_main" id="cart-main">
+            <div class="shopping_cart_main" id="cart-main" style="background-color: #fff2e6;">
                 <div class="shopping_cart_items" id="list-product-variant">
                     @foreach (session('cart')->listProductVariants as $item)
                         <div id="variant-{{ $item['variant_info']->id }}" class="shopping_cart_item">

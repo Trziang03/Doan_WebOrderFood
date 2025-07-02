@@ -62,6 +62,7 @@
                             <div class="form-group-product">
                                 <label>Mô tả</label>
                                 <textarea 
+                                    style="width:300px; height:150px; "
                                     name="description" 
                                     id="description" 
                                     rows="4" 

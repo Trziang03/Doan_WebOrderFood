@@ -27,8 +27,8 @@ class UserController extends Controller
     public function index()
     {
 
-        $danhSachMonAn = ProductUser::LayThongTinSanPham('Món chính');
-        $danhSachDoUong = ProductUser::LayThongTinSanPham('Món phụ');
+        $danhSachMonAn = ProductUser::LayThongTinSanPham('Món ăn');
+        $danhSachDoUong = ProductUser::LayThongTinSanPham('Đồ uống');
         // $danhSachBanChay = ProductUser::SanPhamBanChay();
         return view('User.pages.index')->with([
             "danhSachMonAn" => $danhSachMonAn,
@@ -68,6 +68,8 @@ class UserController extends Controller
         ]);
     }
 
+    
+    
     // public function TimKiemTheoTuKhoa(Request $request)
     // {
     //     $request->validate([

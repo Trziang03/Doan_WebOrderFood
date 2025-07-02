@@ -26,6 +26,7 @@
                     <div class="product_search product_search_list_category">
                         <p>Danh mục<i class="fas fa-sort-down"></i></p>
                         <div class="product_search_list_category_popup">
+                            <a href="{{route('user.menu')}}" >Tất cả</a>
                             @foreach ($danhSachDanhMuc as $danhMuc)
                                 <a href="{{ route('timkiemsanpham', ['slug' => $danhMuc->slug]) }}">{{ $danhMuc->name }}</a>
                             @endforeach
@@ -40,7 +41,7 @@
                             @foreach ($layTatCaSanPham as $item)
                                 <div class="product_search_list_right_item">
                                     <a href="{{ route('detail', [$item->slug]) }}">
-                                        <img src="{{ asset($item->image) }}" alt="Lỗi hiển thị">
+                                        <img src="{{ asset(isset($item->image) ? $item->image : $item->image_food) }}" alt="Lỗi hiển thị">
                                     </a>
                                     <div class="product_search_list_item_info">
                                         <ul>

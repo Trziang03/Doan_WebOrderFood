@@ -490,6 +490,7 @@
 /* shopping cart */
 .shopping_cart {
     padding: 10px;
+    background-color: #fff2e6;
 }
 .shopping_cart_main{
     border-radius: 5px;
@@ -762,6 +763,7 @@
     /* giỏ hàng */
     .shopping_cart_main {
         padding: 10px;
+        background-color: #fff2e6;
     }
     .shopping_cart_item {
         padding-bottom: 5px;

@@ -161,15 +161,20 @@ Route::middleware(['role:QL,NV'])->group(function () {
 
 //Phân quyền quản lý
 Route::middleware(['role:QL'])->group(function () {
-    //quản lý nhân viên
-   Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');    
-   Route::get('/admin/staff/{id}', [AdminStaffController::class, 'Profile'])->name('admin.staff.profile');
-   Route::post('/admin/staff/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
- 
- });
+        //quản lý nhân viên
+    Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');    
+    Route::get('/admin/staff/{id}', [AdminStaffController::class, 'Profile'])->name('admin.staff.profile');
+    Route::post('/admin/staff/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
+    // Xử lý lưu thông tin nhân viên mới
+    Route::post('/admin/staff/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
 
-//Phân quyền quản lý , nhân viên và khách hàng
-Route::middleware(['role:QL,NV,KH'])->group(function () { });
+    Route::post('/admin/staff/ajax-store', [AdminStaffController::class, 'ajaxStore'])->name('admin.staff.ajaxStore');
+
+   
+ 
+});
+
+
 
  //xác nhận đặt hàng và thanh toán
  Route::controller(OrderController::class)->group(function () {

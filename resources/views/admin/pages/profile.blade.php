@@ -42,6 +42,7 @@
                         <input type="radio" name="gender" value="female" {{($staff->gender == 'Nữ') ? 'checked' : ''}}
                             style="width: 15px; margin-left: 55px;"> Nữ
                     </p>
+                    @if ( Auth::user()->role === 'QL')
                     <div style="margin-top: 10px">
                         <label style="margin-left: 20px;" for="role">Vai trò:</label><br>
                         <select style="margin-left: 20px;" name="role" required>
@@ -49,6 +50,7 @@
                             <option value="QL" {{ $staff->role == 'QL' ? 'selected' : '' }}>Quản trị viên</option>
                         </select>
                     </div>
+                    @endif
                 </div>        
                 @error('gender')
                     <div class="alert_error_validate" style="margin-left: 15%">{{ $message }}</div>

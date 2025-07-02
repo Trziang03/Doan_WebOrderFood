@@ -261,8 +261,9 @@
                                             </li>
                                             <!-- <li>{{ $danhSachMonAn[$i]->rating }} <i class="fas fa-star"></i></li> -->
                                             <li>
-                                                <button onclick="buyNow({{ $danhSachMonAn[$i]->id }})">Đặt món ngay</button>
-                                            </li>
+                                                <button><a
+                                                    href="{{ route('detail', [$danhSachMonAn[$i]->slug]) }}">Xem chi tiết</a></button>
+                                            </li> 
                                         </ul>
                                     </div>
                                 </div>
@@ -288,7 +289,8 @@
                                         </li>
                                         <!-- <li>{{ $danhSachMonAn[$i]->rating }}<i class="fas fa-star"></i></li> -->
                                          <li>
-                                        <button onclick="buyNow({{ $danhSachMonAn[$i]->id }})">Đặt món ngay</button>
+                                            <button><a
+                                                href="{{ route('detail', [$danhSachMonAn[$i]->slug]) }}">Xem chi tiết</a></button>
                                         </li>
                                     </ul>
                                 </div>
@@ -416,7 +418,8 @@
                                     </li>
                                     <!-- <li>{{ $danhSachDoUong[$i]->rating }} <i class="fas fa-star"></i></li> -->
                                     <li>
-                                        <button onclick="buyNow({{ $danhSachDoUong[$i]->id }})">Đặt món ngay</button>
+                                        <button >
+                                            <a href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">Xem chi tiết</a></button>
                                     </li>
                                 </ul>
                             </div>
@@ -440,9 +443,9 @@
                                     </li>
                                     <li>{{ number_format($danhSachDoUong[$i]->price, 0, ',', '.') }}<sup>đ</sup>
                                     </li>
-                                    <li>{{ $danhSachDoUong[$i]->rating }} <i class="fas fa-star"></i></li>
                                     <li>
-                                        <button onclick="buyNow({{ $danhSachDoUong[$i]->id }})">Đặt món ngay</button>
+                                        <button >
+                                            <a href="{{ route('detail', [$danhSachDoUong[$i]->slug]) }}">Xem chi tiết</a></button>
                                     </li>
                                 </ul>
                             </div>
