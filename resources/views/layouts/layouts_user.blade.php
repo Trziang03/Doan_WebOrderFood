@@ -19,13 +19,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css" />
     <!-- Bootstrap theme -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css" />
-    {{-- <link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon"> --}}
-    <!-- <link rel="stylesheet" href="{{ secure_asset('bootstrap/css/bootstrap.min.css') }}">
+    {{--<link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon"> --}}
+    <link rel="stylesheet" href="{{ secure_asset('bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/layout_user.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/home.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/user_min.css') }}">
-    <link rel="stylesheet" href="{{ secure_asset('css/user_min_two.css') }}"> -->
+    <link rel="stylesheet" href="{{ secure_asset('css/user_min_two.css') }}">
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout_user.css') }}">
@@ -43,11 +43,8 @@
     <!-- Header -->
     <div class="cskh">
         <i id="scroll" class="far fa-hand-point-up"></i>
-        <!-- <a href="" id="room_chat"><i class="fas fa-robot"></i></a> -->
+
     </div>
-    {{-- chat --}}
-    @include('user.partials.chat')
-    {{-- chat --}}
     {{-- login register --}}
     @include('user.partials.login_register')
     {{-- login register --}}
@@ -60,6 +57,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/layout_user.js') }}"></script>
+    <script src="https://a77f-113-185-64-1.ngrok-free.app/js/layout_user.js"></script>
     @yield('script')
     {{-- ấn nút tìm kiếm thanh input sẽ trượt ra --}}
     <script>

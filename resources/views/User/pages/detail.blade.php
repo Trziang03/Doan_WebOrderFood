@@ -60,10 +60,6 @@
             /* Ẩn mặc định */
         }
 
-        .container_css {
-            padding: 10px;
-        }
-
         .product_detail {
             background-color: #fff2e6;
             display: flex;

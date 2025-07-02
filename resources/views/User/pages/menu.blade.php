@@ -67,41 +67,6 @@
 @endsection
 @section('script')
     <script>
-        function buyNowSearch(variantId) {
-            const quantity = 1;
-            $.ajax({
-                method: "GET",
-                url: `/admin/check-stock-variant/${variantId}`
-            })
-                .done((data) => {
-                    if (data < quantity) {
-                        alertify.alert('Thông báo', 'Sản phẩm không đủ số lượng!');
-                    } else {
-                        $.ajax({
-                            method: "POST",
-                            url: '/order/buy-now',
-                            data: {
-                                id: variantId,
-                                quantity,
-                                _token: '{{csrf_token()}}'
-                            }
-                        }).done((data) => {
-                            if (data.success === 1) {
-                                window.location.href = data.url;
-                            } else {
-                                alertify.alert('Vui lòng đăng nhập để mua ngay');
-                            }
-
-                        })
-                            .fail((data) => {
-                                console.log(data);
-                            })
-
-                    }
-                })
-        }
-    </script>
-    <script>
         document.addEventListener("DOMContentLoaded", () => {
             kt(); // Khởi tạo danh sách sản phẩm
             Page();

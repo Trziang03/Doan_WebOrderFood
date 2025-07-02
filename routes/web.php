@@ -155,12 +155,6 @@ Route::middleware(['role:QL'])->group(function () {
     Route::post('/admin/staff/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
 });
 
-//Phân quyền quản lý , nhân viên và khách hàng
-Route::middleware(['role:QL,NV,KH'])->group(function () { });
-
-
-Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
-
 //xác nhận đặt hàng và thanh toán
 Route::controller(OrderController::class)->group(function () {
     Route::get('/payment', 'index')->name('user.payment');
