@@ -33,23 +33,41 @@ class UserController extends Controller
         return view('User.pages.index')->with([
             "danhSachMonAn" => $danhSachMonAn,
             "danhSachDoUong" => $danhSachDoUong,
-            // "danhSachBanChay" => $danhSachBanChay
         ]);
     }
+
+    public function ChiTietSanPham($slug)
+    {
+        $product = Product::where('slug', $slug)->first();
+
+        if (!$product || $product->status != 1) {
+            return view('user.pages.404');
+        }
+
+        $thongTinSanPham = ProductUser::ThongTinSanPham($slug);
+        $danhSachTopping = ProductUser::DanhSachTopping($slug);
+        $danhSachSize = ProductUser::DanhSachSize($slug);
+
+        if (!$thongTinSanPham) {
+            return view('user.pages.404');
+        }
+
+        return view('user.pages.detail')->with([
+            'slug' => $slug,
+            'danhSachTopping' => $danhSachTopping,
+            'danhSachSize' => $danhSachSize,
+            'thongTinSanPham' => $thongTinSanPham,
+
+        ]);
+    }
+
     public function menu()
     {
         $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
         return view('user.pages.menu', ['layTatCaSanPham' => $layTatCaSanPham]);
     }
 
-    public function TimKiemSanPhamFH($slug, $id = null)
-    {
-        $danhSachSanPham = ProductUser::TimKiemSanPham($slug);
-        return view('user.pages.menu')->with('danhSachSanPham', $danhSachSanPham);
-    }
-
-
-    public function timKiemSanPham($slug)
+    public function TimKiemTheoTuKhoa(Request $request)
     {
         // Tìm danh mục theo slug
         $category = Category::where('slug', $slug)->first();
@@ -67,32 +85,28 @@ class UserController extends Controller
             'danhSachDanhMuc' => Category::where('status', 1)->get(), // để load lại menu
         ]);
     }
+    public function timKiemSanPhamTheoDanhMuc($slug)
+    {
+        // Tìm danh mục theo slug
+        $category = Category::where('slug', $slug)->first();
 
-    
-    
-    // public function TimKiemTheoTuKhoa(Request $request)
-    // {
-    //     $request->validate([
-    //         'seachbykey' => 'required',
-    //     ], [
-    //         'seachbykey.required' => "Vui lòng nhập từ khóa tìm kiếm",
-    //     ]);
-    //     $key = str_replace('$', '', $request->input('seachbykey'));
-    //     $danhSachSanPham = ProductUser::TimKiemTheoTuKhoa($key);
-    //     return view('user.pages.menu')->with('danhSachSanPham', $danhSachSanPham);
-    // }
+        if (!$category) {
+            return redirect()->back()->with('error', 'Không tìm thấy danh mục.');
+        }
 
+        // Lấy các sản phẩm thuộc danh mục
+        $layTatCaSanPham = Product::where('category_id', $category->id)->where('status', 1)->get();
+
+        // Gửi dữ liệu ra view
+        return view('User.pages.menu', [
+            'layTatCaSanPham' => $layTatCaSanPham,
+            'danhSachDanhMuc' => Category::where('status', 1)->get(),
+        ]);
+    }
     //Trang Giới Thiệu
     public function GioiThieu()
     {
         $danhSachBaiViet = Blog::layTatCaBaiViet();
-        return view('user.pages.blog')->with('danhSachBaiViet', $danhSachBaiViet);
-    }
-    public function timKiemBaiVietTheoTuKhoa(Request $request)
-    {
-        $key = $request->input('keyBlog');
-        $key = str_replace('$', '', $key);
-        $danhSachBaiViet = Blog::timKiemBaiViet($key);
         return view('user.pages.blog')->with('danhSachBaiViet', $danhSachBaiViet);
     }
 
@@ -101,8 +115,6 @@ class UserController extends Controller
     {
         return view('user.pages.contact');
     }
-    
-    
 
     //Trang Đăng Ký
     public function DangKy(Request $request)
@@ -176,63 +188,8 @@ class UserController extends Controller
         return redirect()->back();
     }
 
-    public function ChiTietSanPham($slug)
-{
-    $product = Product::where('slug', $slug)->first();
-
-    if (!$product || $product->status != 1) {
-        return view('user.pages.404');
-    }
-
-    $thongTinSanPham = ProductUser::ThongTinSanPham($slug);
-    $danhSachTopping = ProductUser::DanhSachTopping($slug);
-    $danhSachSize = ProductUser::DanhSachSize($slug);
-
-    if (!$thongTinSanPham) {
-        return view('user.pages.404');
-    }
-
-    return view('user.pages.detail')->with([
-        'slug' => $slug,
-        'danhSachTopping' => $danhSachTopping,
-        'danhSachSize' => $danhSachSize,
-        'thongTinSanPham' => $thongTinSanPham,
-
-    ]);
-}
 
 
-    public function LayMauSanPhamTheoBoNho($slug, $internal_memory)
-    {
-        $danhSachMau = ProductUser::MauSanPham($slug, $internal_memory);
-        return $danhSachMau;
-    }
-    // public function ChiTietSanPhamTheoBoNho($slug, $internal_memory)
-    // {
-
-    //     $danhSachAnh = ProductUser::HinhAnhSamPham($slug);
-    //     $danhSachBoNho = ProductUser::BoNhoTrongSanPham($slug);
-    //     $thongTinSanPham = ProductUser::ThongTinSanPham($slug);
-    //     $thongSoKiThuatSanPham = ProductUser::ThongSoKiThuatSanPham($slug);
-    //     $mauSanPham = ProductUser::MauSanPham($slug, $internal_memory);
-    //     $luotThichSanPham = ProductUser::LuotThichSanPham($slug);
-    //     return View('user.pages.detail')->with([
-    //         'slug' => $slug,
-    //         //"danhSachBoNho" => $danhSachBoNho,
-    //         "thongTinSanPham" => $thongTinSanPham[0],
-    //         "thongSoKiThuatSanPham" => $thongSoKiThuatSanPham[0],
-    //         "luotThichSanPham" => $luotThichSanPham,
-    //         "mauSanPham" => $mauSanPham,
-    //     ]);
-    // }
-    public function LayThongTinSanPhamTheoMau($slug, $internal_memory, $color)
-    {
-        $data = ProductUser::LayThongTinSanPhamTheoMau($slug, $internal_memory, $color);
-        return response()->json([
-            "variant_id" => $data->id,
-            "price" => $data->price
-        ]);
-    }
     public function addContact(Request $req)
     {
         $validate = $req->validate([
@@ -268,89 +225,18 @@ class UserController extends Controller
         return redirect()->route('user.contact')->with('msg', 'Gửi liên hệ thành công!');
     }
 
-    public function getRating($id, $sao = 0)
-    {
-        $rating = Rating::HienThiRating($id, $sao);
-        return response()->json([
-            'data' => $rating
-        ]);
-    }
-    public function CapNhapSanPhamYeuThich($sanpham, $user)
-    {
-        $luotThich = LikeProduct::TongLuotThichSanPham($sanpham);
-        $tenSanPham = ProductUser::LayTenSanPhamTheoId($sanpham);
-        $status = LikeProduct::TrangThai($sanpham, $user);
-        if ($status > 0) {
-            LikeProduct::XoaSanPhamYeuThich($sanpham, $user);
-            return response()->json([
-                'status' => 0,
-                'tenSanPham' => $tenSanPham,
-                'luotThich' => $luotThich,
-            ]);
-        } else {
-            LikeProduct::ThemSanPhamYeuThich($sanpham, $user);
-            return response()->json([
-                'status' => 1,
-                'tenSanPham' => $tenSanPham,
-                'luotThich' => $luotThich,
-            ]);
-        }
-    }
-    public function GetDanhSachDanhGia($user, $code)
-    {
-        $danhSach = Rating::DanhGia($user, $code);
-        return $danhSach;
-    }
+    // public function getRating($id, $sao = 0)
+    // {
+    //     $rating = Rating::HienThiRating($id, $sao);
+    //     return response()->json([
+    //         'data' => $rating
+    //     ]);
+    // }
 
+    // public function GetDanhSachDanhGia($user, $code)
+    // {
+    //     $danhSach = Rating::DanhGia($user, $code);
+    //     return $danhSach;
+    // }
 
-    public function ThemDanhGia(Request $request)
-    {
-
-        $validatedData = $request->validate(
-            [
-                'file.*' => 'file|mimes:jpg,png,jpeg,gif,webp|max:2048',
-                'content' => 'required',
-            ],
-            [
-                'content.required' => "Vui lòng nhập nội dung đánh giá",
-                'file.*.mimes' => "Vui lòng nhập hình ảnh có định dạng jpg, png, jpeg, gif, webp",
-                'file.*.max' => "Vui lòng nhập hình ảnh có kích thước không vượt quá 2Mb",
-            ]
-        );
-        $variant = ProductVariant::findOrFail($request->id);
-
-        $rating = Rating::create([
-            'content' => $request->content,
-            'internal_memory' => $variant->internal_memory,
-            'point' => $request->point,
-            'color' => $variant->color,
-            'product_id' => $variant->product_id,
-            'user_id' => Auth::id(),
-        ]);
-        if ($request->has('file') && count($request->file('file')) > 0) {
-            $idx = 1;
-            foreach ($request->file as $file) {
-                $extension = $file->getClientOriginalExtension();
-                $fileName = 'ratings_' . $idx . time() . '.' . $extension;
-                $file->move(public_path('images'), $fileName);
-                ImageRating::create([
-                    'image' => $fileName,
-                    'rating_id' => $rating->id,
-                ]);
-                $idx++;
-            }
-        }
-        DB::table('order_items')
-            ->where('product_variant_id', $request->id)
-            ->update([
-                'status' => 1,
-            ]);
-
-
-        return response()->json([
-            'tenSanPham' => $variant->product->name,
-            'boNho' => $variant->internal_memory,
-            'mau' => $variant->color,
-        ]);
-    }
 }

@@ -45,7 +45,6 @@ class AdminTableController extends Controller
         $table->token = $token;
         $table->access_limit = $request->access_limit;
         $table->access_count = 0;
-        $table->token_expires_at = Carbon::now();
         $table->save(); // để lấy ID trước khi đặt tên file QR
 
 
@@ -182,13 +181,29 @@ class AdminTableController extends Controller
         if ($table->access_count >= $table->access_limit) {
             return response()->view('table.too-many', ['table' => $table]);
         }
-        
+
         // Tăng lượt truy cập
         $table->access_count += 1;
         $table->save();
 
         // Tiếp tục truy cập menu gọi món
         return view('order.menu', ['table' => $table]);
+    }
+
+
+    public function handleQr(Request $request)
+    {
+        $tableId = $request->query('table_id');
+
+        if (!$tableId || !Table::find($tableId)) {
+            return abort(404, 'Bàn không tồn tại');
+        }
+
+        // Lưu table_id vào session
+        session(['table_id' => $tableId]);
+
+        // Chuyển hướng về trang gọi món (hoặc trang chính)
+        return redirect('/'); // có thể đổi thành route của trang thực đơn
     }
 
 
@@ -242,6 +257,4 @@ class AdminTableController extends Controller
 
     //     return redirect()->back()->with('message', 'Cập nhật bàn thành công');
     // }
-    
-
 }

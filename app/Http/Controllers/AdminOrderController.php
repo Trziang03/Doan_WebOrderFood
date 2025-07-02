@@ -18,7 +18,7 @@ class AdminOrderController extends Controller
     {
         $keyword = $request->keyword;
 
-        $orders = Order::with(['table', 'paymentMethod', 'status', 'orderItems.product', 'orderItems.size'])
+        $orders = Order::with(['table', 'paymentMethod', 'orderStatus', 'orderItems.product', 'orderItems.size'])
             ->when($keyword, function ($query) use ($keyword) {
                 $query->where(function ($q) use ($keyword) {
                     $dateExact = null;
@@ -133,17 +133,22 @@ class AdminOrderController extends Controller
 
     public function ajaxDetail($id)
     {
-        $order = Order::with([
-            'table',
-            'paymentMethod',
-            'status',
-            'orderItems.product',
-            'orderItems.size',
-            'orderItems.toppings',
-            'orderItems.orderItemToppings'
-        ])->findOrFail($id);
+        try {
+            $order = Order::with([
+                'table',
+                'paymentMethod',
+                'orderStatus',
+                'orderItems.product',
+                'orderItems.size',
+                'orderItems.toppings',
+                'orderItems.orderItemToppings'
+            ])->findOrFail($id);
 
-        return view('admin.pages.orderdetail', compact('order'));
+            return view('admin.pages.orderdetail', compact('order'));
+
+        } catch (\Exception $e) {
+            return response('<b>Lỗi:</b> ' . $e->getMessage(), 500);
+        }
     }
     public function update(Request $request, $id)
     {
@@ -157,13 +162,8 @@ class AdminOrderController extends Controller
             $order = Order::create([
                 'order_code' => Order::generateTimestamp(),
                 'table_id' => $request->table_id,
-                'full_name' => $request->full_name,
-                'phone' => $request->phone,
-                'address' => $request->address,
                 'total_price' => 0,
                 'payment_method_id' => $request->payment_method_id,
-                'user_id' => $request->user_id ?? null,
-                'voucher_id' => $request->voucher_id ?? null,
                 'order_status_id' => $request->order_status_id,
             ]);
 
@@ -208,7 +208,7 @@ class AdminOrderController extends Controller
                         'order_item_id' => $orderItem->id,
                         'topping_id' => $topping->id,
                         'quantity' => $toppingData['quantity'] ?? 1,
-                        'topping_price' => $topping->price,
+                        'price' => $topping->price,
                         'note' => $toppingData['note'] ?? null,
                     ]);
                 }

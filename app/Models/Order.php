@@ -48,7 +48,7 @@ class Order extends Model
     /**
      * Trạng thái đơn hàng (Đang xử lý, Đã giao, v.v.).
      */
-    public function status()
+    public function orderStatus()
     {
         return $this->belongsTo(OrderStatus::class, 'order_status_id');
     }

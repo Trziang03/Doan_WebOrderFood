@@ -95,7 +95,7 @@ input {
 }
 
 .menu div {
-    background-color: #fff2e6;
+    background-color: white;
     color: rgb(0, 0, 0);
     padding: 12px;
     margin: 2px 0px;
@@ -212,7 +212,7 @@ input {
 }
 
 .tabs div {
-    background-color: rgb(215, 229, 232);
+    background-color: white;
     color: rgb(0, 0, 0);
     padding: 8.5px 12px;
     margin-right: 4px;
@@ -636,7 +636,7 @@ table tr td {
 }
 
 .selected-toppings-list .selected-item {
-    background-color: #f1f1f1;
+    background-color: white;
     padding: 6px 10px;
     border-radius: 20px;
     display: flex;

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+    namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use App\Models\About;
-use App\Models\Staff;
+    use Illuminate\Support\Facades\Auth;
+    use Illuminate\Http\Request;
+    use App\Models\About;
+    use App\Models\Staff;
 
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+    use Illuminate\Support\Facades\Hash;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Validation\Rule;
 
 
 class AdminStaffController extends Controller

@@ -21,10 +21,10 @@
                 @auth
                     <li class="handleDropbox"><a href="" onclick="event.preventDefault();"><i class="far fa-user-circle"
                                 style="margin-right:5px"></i>{{ Auth::user()->username }}</a>
-                        <ul class="dropbox_login">  
+                        <ul class="dropbox_login">
                             @if (Auth::user()->role === 'KH')
                                 <li><a href="{{ route('profile.index') }} ">Thông tin cá nhân</a></li>
-                            @endif    
+                            @endif
                             @if (Auth::user()->role === 'NV' or Auth::user()->role === 'QL')
                                 <li><a href="{{ route('admin.index') }} ">Trang quản trị</a></li>
                             @endif
@@ -40,7 +40,7 @@
         <div class="navbar_item_first">
             <div style="width:190px">
                 <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
-                        style="width:100%; height:55px; margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
+                        style="width:100%; height:55px; margin-left:6px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
                         alt="Lỗi hiển thị"></a>
             </div>
             <ul style="padding-left:0">
@@ -63,7 +63,6 @@
                 <ul>
                     <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
                     <li><a href="{{route('user.menu')}}">Menu</a></li>
-                    
                     <li><a href="{{ route('user.blog') }}">Giới Thiệu</a></li>
                     <li><a href="{{ route('user.contact') }}">Liên Hệ</a></li>
                     {{-- @guest

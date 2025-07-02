@@ -274,7 +274,7 @@
         border-radius: 6px;
         cursor: pointer;
         transition: background-color 0.2s;
-        width: auto; /* ✅ Không còn chiếm full width */
+        width: auto;
     }
 
     .popup-content .btn:hover {
@@ -321,39 +321,11 @@
                     <div class="form-buttons">
                         <button class="btn" type="submit">Lưu thay đổi</button>
                     </div>
-                    
+
                 </form>
             </div>
         </div>
         
-
-{{-- 
-        <form method="POST" action="{{ route('admin.table.store') }}">
-            @csrf
-            <div id="tableForm" class="form-section" style="display: none;">
-                <div class="form-group-tablee">
-                    <div class="form-group-row-table">
-                        <div class="form-group-table">
-                            <label for="tableNumber">Số bàn</label>
-                            <input type="text" id="tableNumber" name="name" class="form-control" placeholder="Nhập số bàn">
-                        </div>
-                        <div class="form-group-table">
-                            <label for="statusSelect">Trạng thái</label>
-                            <select name="table_status_id" id="statusSelect" class="form-control">
-                                @foreach ($statuses as $status)
-                                    <option value="{{ $status->id }}">{{ $status->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group-row-table buttons">
-                        <button class="btn" type="submit">Thêm</button>
-                        <button class="btn" type="button" onclick="hideForm()">Hủy</button>
-                    </div>
-                </div>
-            </div>
-        </form> --}}
-
         @php
             $totalSlots = 12;
             $tableCount = count($tables);
@@ -403,17 +375,22 @@
                     <input
                         type="text"
                         id="editName"
+                        placeholder="Tên bàn"
                         name="name"
                         value="{{ $table->name }}"
                         oninput="validateFormat()"
                         data-id="{{ $table->id }}"
                     >
                     <div class="alert_error_validate">
-                        <span id="name_error" style="color: red; font-size: 12px;"></span>
+                        <span
+                            id="name_error"
+                            style="color: red; font-size:12px;margin-left: 10px"
+                        >
                             @error('name'){{$message}}@enderror
                         </span>
                     </div>
-                </div>                
+                </div>
+
 
                 <label for="editStatus">Trạng thái</label>
                 <select id="editStatus" name="table_status_id">
@@ -488,7 +465,7 @@
                 }
             });
         });
-        
+
 
         function openEditPopup(table) {
             const form = document.getElementById('editTableForm');
@@ -649,10 +626,9 @@
         document.getElementById("toggleForm").onclick = function () {
             document.getElementById("addTablePopup").style.display = "flex";
         }
-    
+
         function hideForm() {
             document.getElementById("addTablePopup").style.display = "none";
         }
     </script>
-    
 @endsection

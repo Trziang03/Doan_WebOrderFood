@@ -23,7 +23,7 @@ p{
 div{
     border-radius: 10px;
 }
-img{  
+img{
     border-radius: 10px;
 
 }
@@ -276,7 +276,7 @@ img{
 }
 .navbar-bottom .navbar_item_second .cart__header_mb_tl > a{
     padding:10px 5px;
-    margin-right: 0.5rem;
+    margin-right: 10px;
 }
 /* Nav mb tl */
 .navbar_hidden_mb_tl{
@@ -302,7 +302,7 @@ img{
     overflow-y: auto;
     z-index: 1000;
     transition: transform 0.3s ease, left 0.3s ease;
-    width:50%;
+    width: 50%;
 }
 .checkbox_input_hidden:checked ~ .navbar_hidden_mb_tl {
     transform: translateX(0);
@@ -315,10 +315,20 @@ img{
     padding:10px 0 15px 15px;
     transition: border linear 0.2s;
 }
-/* .navbar_item_second .navbar_hidden_mb_tl > ul > li:hover {
-    border-bottom: 1px solid grey;
+
+.navbar_item_second .navbar_hidden_mb_tl > ul > li:hover {
+    animation: shake 0.3s;
     cursor: pointer;
-} */
+}
+
+/* Tạo hiệu ứng rung nhẹ */
+@keyframes shake {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-2px); }
+    50%  { transform: translateX(2px); }
+    75%  { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+}
 .navbar_item_second .navbar_hidden_mb_tl > ul > li > a {
     color: black;
 }
@@ -351,7 +361,7 @@ img{
     footer{
         width: 100%;
     }
-    /* Khi ở mobile (max-width 768px), hiện logo */ 
+    /* Khi ở mobile (max-width 768px), hiện logo */
     .logo-mobile-only {
         display: block;
     }
@@ -508,8 +518,7 @@ footer{
     justify-content: space-between;
 }
 .payment_left {
-    width: 39%;
-    background-color:#fff2e6;
+    width: 100%;
 }
 .payment_left .payment_products .payment_product {
     padding: 10px;
@@ -938,18 +947,17 @@ footer{
 .change_password_form > div > span:hover{
     cursor: pointer;
 }
-/* Ẩn thanh input ban đầu trên mobile */
+
 .search-btn {
-    background-color: #ff9933;     /* Màu cam nổi bật */
-    color: #fff;                   /* Màu icon trắng */
+    background-color: #ff9933;
+    color: #fff;
     border: none;
     width: 40px;
-    height: 40px;
+    height: 39px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -1036,7 +1044,6 @@ footer{
    }
    .payment_left {
     width: 100%;
-    border-bottom: 2px solid black;
    }
    .payment_right {
     border: none;

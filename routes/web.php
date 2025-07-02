@@ -3,7 +3,9 @@
 use App\Http\Middleware\CheckAccessToken;
 use App\Http\Middleware\AdminRoleMiddleware;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Http;
+// use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminOrderController;
@@ -25,14 +27,13 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/addContact', 'addContact');
     Route::get('/', "index")->name('user.index');
     Route::get('/menu', "menu")->name('user.menu');
-    Route::get('/menu/{slug}', "timKiemSanPham")->name('timkiemsanpham');
-
+    Route::get('/menu/{slug}', "timKiemSanPhamTheoDanhMuc")->name('timkiemsanphamtheodanhmuc');
+    Route::get('seach', "TimKiemTheoTuKhoa")->name('timkiemtheotukhoa');
+    Route::get('/search', "search")->name('user.search');
     Route::post('/dangky', "DangKy")->name('dangky');
     Route::post('/dangnhap', "DangNhap")->name('dangnhap');
     Route::get('/logout', "Logout")->name('logout');
     Route::get('detail/{slug}', "ChiTietSanPham")->name("detail");
-    Route::get('detail/{slug}/{internal_memory}', "LayMauSanPhamTheoBoNho")->name("LayMauSanPhamTheoBoNho");
-    Route::get('detail/{slug}/{internal_memory}/{color}', "LayThongTinSanPhamTheoMau")->name("LayThongTinSanPhamTheoMau");
     Route::post('/addContact', 'addContact');
     Route::get('/yeuthich/{sampham}/{user}', 'CapNhapSanPhamYeuThich')->name("SanPhamYeuThich");
     Route::get('/get/{user}/{code}', 'GetDanhSachDanhGia');
@@ -43,13 +44,15 @@ Route::controller(UserController::class)->group(function () {
 
 Route::controller(CartController::class)->group(function () {
     Route::get('/shopping-cart', "index")->name('user.shoppingcart');
-    Route::get('/add-to-cart/{id}/{quantity}', "addToCart")->name('cart.add');
-    Route::get('/cart-delete-item/{id}', 'deleteItemCart')->name('cart.delete_item');
-    Route::get('/cart-delete-all', 'deleteAllItem');
-    Route::get('/cart-minus-one-variant/{id}', 'minusOnQuantity');
+    Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
+    Route::delete('/cart/delete-item/{cart_item_id}', 'deleteItemCart');
+    Route::delete('/cart/delete-all', 'deleteAllItem');
+    Route::patch('/cart/increase/{cart_item_id}', 'increaseOnQuantity');
+    Route::patch('/cart/minus/{cart_item_id}', 'minusOnQuantity');
+    Route::post('/cart/submit', 'submitCart')->name('cart.submit');
 });
 
-// Route::get('/admin/check-stock-variant/{id}', [AdminProductVariantController::class, 'checkStock']);
+
 //Phân quyền quản lý và nhân viên
 Route::middleware(['role:QL,NV'])->group(function () {
 
@@ -75,7 +78,6 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::post('/checkpw', [AdminController::class, 'IsPasswordChange'])->name('profile.checkpw');
     Route::post('/changepw', [AdminController::class, 'UpdatePassword'])->name('profile.changepw');
 
-    
     //Route dashboard
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::post('/admin/editWebsite', [AdminController::class, 'editWebsite'])->middleware(AdminRoleMiddleware::class)->name('admin.editWebsite');
@@ -90,18 +92,18 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/admin/static', [AdminStaticController::class, 'index'])->name('admin.static');
     Route::post('/admin/statistic', [AdminStaticController::class, 'statistics'])->name('admin.statistic');
 
-    Route::get('/admin/category-specification/{id}', [AdminCategoryController::class, 'loadCategorySpecification']);
-
     //Route quản lí món ăn
     Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
     Route::get('/admin/products/category/{id}', [AdminProductController::class, 'filterByCategory']);
+    Route::get('/admin/product/search', [AdminProductController::class, 'search'])->name('admin.product.search');
+    Route::get('/admin/product/filter', [AdminProductController::class, 'filter'])->name('admin.product.filter');
     Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
     Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
 
     Route::resource('/admin/product', AdminProductController::class);
 
 
-    //Route quan li lien he trang quản trị
+    //Route quan li lien he
     Route::get('/admin/contact', [AdminContactController::class, 'showListContacts'])->name('admin.contact');
     Route::delete('/admin/contact/delete/{id}', [AdminContactController::class, 'deleteContact'])->name('contact.delete');
     Route::get('/admin/contact/update/{id}', [AdminContactController::class, 'updateContact'])->name('contact.update');
@@ -144,12 +146,8 @@ Route::middleware(['role:QL,NV'])->group(function () {
      //Route quản lí món ăn
    Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
    Route::get('/admin/products/category/{id}', [AdminProductController::class, 'filterByCategory']);
-   Route::get('/admin/product/active/{id}', [AdminProductController::class, 'active'])->middleware(AdminRoleMiddleware::class)->name('admin.product.active');
-   Route::get('/admin/product/deactive/{id}', [AdminProductController::class, 'deactive'])->middleware(AdminRoleMiddleware::class)->name('admin.product.deactive');
    Route::get('/admin/product/search', [AdminProductController::class, 'search'])->name('admin.product.search');
-   Route::get('/admin/proudct/list-product-unapproved', [AdminProductController::class, 'getListProductsUnapproved'])->middleware(AdminRoleMiddleware::class)->name('admin.product.unapproved');
    Route::get('/admin/product/filter', [AdminProductController::class, 'filter'])->name('admin.product.filter');
-   Route::post('/admin/product/is_isset', [AdminProductController::class, 'isIssetProduct']);
    Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
    Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
 
@@ -165,60 +163,36 @@ Route::middleware(['role:QL'])->group(function () {
     Route::get('/admin/staff', [AdminStaffController::class, 'index'])->name('admin.staff');    
     Route::get('/admin/staff/{id}', [AdminStaffController::class, 'Profile'])->name('admin.staff.profile');
     Route::post('/admin/staff/{id}', [AdminStaffController::class, 'update'])->name('admin.staff.update');
-    // Xử lý lưu thông tin nhân viên mới
-    Route::post('/admin/staff/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
-
-    Route::post('/admin/staff/ajax-store', [AdminStaffController::class, 'ajaxStore'])->name('admin.staff.ajaxStore');
-
    
  
 });
 
 
 
- //xác nhận đặt hàng và thanh toán
- Route::controller(OrderController::class)->group(function () {
+
+
+//xác nhận đặt hàng và thanh toán
+Route::controller(OrderController::class)->group(function () {
     Route::get('/payment', 'index')->name('user.payment');
-    Route::post('/payment/complete', 'completePayment')->name('complete-payment');
+    Route::post('/payment', 'completePayment')->name('complete-payment');
     Route::get('/table/{id}', 'orderByTable')->name('order.table');
+
 });
-    Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
 
-    Route::controller(OrderController::class)->group(function () {
-        Route::get('/payment', 'index')->name('user.payment');
-        Route::post('/payment', 'completePayment')->name('complete-payment');
-        Route::post('/add-voucher', 'addVoucher')->name('user.addvoucher');
-        Route::get('/table/{id}', 'orderByTable')->name('order.table');
+//Route profile
+Route::controller(ProfileController::class)->group(function () {
+    Route::get('/trangcanhan', 'index')->name('profile.index');
+    Route::post('/trangcanhan/editInfo', 'editInfo')->name('profile.editInfo');
+    Route::post('/trangcanhan/editImage', 'editImage')->name('profile.editImage');
+    Route::get('/lichsudonhang', 'order_history')->name('profile.order_history');
+    Route::put('/lichsudonhang/cancel/{id}', 'cancel')->name('profile.cancel');
+    Route::get('/sanphamyeuthich', 'favourite_product')->name('profile.favourite_product');
+    Route::get('/sanphamyeuthich/unLike/{id}', 'unLike')->name('profile.unLike');
+    Route::get('/lichsudanhgia', 'review_history')->name('profile.review_history');
+    Route::get('/doimatkhau', 'ChangePwd')->name('profile.changepassword');
+    Route::post('/kiemtrapassword', 'IsPasswordChange')->name('profile.ispassword');
+    Route::post('/submitchange', 'UpdatePassword')->name('profile.submitchange');
+});
 
-    });
-
-    Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('add.to.cart');
-    Route::post('/order/buy-now', [CartController::class, 'buyNow'])->name('buynow');
-
-    //Route profile
-    Route::controller(ProfileController::class)->group(function () {
-        Route::get('/trangcanhan', 'index')->name('profile.index');
-        Route::post('/trangcanhan/editInfo', 'editInfo')->name('profile.editInfo');
-        Route::post('/trangcanhan/editImage', 'editImage')->name('profile.editImage');
-        Route::get('/lichsudonhang', 'order_history')->name('profile.order_history');
-        Route::put('/lichsudonhang/cancel/{id}', 'cancel')->name('profile.cancel');
-        Route::get('/sanphamyeuthich', 'favourite_product')->name('profile.favourite_product');
-        Route::get('/sanphamyeuthich/unLike/{id}', 'unLike')->name('profile.unLike');
-        Route::get('/lichsudanhgia', 'review_history')->name('profile.review_history');
-        Route::get('/doimatkhau', 'ChangePwd')->name('profile.changepassword');
-        Route::post('/kiemtrapassword', 'IsPasswordChange')->name('profile.ispassword');
-        Route::post('/submitchange', 'UpdatePassword')->name('profile.submitchange');
-    });
-//Route quan li danh mục
-Route::controller(AdminCategoryController::class)->group(
-    function () {
-        Route::get('/admin/addcategory', [AdminCategoryController::class, 'addCategory'])->name('admin.category.addcategory');
-        Route::post('/admin/addcategory/store', [AdminCategoryController::class, 'storeCategory'])->name('admin.category.storecategory');
-        Route::get('/admin/editcategory/{id}', [AdminCategoryController::class, 'editCategory'])->name('admin.category.editcategory');
-        Route::post('/admin/updatecategory//{id}', [AdminCategoryController::class, 'updateCategory'])->name('admin.category.updatecategory');
-        Route::get('/admin/filter-category/{id}', [AdminCategoryController::class, 'filterCategory'])->name('filter.category');
-        Route::delete('/admin/deletecategory/{id}', [AdminCategoryController::class, 'deleteCategory'])->name('admin.delete.category');
-    }
-);
-
-
+// });
+Route::get('/qr', [AdminTableController::class, 'handleQr']);

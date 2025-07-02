@@ -26,13 +26,12 @@
                     <div class="product_search product_search_list_category">
                         <p>Danh mục<i class="fas fa-sort-down"></i></p>
                         <div class="product_search_list_category_popup">
-                            <a href="{{route('user.menu')}}" >Tất cả</a>
+                            <a href="{{route('user.menu')}}">Tất cả</a>
                             @foreach ($danhSachDanhMuc as $danhMuc)
-                                <a href="{{ route('timkiemsanpham', ['slug' => $danhMuc->slug]) }}">{{ $danhMuc->name }}</a>
+                                <a href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => $danhMuc->slug]) }}">{{ $danhMuc->name }}</a>
                             @endforeach
                         </div>
                     </div>
-                    
                 </div>
             </div>
             <div class="product_search_list_right">

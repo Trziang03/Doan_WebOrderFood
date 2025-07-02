@@ -453,7 +453,7 @@
 .table_content_privacy>table>th,td {
     text-align: left;
     padding: 8px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .table_content_privacy>table>th {
@@ -503,13 +503,13 @@
     justify-content: space-around;
     flex-wrap: wrap;
     border-bottom: 1px solid #C7C7C7;
-    background-color:#fff2e6;   
+    background-color:#fff2e6;
 }
 .cart_item_img {
     width: 20%;
 }
-.cart_item_img > a > img {
-    padding:20px;
+.cart_item_img img {
+    padding: 20px;
     max-width: 100%;
 }
 .cart_item_info {
@@ -533,13 +533,13 @@
     top:15px;
     width: 5%;
     padding:8px 10px;
-    border: 1px solid #c7c7c7;
-    background-color: white;
+    border: 1px solid #c7c7c7 !important;
+    background-color: white !important;
     border-radius: 5px;
     transition: all linear 0.3s;
 }
 .cart_item_info_top > button:hover {
-    background-color: red;
+    background-color: red !important;
     color: white;
 }
 .cart_item_info_bottom {
@@ -553,6 +553,10 @@
     display: flex;
     align-items: center;
     padding: 8px 16px;
+    /* Gắn thêm 2 dòng dưới để cố định góc phải dưới */
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }
 .cart_item_info_bottom > div:nth-child(2) >button{
     border: none;
