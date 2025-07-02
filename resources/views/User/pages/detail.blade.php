@@ -131,7 +131,7 @@
             border-radius: 10px;
             text-align: center;
             min-width: 120px;
-            max-width: 120px;
+            max-width: 200px;
             margin-top: 10px;
         }
 

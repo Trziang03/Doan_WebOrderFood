@@ -67,17 +67,24 @@ class UserController extends Controller
         return view('user.pages.menu', ['layTatCaSanPham' => $layTatCaSanPham]);
     }
 
-    public function TimKiemTheoTuKhoa(Request $request)
-    {
-        $request->validate([
-            'seachbykey' => 'required',
-        ], [
-            'seachbykey.required' => "Vui lòng nhập từ khóa tìm kiếm",
-        ]);
-        $key = str_replace('$', '', $request->input('seachbykey'));
-        $danhSachSanPham = ProductUser::TimKiemTheoTuKhoa($key);
-        return view('user.pages.menu')->with('danhSachSanPham', $danhSachSanPham);
-    }
+public function timKiemToanBo(Request $request)
+{
+    $keyword = $request->input('keyword');
+
+    // Tìm trong tất cả sản phẩm (không phụ thuộc danh mục)
+    $layTatCaSanPham = Product::where('status', 1)
+        ->where(function ($query) use ($keyword) {
+            $query->where('name', 'like', '%' . $keyword . '%')
+                  ->orWhere('description', 'like', '%' . $keyword . '%');
+        })
+        ->get();
+
+    return view('User.pages.menu', [
+        'layTatCaSanPham' => $layTatCaSanPham,
+        'danhSachDanhMuc' => Category::where('status', 1)->get(),
+        'keyword' => $keyword,
+    ]);
+}
     public function timKiemSanPhamTheoDanhMuc($slug)
     {
         // Tìm danh mục theo slug

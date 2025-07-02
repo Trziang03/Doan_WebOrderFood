@@ -6,6 +6,18 @@
         color: white;
     }
 
+    #inputContainer .form-control {
+        margin-bottom: 5px;
+    }
+    textarea.form-control {
+        resize: vertical;
+        overflow-y: auto;
+        padding: 8px;
+        line-height: 1.5;
+        font-size: 14px;
+        width: 40%;
+    }
+
 </style>
 @section('content')
     <div class="separator"></div>
@@ -36,11 +48,20 @@
                         <label for="description">Mô tả:</label>
                     </div>
                     <div class="col">
-                        <input type="text" class="form-control input-description" id="description" name="description"
-                            value="{{ $danhMucTimKiem->description }}">
-                        @error('description')
-                            <span class="text-danger" style="color:red">{{ $message }}</span>
-                        @enderror
+                        <div class="col">
+                            <textarea
+                                id="description"
+                                name="description"
+                                class="form-control"
+                                placeholder="Nhập mô tả"
+                                rows="4"
+                                maxlength="255"
+                                oninput="validateDescription()"
+                                value="{{ $danhMucTimKiem->description }}"
+                            >{{ $danhMucTimKiem->description }}</textarea>
+                            
+                        </div>
+                        <span id="description_error" class="text-danger" style="color:red"></span>
                     </div>
                 </div>
 
@@ -69,4 +90,65 @@
         </div>
     </div>
     </div>
+@endsection
+@section('script')
+<script>
+    function validateCategoryName() {
+         const input = document.getElementById('name');
+         const error = document.getElementById('name_error');
+         const value = input.value.trim();
+
+         if (value === '') {
+             error.textContent = 'Tên danh mục không được để trống.';
+             return;
+         }
+
+         if (value.length > 50) {
+             error.textContent = 'Tên danh mục không được dài quá 50 ký tự.';
+             return;
+         }
+
+         // ✅ Cho phép chữ có dấu, số, khoảng trắng và dấu gạch ngang
+         const regex = /^[\p{L}0-9\s\-]+$/u;
+
+         if (!regex.test(value)) {
+             error.textContent = 'Chỉ cho phép chữ (có dấu), số, dấu cách và gạch ngang.';
+             return;
+         }
+
+         // ✅ Hợp lệ
+         error.textContent = '';
+     }
+
+ </script>
+     
+ <script>
+     //kiểm tra định dạng mô tả ngay khi nhập
+     function validateDescription() {
+     const input = document.getElementById('description');
+     const error = document.getElementById('description_error');
+     const value = input.value.trim();
+
+     if (value === '') {
+         error.textContent = 'Mô tả không được để trống.';
+         return;
+     }
+
+     if (value.length > 255) {
+         error.textContent = 'Mô tả không được vượt quá 255 ký tự.';
+         return;
+     }
+
+     // ✅ Cho phép chữ có dấu, số, khoảng trắng và một số ký tự thường dùng trong mô tả
+     const regex = /^[\p{L}0-9\s.,\-–()!?]+$/u;
+
+     if (!regex.test(value)) {
+         error.textContent = 'Mô tả chỉ được chứa chữ, số, dấu cách, dấu chấm, phẩy, gạch, ngoặc và dấu chấm hỏi/cảm.';
+         return;
+     }
+
+     error.textContent = ''; // ✅ Hợp lệ
+ }
+
+ </script>
 @endsection

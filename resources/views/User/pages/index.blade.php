@@ -178,8 +178,9 @@
                                                 <sup>đ</sup>
                                             </li>
                                             <li>
-                                                <button><a href="{{ route('detail', [$danhSachMonAn[$i]->slug]) }}">Xem chi tiết</a></button>
-                                            </li>
+                                                <button><a
+                                                    href="{{ route('detail', [$danhSachMonAn[$i]->slug]) }}">Xem chi tiết</a></button>
+                                            </li> 
                                         </ul>
                                     </div>
                                 </div>

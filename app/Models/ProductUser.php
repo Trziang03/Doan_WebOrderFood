@@ -121,8 +121,6 @@ class ProductUser extends Model
 
         $danhSachSanPham = DB::table('products')
             ->select(
-                'products.id',
-                'products.name',
                 'products.slug',
                 'products.description',
                 'products.price',

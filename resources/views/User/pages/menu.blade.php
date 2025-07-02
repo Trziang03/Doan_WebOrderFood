@@ -56,8 +56,8 @@
                         </div>
                         <div class="page" id="page"></div>
                     @else
-                    <div style="color: black; text-align:center; width:100%; margin-top:10px">
-                        <h5>Không có sản phẩm tương tự</h5>
+                    <div style="color: black; text-align:center; width:100%; margin-top:120px; height: 176px;">
+                        <h3>Không tìm thấy món ăn nào</h3>
                     </div>
                 @endif
             </div>

@@ -40,8 +40,8 @@
         <div class="navbar_item_first">
             <div style="width:190px">
                 <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
-                        style="width:100%; height:55px; margin-left:6px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
-                        alt="Lỗi hiển thị"></a>
+                        style="width:100%; height:55px; margin-left:6px"
+                        src="{{ asset('images/' . $lienKetWebsite->logo) }}" alt="Lỗi hiển thị"></a>
             </div>
             <ul style="padding-left:0">
                 <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
@@ -54,8 +54,8 @@
             <label for="checkbox_hidden"><span class="menu-icon"><i class="fas fa-bars"></i></span></label>
             <div style="width:190px" class="logo-mobile-only">
                 <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
-                        style="width:125%;height:55px;margin-left:3px" src="{{ asset('images/' . $lienKetWebsite->logo) }}"
-                        alt="Lỗi hiển thị"></a>
+                        style="width:125%;height:55px;margin-left:3px"
+                        src="{{ asset('images/' . $lienKetWebsite->logo) }}" alt="Lỗi hiển thị"></a>
             </div>
             <!-- Navbar hidden moblie tablet -->
             <nav class="navbar_hidden_mb_tl">
@@ -66,22 +66,21 @@
                     <li><a href="{{ route('user.blog') }}">Giới Thiệu</a></li>
                     <li><a href="{{ route('user.contact') }}">Liên Hệ</a></li>
                     {{-- @guest
-                        <li><a href="" onclick="handleLogin(event)"><i class="far fa-user-circle"
-                                    style="margin-right:5px"></i>Đăng nhập</a></li>
+                    <li><a href="" onclick="handleLogin(event)"><i class="far fa-user-circle"
+                                style="margin-right:5px"></i>Đăng nhập</a></li>
                     @endguest --}}
                     {{-- @auth
-                        <li><a href="{{ route('profile.index') }} ">Thông tin cá nhân</a></li>
-                        <li><a href="{{ route('logout') }}">Đăng xuất</a></li>
+                    <li><a href="{{ route('profile.index') }} ">Thông tin cá nhân</a></li>
+                    <li><a href="{{ route('logout') }}">Đăng xuất</a></li>
                     @endauth --}}
 
                 </ul>
             </nav>
             <ul>
                 <li class="search-wrapper">
-
-                    <form action="{{ route('timkiemtheotukhoa') }}" method="GET" class="search-form">
-                        <input type="search" name = "seachbykey" placeholder="Tìm kiếm..."
-                            value="{{ request('seachbykey') }}" class="search-input">
+                    <form action="{{ route('user.search.all') }}" method="GET" class="search-form">
+                        <input type="search" name="keyword" placeholder="Tìm kiếm..." value="{{ request('keyword') }}"
+                            class="search-input">
                         <button type="submit" class="search-btn">
                             <i class="fas fa-search"></i>
                         </button>
