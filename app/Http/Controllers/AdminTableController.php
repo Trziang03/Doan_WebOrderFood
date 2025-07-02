@@ -139,7 +139,9 @@ class AdminTableController extends Controller
     private function generateQrForTable(&$table, $now)
     {
         $token = Str::random(40);
-        $url = route('order.table', ['id' => $table->id]);
+
+        // Tạo URL có kèm token
+        $url = route('user.menu', ['id' => $table->id]) . '?token=' . $token;
 
         $builder = new Builder(
             writer: new PngWriter(),
@@ -155,13 +157,15 @@ class AdminTableController extends Controller
             Storage::disk('public')->delete('qr-codes/' . $table->qr_code);
         }
 
-        $filename = 'qr_table_' . $table->id . '_' . Str::random(5) . '.png';
+        // Tên file có chứa token
+        $filename = 'qr_table_' . $token . '.png';
         Storage::disk('public')->put('qr-codes/' . $filename, $result->getString());
 
-        // Gán lại thông tin
+        // Gán lại thông tin vào model
         $table->qr_code = $filename;
         $table->token = $token;
     }
+
 
     public function checkin(Request $request)
     {
@@ -191,19 +195,36 @@ class AdminTableController extends Controller
     }
 
 
-    public function handleQr(Request $request)
-    {
-        $tableId = $request->query('table_id');
+    // public function handleQr(Request $request)
+    // {
+    //     $tableId = $request->query('table_id');
 
-        if (!$tableId || !Table::find($tableId)) {
-            return abort(404, 'Bàn không tồn tại');
+    //     if (!$tableId || !Table::find($tableId)) {
+    //         return abort(404, 'Bàn không tồn tại');
+    //     }
+
+    //     // Lưu table_id vào session
+    //     session(['table_id' => $tableId]);
+
+    //     // Chuyển hướng về trang gọi món (hoặc trang chính)
+    //     return redirect('/'); // có thể đổi thành route của trang thực đơn
+    // }
+    public function handleQr($id, Request $request)
+    {
+        $token = $request->query('token');
+
+        // Kiểm tra table tồn tại và token đúng
+        $table = Table::findOrFail($id);
+
+        if ($table->token !== $token) {
+            abort(403, 'Token không hợp lệ.');
         }
 
-        // Lưu table_id vào session
-        session(['table_id' => $tableId]);
-
-        // Chuyển hướng về trang gọi món (hoặc trang chính)
-        return redirect('/'); // có thể đổi thành route của trang thực đơn
+        // Redirect sang route user.menu, truyền theo table_id và token
+        return redirect()->route('user.menu', [
+            'table_id' => $id,
+            'token' => $token
+        ]);
     }
 
 

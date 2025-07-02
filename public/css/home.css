@@ -771,7 +771,7 @@ html {
 }
 .product_search_list_item_info > ul > li a {
     color: black;
-    font-size: 16px;
+    font-size: 14px;
     transition: all linear 0.3s;
 }
 .product_search_list_item_info > ul > li:nth-child(2){
@@ -864,7 +864,7 @@ html {
     .product_best_seller_item {
         width: 49%;
         margin-bottom: 6px;
-        height: 400px;
+        height: 350px;
         margin-left: 0;
     }
     .product_lt_new_items {
@@ -901,7 +901,8 @@ html {
         width: 100%;
     }
     .product_search_list_right_item{
-        width: 48%;
+        width: 47%;
+        height: 327px;
     }
     .product_search_list_left {
         width: 100%;

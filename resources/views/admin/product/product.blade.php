@@ -40,8 +40,10 @@
             </div>
         </div>
         <div class="separator_x"></div>
-        <a href="{{ route('product.create') }}" class="btn">
-            <i class="fa-solid fa-plus"></i> Thêm món ăn</a>
+        @if ( Auth::user()->role === 'QL')
+            <a href="{{ route('product.create') }}" class="btn">
+                <i class="fa-solid fa-plus"></i> Thêm món ăn</a>
+        @endif
         <select onchange="findProduct(this)">
             <option value="all" {{ request()->is('admin/products') ? 'selected' : '' }}>Danh mục</option>
             @foreach ($categories as $category)

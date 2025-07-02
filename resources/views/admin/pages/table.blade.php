@@ -53,8 +53,10 @@
     /* Overlay nền xám mờ */
     #optionPopup {
         position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
         background-color: rgba(0, 0, 0, 0.4);
         z-index: 999;
         display: flex;
@@ -64,7 +66,8 @@
 
     /* Nội dung popup */
     #optionPopup .popup-content {
-        background-color: #ffa726; /* cam đậm */
+        background-color: white;
+        /* cam đậm */
         padding: 25px 30px;
         border-radius: 12px;
         width: 350px;
@@ -102,6 +105,7 @@
         cursor: pointer;
         transition: 0.2s;
     }
+
     .btn-close-popup:hover {
         background-color: #e65100;
     }
@@ -118,6 +122,7 @@
         box-shadow: inset 0 0 0 1px #ccc;
         transition: 0.2s;
     }
+
     #optionPopup input:focus,
     #optionPopup select:focus {
         outline: none;
@@ -133,7 +138,8 @@
 
     /* Nút lưu */
     #optionPopup button[type="submit"] {
-        background-color: #43a047; /* xanh lá */
+        background-color: #43a047;
+        /* xanh lá */
         color: white;
         border: none;
         padding: 10px 20px;
@@ -147,6 +153,7 @@
         margin-left: auto;
         margin-right: auto;
     }
+
     #optionPopup button[type="submit"]:hover {
         background-color: #2e7d32;
     }
@@ -164,8 +171,10 @@
     /* Nền overlay */
     .popup-overlay {
         position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background: rgba(0, 0, 0, 0.3);
         z-index: 999;
         display: flex;
@@ -202,6 +211,7 @@
         text-align: center;
         transition: 0.2s;
     }
+
     .btn-close-popup:hover {
         background: #e65100;
     }
@@ -234,6 +244,7 @@
         font-size: 14px;
         transition: 0.2s;
     }
+
     .popup-content input:focus,
     .popup-content select:focus {
         border-color: #f57c00;
@@ -255,6 +266,7 @@
         margin-top: 5px;
         transition: 0.2s;
     }
+
     .popup-content .btn:hover {
         background-color: #e65100;
     }
@@ -280,8 +292,6 @@
     .popup-content .btn:hover {
         background-color: #e65100;
     }
-
-
 </style>
 @section('content')
     <div class="content" id="banan">
@@ -297,11 +307,13 @@
                 <button class="btn-close-popup" onclick="hideForm()">×</button>
                 <h4>Thêm bàn ăn</h4>
 
-                <form method="POST" action="{{ route('admin.table.store') }}">
+                <form method="POST" action="{{ route('admin.table.store') }}" id="addTableForm">
                     @csrf
                     <div class="form-group-table">
                         <label for="tableNumber">Số bàn</label>
-                        <input type="text" name="name" id="tableNumber" class="form-control" placeholder="Nhập số bàn" required>
+                        <input type="text" name="name" id="tableNumber" class="form-control" placeholder="Nhập số bàn"
+                            required oninput="validateNewTableName()">
+                        <span id="tableNameError" style="color: red; font-size: 12px;"></span>
                     </div>
 
                     <div class="form-group-table">
@@ -315,17 +327,21 @@
 
                     <div class="form-group-table">
                         <label for="access_limit">Số lượt truy cập cho phép</label>
-                        <input type="number" name="access_limit" id="access_limit" class="form-control" min="1" value="1" required>
+                        <input type="number" name="access_limit" id="access_limit" class="form-control" min="1"
+                            max="10" value="1" required oninput="checkAccessLimit(this)">
+                        <span id="access_limit_error" style="color: red; display: none;">
+                            Số lượt truy cập không được vượt quá 10.
+                        </span>
                     </div>
 
                     <div class="form-buttons">
                         <button class="btn" type="submit">Lưu thay đổi</button>
                     </div>
-
                 </form>
             </div>
         </div>
-        
+
+
         @php
             $totalSlots = 12;
             $tableCount = count($tables);
@@ -344,7 +360,7 @@
                         </div> --}}
                         <div class="table-qr">
                             <img src="{{ asset('storage/qr-codes/' . $table->qr_code) }}" width="80">
-                                <p>Link: {{ url('/table/checkin?token=' . $table->token) }}</p>
+                            <p>Link: {{ url('/table/checkin?token=' . $table->token) }}</p>
                         </div>
                     @endif
                     <div class="table-actions">
@@ -368,25 +384,18 @@
             <button class="btn-close-popup" onclick="closeEditPopup()">×</button>
             <h4>Cập nhật bàn ăn</h4>
 
-            <form style="padding: 5px 20px;" id="editTableForm" method="POST" action="{{ route('admin.table.update', ['id' => $table->id]) }}">
+            <form style="padding: 5px 20px;" id="editTableForm" method="POST"
+                action="{{ route('admin.table.update', ['id' => $table->id]) }}">
                 @csrf
                 <label for="editName">Số hiệu bàn</label>
                 <div class="col">
-                    <input
-                        type="text"
-                        id="editName"
-                        placeholder="Tên bàn"
-                        name="name"
-                        value="{{ $table->name }}"
-                        oninput="validateFormat()"
-                        data-id="{{ $table->id }}"
-                    >
+                    <input type="text" id="editName" placeholder="Tên bàn" name="name" value="{{ $table->name }}"
+                        oninput="validateFormat()" data-id="{{ $table->id }}">
                     <div class="alert_error_validate">
-                        <span
-                            id="name_error"
-                            style="color: red; font-size:12px;margin-left: 10px"
-                        >
-                            @error('name'){{$message}}@enderror
+                        <span id="name_error" style="color: red; font-size:12px;margin-left: 10px">
+                            @error('name')
+                                {{ $message }}
+                            @enderror
                         </span>
                     </div>
                 </div>
@@ -395,22 +404,15 @@
                 <label for="editStatus">Trạng thái</label>
                 <select id="editStatus" name="table_status_id">
                     @foreach ($statuses as $status)
-                        <option value="{{ $status->id }}" {{ $table->table_status_id == $status->id ? 'selected' : '' }}>
+                        <option value="{{ $status->id }}"
+                            {{ $table->table_status_id == $status->id ? 'selected' : '' }}>
                             {{ $status->name }}
                         </option>
                     @endforeach
                 </select>
                 <label style="margin-top: 10px;" for="access_limit">Số lượt truy cập cho phép</label>
-                <input
-                    style="width: 40%;"
-                    type="number"
-                    id="access_limit"
-                    name="access_limit"
-                    min="1"
-                    max="10"
-                    value="{{ $table->access_limit }}"
-                    oninput="checkAccessLimit(this)"
-                >
+                <input style="width: 40%;" type="number" id="access_limit" name="access_limit" min="1"
+                    max="10" value="{{ $table->access_limit }}" oninput="checkAccessLimit(this)">
                 <small id="access_limit_error" style="color: red; display: none;">
                     Số lượt truy cập không được vượt quá 10.
                 </small>
@@ -451,7 +453,7 @@
 
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function (){
+        document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('toggleForm');
             const form = document.getElementById('tableForm');
 
@@ -536,12 +538,87 @@
 
     {{-- kiểm tra dữ liệu ngay khi nhập --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('updateTableForm').addEventListener('submit', validateName);
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('addTableForm');
 
-    <script >
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const isValid = validateNewTableName();
+                if (!isValid) return;
+
+                checkNewTableNameExists(function(isAvailable) {
+                    if (isAvailable) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        function validateNewTableName() {
+            const input = document.getElementById('tableNumber');
+            const error = document.getElementById('tableNameError');
+            const value = input.value.trim();
+
+            if (value === '') {
+                error.textContent = 'Tên bàn không được để trống.';
+                return false;
+            }
+
+            if (value.length > 50) {
+                error.textContent = 'Tên bàn không được dài quá 50 ký tự.';
+                return false;
+            }
+
+            if (!/^[a-zA-Z0-9\s\-]+$/.test(value)) {
+                error.textContent = 'Tên bàn chỉ được chứa chữ, số, dấu cách và gạch ngang.';
+                return false;
+            }
+
+            error.textContent = '';
+            return true;
+        }
+
+        function checkNewTableNameExists(callback) {
+            const input = document.getElementById('tableNumber');
+            const value = input.value.trim();
+
+            fetch(`/check-table-name?name=${encodeURIComponent(value)}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Lỗi mạng');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.exists) {
+                        alertify.error('Tên bàn đã tồn tại.');
+                        callback(false);
+                    } else {
+                        callback(true);
+                    }
+                })
+                .catch(() => {
+                    alertify.error('Lỗi khi kiểm tra tên bàn.');
+                    callback(false);
+                });
+        }
+
+        function checkAccessLimit(input) {
+            const error = document.getElementById('access_limit_error');
+            const value = parseInt(input.value);
+
+            if (value > 10) {
+                error.style.display = 'block';
+            } else {
+                error.style.display = 'none';
+            }
+        }
+    </script>
+    <script>
         function validateFormat() {
             const input = document.getElementById('editName');
             const error = document.getElementById('name_error');
@@ -612,18 +689,14 @@
                 }
             });
         });
-
-
     </script>
 
-    
+
 
     {{-- kiểm tra duplicate name --}}
+    <script></script>
     <script>
-        
-    </script>
-    <script>
-        document.getElementById("toggleForm").onclick = function () {
+        document.getElementById("toggleForm").onclick = function() {
             document.getElementById("addTablePopup").style.display = "flex";
         }
 

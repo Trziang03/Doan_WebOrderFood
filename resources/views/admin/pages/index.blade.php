@@ -11,20 +11,6 @@
         <div class="count">
             <div class="see">
                 <div class="icon">
-                    <img src="/images/icondanhmuc.png" alt="icon">
-                </div>
-                <div class="number">
-                    <p class="num">{{count(App\Models\Category::all())}}</p>
-                    <p>Danh mục</p>
-                </div>
-            </div>
-            <div class="go">
-                <a href="{{route('admin.category')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </div>
-        <div class="count">
-            <div class="see">
-                <div class="icon">
                     <img src="/images/iconfood2.png" alt="icon">
                 </div>
                 <div class="number">
@@ -34,36 +20,6 @@
             </div>
             <div class="go">
                 <a href="{{route('product.index')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </div>
-        <div class="count">
-            <div class="see">
-                <div class="icon">
-                    <img src="/images/icondonhang.png" alt="icon">
-                </div>
-                <div class="number">
-                    <p class="num">{{count(App\Models\Order::all())}}</p>
-                    <p>Đơn hàng</p>
-                </div>
-            </div>
-            <div class="go">
-                <a href="{{route('admin.order')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </div>
-    </div>
-    <div class="static">
-        <div class="count">
-            <div class="see">
-                <div class="icon">
-                    <img src="/images/nv2.png" alt="icon">
-                </div>
-                <div class="number">
-                    <p class="num">{{ \App\Models\User::where('role', 'NV')->count() }}</p>
-                    <p>Nhân viên</p>
-                </div>
-            </div>
-            <div class="go">
-                <a href="{{route('admin.staff')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
         <div class="count">
@@ -83,17 +39,64 @@
         <div class="count">
             <div class="see">
                 <div class="icon">
-                    <img src="/images/iconlienhe.png" alt="icon">
+                    <img src="/images/icondonhang.png" alt="icon">
                 </div>
                 <div class="number">
-                    <p class="num">{{count(App\Models\Contact::all())}}</p>
-                    <p>Liên hệ</p>
+                    <p class="num">{{count(App\Models\Order::all())}}</p>
+                    <p>Đơn hàng</p>
                 </div>
             </div>
             <div class="go">
-                <a href="{{route('admin.contact')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="{{route('admin.order')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
+    </div>
+    <div class="static">
+        @if ( Auth::user()->role === 'QL')
+        <div class="count">
+            <div class="see">
+                <div class="icon">
+                    <img src="/images/nv2.png" alt="icon">
+                </div>
+                <div class="number">
+                    <p class="num">{{ \App\Models\User::where('role', 'NV')->count() }}</p>
+                    <p>Nhân viên</p>
+                </div>
+            </div>
+            <div class="go">
+                <a href="{{route('admin.staff')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+        
+        <div class="count">
+            <div class="see">
+                <div class="icon">
+                    <img src="/images/icondanhmuc.png" alt="icon">
+                </div>
+                <div class="number">
+                    <p class="num">{{count(App\Models\Category::all())}}</p>
+                    <p>Danh mục</p>
+                </div>
+            </div>
+            <div class="go">
+                <a href="{{route('admin.category')}}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div class="count">
+            <div class="see">
+                <div class="icon">
+                    <img src="/images/icon-thong-ke.jpg" alt="icon">
+                </div>
+                <div class="number">
+                    <p>Thống kê</p>
+                </div>
+            </div>
+            <div class="go">
+                <a href="{{ route('admin.static') }}">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+        @endif
     </div>
     <div class="separator_x"></div>
     <div class="area">

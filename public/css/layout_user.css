@@ -408,7 +408,6 @@ img{
     }
     .navbar-bottom > .navbar_item_second > ul li:first-child form{
         width: 270px;
-        margin-right: 10px;
     }
     .navbar-bottom > .navbar_item_second > ul > li:first-child form input{
         border: none;;
@@ -982,12 +981,12 @@ footer{
 }
 
 .search-input.active {
-    width: 180px;
+    width: 70px;
     opacity: 1;
 }
-@media (min-width: 768px) {
+@media (min-width: 740px) {
     .search-input {
-        width: 200px !important;
+        width: 50px !important;
         opacity: 1 !important;
     }
 }

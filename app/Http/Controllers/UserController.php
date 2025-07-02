@@ -7,19 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Blog;
 use App\Models\ProductUser;
-use App\Models\Brand;
+use App\Models\Table;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\LikeProduct;
-use App\Models\Rating;
-use App\Models\Contact;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ImageRating;
 use App\Models\Order;
-use App\Models\ProductVariant;
 
 class UserController extends Controller
 {
@@ -66,7 +62,26 @@ class UserController extends Controller
         $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
         return view('user.pages.menu', ['layTatCaSanPham' => $layTatCaSanPham]);
     }
-
+    // public function menu(Request $request)
+    // {
+    //     $tableId = $request->query('table_id');
+    //     $token = $request->query('token');
+    
+    //     // Kiểm tra hợp lệ
+    //     $table = Table::findOrFail($tableId);
+    
+    //     if ($table->token !== $token) {
+    //         abort(403, 'Token không hợp lệ');
+    //     }
+    
+    //     // Lấy toàn bộ sản phẩm
+    //     $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
+    
+    //     return view('user.pages.menu', [
+    //         'layTatCaSanPham' => $layTatCaSanPham,
+    //         'table' => $table
+    //     ]);
+    // }
     public function TimKiemTheoTuKhoa(Request $request)
     {
         // Tìm danh mục theo slug
