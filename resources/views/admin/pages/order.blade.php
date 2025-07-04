@@ -121,51 +121,51 @@
         </div>
         <!-- Popup Xóa -->
         <!-- <div class="popup_admin" id="popupxoa" style="display: none;">
-                <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
-                <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
-                <p id="alert"></p>
-                <div class="button">
-                    <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
-                    <button onclick="cancel('xoa')">Hủy</button>
-                </div>
-            </div> -->
-    </div>
-    <div class="pagination">
-        {{ $orders->links() }}
+                    <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
+                    <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
+                    <p id="alert"></p>
+                    <div class="button">
+                        <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
+                        <button onclick="cancel('xoa')">Hủy</button>
+                    </div>
+                </div> -->
+        <div class="pagination">
+            {{ $orders->links() }}
+        </div>  
     </div>
 @endsection
 
 @section('script')
     <!-- <script>
-            function showDeletePopup(full_name, id) {
-                let popup = document.getElementById('popupxoa');
-                popup.children[0].textContent = `Bạn có thật sự muốn xóa đơn hàng của khách hàng ${full_name} ?`;
-                popup.querySelector("button[onclick^='deleteOrder']").dataset.id = id;
-                popup.style.display = "block";
-            }
+                function showDeletePopup(full_name, id) {
+                    let popup = document.getElementById('popupxoa');
+                    popup.children[0].textContent = `Bạn có thật sự muốn xóa đơn hàng của khách hàng ${full_name} ?`;
+                    popup.querySelector("button[onclick^='deleteOrder']").dataset.id = id;
+                    popup.style.display = "block";
+                }
 
-            function deleteOrder(id) {
-                $.ajax({
-                    type: "POST",
-                    url: `/admin/order/delete/${id}`,
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function (data) {
-                        alert(data);
-                        location.reload();
-                    },
-                    error: function (xhr) {
-                        alert('Có lỗi xảy ra: ' + xhr.responseText);
-                    }
-                });
-                document.getElementById('popupxoa').style.display = "none";
-            }
+                function deleteOrder(id) {
+                    $.ajax({
+                        type: "POST",
+                        url: `/admin/order/delete/${id}`,
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (data) {
+                            alert(data);
+                            location.reload();
+                        },
+                        error: function (xhr) {
+                            alert('Có lỗi xảy ra: ' + xhr.responseText);
+                        }
+                    });
+                    document.getElementById('popupxoa').style.display = "none";
+                }
 
-            function cancel(type) {
-                document.getElementById(`popup${type}`).style.display = "none";
-            }
-        </script> -->
+                function cancel(type) {
+                    document.getElementById(`popup${type}`).style.display = "none";
+                }
+            </script> -->
     <script>
         $(document).ready(function () {
             $('.view-order-detail').click(function () {

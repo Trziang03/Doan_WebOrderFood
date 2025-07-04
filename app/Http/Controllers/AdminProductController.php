@@ -10,9 +10,7 @@ use App\Models\Size;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use App\Models\ProductUser;
-use App\Models\Order;
-use App\Models\OrderItem;
+
 
 class AdminProductController extends Controller
 {

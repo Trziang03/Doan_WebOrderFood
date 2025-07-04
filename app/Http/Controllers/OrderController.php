@@ -3,14 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Voucher;
-use App\Models\Product;
 use App\Models\Table;
-use App\Models\VoucherUser;
-use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller

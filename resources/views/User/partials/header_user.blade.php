@@ -46,15 +46,14 @@
             <ul style="padding-left:0">
                 <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
                 <li><a href="{{route('user.menu')}}">Menu</a></li>
-                </li>
             </ul>
         </div>
         <div class="navbar_item_second">
             <input type="checkbox" hidden id="checkbox_hidden" class="checkbox_input_hidden">
             <label for="checkbox_hidden"><span class="menu-icon"><i class="fas fa-bars"></i></span></label>
-            <div style="width:190px" class="logo-mobile-only">
+            <div style="width:25px" class="logo-mobile-only">
                 <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
-                        style="width:125%;height:55px;margin-left:3px"
+                        style="max-height: 55px; height: 50px; width: 100px; margin-left: -20px"
                         src="{{ asset('images/' . $lienKetWebsite->logo) }}" alt="Lỗi hiển thị"></a>
             </div>
             <!-- Navbar hidden moblie tablet -->
@@ -73,21 +72,19 @@
                     <li><a href="{{ route('profile.index') }} ">Thông tin cá nhân</a></li>
                     <li><a href="{{ route('logout') }}">Đăng xuất</a></li>
                     @endauth --}}
-
                 </ul>
             </nav>
             <ul>
                 <li class="search-wrapper">
                     <form action="{{ route('user.search.all') }}" method="GET" class="search-form">
-                        <input type="search" name="keyword" placeholder="Tìm kiếm..." value="{{ request('keyword') }}"
-                            class="search-input">
+                        <input type="search" name="keyword" placeholder="Tìm kiếm..." value="{{ request('keyword') }}">
                         <button type="submit" class="search-btn">
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
                 </li>
                 <li class="cart__header_desktop"><a href="{{ route('user.shoppingcart') }}"><i
-                            class="fas fa-shopping-cart" style="margin-right:5px"><span id="cart-quantity"
+                            class="fas fa-shopping-cart" style="margin-right:0px"><span id="cart-quantity"
                                 class="number_cart">
                                 @if (session('cart') == null)
                                     0

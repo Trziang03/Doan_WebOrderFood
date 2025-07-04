@@ -1,139 +1,95 @@
 <?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use Illuminate\Support\Facades\Auth;
-    use Illuminate\Http\Request;
-    use App\Models\About;
-    use App\Models\Staff;
-
-    use Illuminate\Support\Facades\Hash;
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Models\Staff;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 
 class AdminStaffController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        //lọc nhân viên có role là 'NV'
-        $staffs = Staff::where('role', 'NV')->get();
+        $keyword = $request->keyword;
+        $staffs = Staff::where('role', 'NV')
+            ->when($keyword, function ($query, $keyword) {
+                return $query->where(function ($q) use ($keyword) {
+                    $q->where('full_name', 'like', "%$keyword%")
+                        ->orWhere('email', 'like', "%$keyword%")
+                        ->orWhere('phone', 'like', "%$keyword%");
+                });
+            })
+            ->get();
 
-        return view('admin.pages.staff', compact('staffs'));
+        return view('admin.pages.staff', ['staffs' => $staffs]);
     }
-    public function Profile($id)
-    {
-        $staff = Staff::findOrFail($id);
-        return view('admin.pages.editstaff',compact('staff'))->with('user', Auth::user());
-    }
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'fullname' => 'required|string|max:255',
-            'username' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('users', 'username')->ignore($id),
-            ],
-            'phone' => [
-                'required',
-                'string',
-                'regex:/^[0-9]{10}$/',
-                Rule::unique('users', 'phone')->ignore($id),
-            ],
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('users', 'email')->ignore($id),
-            ],
-            'gender' => 'required|string',
-            'birthday' => 'required|date|before_or_equal:today',
-            'role' => ['required', Rule::in(['NV', 'QL'])], // ví dụ dùng NV, QL
-        ], [
-            // thông báo lỗi giống như bạn đã viết
-            'username.required' => 'Vui lòng nhập username',
-            'username.unique' => 'Username đã tồn tại',
-            'phone.unique' => 'Số điện thoại đã được sử dụng',
-            'email.unique' => 'Email đã được sử dụng',
-            //...
-        ]);
 
-        // ✅ Lấy user theo id nhân viên
-        $user = Staff::findOrFail($id);
-
-        // ✅ Cập nhật thông tin
-        $user->username = $validated['username'];
-        $user->full_name = $validated['fullname'];
-        $user->email = $validated['email'];
-        $user->phone = $validated['phone'];
-        $user->gender = $validated['gender'] == 'male' ? 'Nam' : 'Nữ';
-        $user->date_of_birth = $validated['birthday'];
-        $user->role = $validated['role'];
-        $user->save();
-
-        return redirect()->route('admin.staff')->with('success', 'Cập nhật nhân viên thành công!');
-    }
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required|unique:staff,username',
-            'fullname' => 'required|string',
-            'email' => 'required|email|unique:staff,email',
-            'phone' => 'required|digits_between:9,11',
-            'password' => 'required|confirmed|min:6',
+            'username' => 'required|string|unique:users,username',
+            'full_name' => 'required|string|max:255',
+            'gender' => 'nullable|string',
+            'date_of_birth' => 'nullable|date|before_or_equal:' . now()->subYears(18)->format('Y-m-d'),
+            'phone' => 'nullable|string|max:10',
+            'email' => [
+                'required',
+                'email',
+                'regex:/^[\w.+\-]+@gmail\.com$/i',
+                'unique:users,email'
+            ],
+            'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|in:QL,NV',
+            'status' => 'required|boolean',
+        ], [
+            'email.regex' => 'Email phải có định dạng đúng và thuộc @gmail.com',
         ]);
 
-        $staff = new User();
-        $staff->username = $request->username;
-        $staff->full_name = $request->fullname;
-        $staff->email = $request->email;
-        $staff->phone = $request->phone;
-        $staff->role = 'NV'; // mặc định là nhân viên
-        $staff->gender = 'Nam'; // hoặc null nếu không nhập
-        $staff->date_of_birth = null;
-        $staff->password = Hash::make($request->password);
-        $staff->image = 'default-avatar.png'; // hoặc null
+        Staff::create([
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'full_name' => $request->full_name,
+            'gender' => $request->gender,
+            'date_of_birth' => $request->date_of_birth,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'role' => $request->role,
+            'status' => $request->status,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-        $staff->save();
-
-        return redirect()->route('admin.staff')->with('success', 'Thêm nhân viên thành công!');
+        return redirect()->back()->with('success', 'Thêm nhân viên thành công!');
     }
-    public function ajaxStore(Request $request)
+
+    public function edit($id)
     {
-        $validator = \Validator::make($request->all(), [
-            'username' => 'required|unique:staff,username',
-            'fullname' => 'required|string',
-            'email' => 'required|email|unique:staff,email',
-            'phone' => 'required|digits_between:9,11',
-            'password' => 'required|confirmed|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $staff = new Staff();
-        $staff->username = $request->username;
-        $staff->full_name = $request->fullname;
-        $staff->email = $request->email;
-        $staff->phone = $request->phone;
-        $staff->role = 'NV';
-        $staff->gender = 'Nam';
-        $staff->date_of_birth = null;
-        $staff->password = \Hash::make($request->password);
-        $staff->image = 'default-avatar.png';
-
-        $staff->save();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Thêm nhân viên thành công!'
-        ]);
+        return response()->json(Staff::findOrFail($id));
     }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'username' => 'required|unique:users,username,' . $id,
+            'full_name' => 'required',
+            'gender' => 'required|in:Nam,Nữ',
+            'date_of_birth' => 'required|date|before:2010-01-01',
+            'phone' => 'required|regex:/^0[0-9]{9}$/|unique:users,phone,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
+            'role' => 'required|in:QL,NV',
+            'status' => 'required|in:1,0',
+        ]);
+
+        $user = Staff::findOrFail($id);
+        $user->update($request->except('_token'));
+
+        return response()->json(['success' => true]);
+    }
 }
+
+
+

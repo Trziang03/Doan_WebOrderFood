@@ -676,6 +676,11 @@ html {
     border-bottom: 1px solid #a7a7a7;
     font-size: 16px;
 }
+
+.product_search_list_category.active .product_search_list_category_popup {
+    display: block;
+}
+
 .product_search_list_branch_popup > p{
     text-align: center;
     font-size: 15px;

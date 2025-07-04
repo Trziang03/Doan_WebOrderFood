@@ -11,10 +11,10 @@ use App\Models\Table;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ImageRating;
+
 use App\Models\Order;
 
 class UserController extends Controller
@@ -25,7 +25,6 @@ class UserController extends Controller
 
         $danhSachMonAn = ProductUser::LayThongTinSanPham('Món ăn');
         $danhSachDoUong = ProductUser::LayThongTinSanPham('Đồ uống');
-        // $danhSachBanChay = ProductUser::SanPhamBanChay();
         return view('User.pages.index')->with([
             "danhSachMonAn" => $danhSachMonAn,
             "danhSachDoUong" => $danhSachDoUong,
@@ -57,32 +56,41 @@ class UserController extends Controller
         ]);
     }
 
-    public function menu()
+    public function showmenu(Request $request)
     {
+        $tableId = $request->input('id');
+        $token = $request->input('token');
+
+        if ($tableId && $token) {
+            // Truy cập lần đầu từ mã QR
+            $table = Table::where('id', $tableId)->where('token', $token)->first();
+            if (!$table) {
+                abort(403, 'Mã QR không hợp lệ hoặc đã hết hạn.');
+            }
+
+            // Lưu vào cookie + session
+            Cookie::queue('table_id', $table->id, 30); // cookie 30 phút
+            session(['table_id' => $table->id]);
+        }
+
+        // Nếu không có id/token, lấy từ session hoặc cookie
+        $table_id = session('table_id') ?? $request->cookie('table_id');
+        if (!$table_id) {
+            return redirect('/404')->with('error', 'Không xác định được bàn hoặc bàn không hợp lệ.');
+        }
+
+        // Lấy lại thông tin bàn
+        $table = Table::find($table_id);
+
+        // Lấy toàn bộ sản phẩm
         $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
-        return view('user.pages.menu', ['layTatCaSanPham' => $layTatCaSanPham]);
+
+        return view('user.pages.menu', [
+            'table' => $table,
+            'layTatCaSanPham' => $layTatCaSanPham
+        ]);
     }
 
-    // public function menu(Request $request)
-    // {
-    //     $tableId = $request->query('table_id');
-    //     $token = $request->query('token');
-    
-    //     // Kiểm tra hợp lệ
-    //     $table = Table::findOrFail($tableId);
-    
-    //     if ($table->token !== $token) {
-    //         abort(403, 'Token không hợp lệ');
-    //     }
-    
-    //     // Lấy toàn bộ sản phẩm
-    //     $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
-    
-    //     return view('user.pages.menu', [
-    //         'layTatCaSanPham' => $layTatCaSanPham,
-    //         'table' => $table
-    //     ]);
-    // }
     public function timKiemToanBo(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -91,8 +99,7 @@ class UserController extends Controller
         // Tìm trong tất cả sản phẩm (không phụ thuộc danh mục)
         $layTatCaSanPham = Product::where('status', 1)
             ->where(function ($query) use ($keyword) {
-                $query->where('name', 'like', '%' . $keyword . '%')
-                    ->orWhere('description', 'like', '%' . $keyword . '%');
+                $query->where('name', 'like', '%' . $keyword . '%');
             })
             ->get();
 
@@ -205,55 +212,5 @@ class UserController extends Controller
         return redirect()->back();
     }
 
-
-
-    public function addContact(Request $req)
-    {
-        $validate = $req->validate([
-            'name' => 'required|string|regex:/^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]+$/|max:50',
-            'email' => 'required|email|max:25',
-            'phone' => 'required|string|regex:/^[0-9]{10}$/',
-            'title' => 'required|regex:/^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]+$/|max:255',
-            'content' => 'required|regex:/^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]+$/|string',
-        ], [
-            'name.required' => 'Bạn chưa nhập họ tên',
-            'name.regex' => 'Bạn không được phép nhập ký tự đặc biệt ở họ và tên',
-            'name.max' => 'Họ và tên vừa nhập đã vượt 50 ký tự.',
-            'email.required' => 'Bạn chưa nhập Email.',
-            'email.email' => 'Email vừa nhập chưa hợp lệ.',
-            'email.max' => 'Email vừa nhập đã vượt 25 ký tự.',
-            'phone.required' => 'Bạn chưa nhập số điện thoại.',
-            'phone.regex' => 'Số điện thoại chỉ được nhập là số và chỉ được 10 ký tự',
-            'title.required' => 'Bạn chưa nhập tiêu đề.',
-            'title.regex' => 'Bạn không được phép nhập ký tự đặc biệt ở tiêu đề',
-            'title.max' => 'chỉ được nhập tối đã 255 ký tự',
-            'content.required' => 'Bạn chưa nhập nội dung.',
-            'content.regex' => 'Bạn không được phép nhập ký tự đặc biệt ở nội dung',
-        ]);
-
-        $data = new Contact();
-        $data->id = $req['id'];
-        $data->name = $req['name'];
-        $data->title = $req['title'];
-        $data->content = $req['content'];
-        $data->email = $req['email'];
-        $data->phone = $req['phone'];
-        $data->save();
-        return redirect()->route('user.contact')->with('msg', 'Gửi liên hệ thành công!');
-    }
-
-    // public function getRating($id, $sao = 0)
-    // {
-    //     $rating = Rating::HienThiRating($id, $sao);
-    //     return response()->json([
-    //         'data' => $rating
-    //     ]);
-    // }
-
-    // public function GetDanhSachDanhGia($user, $code)
-    // {
-    //     $danhSach = Rating::DanhGia($user, $code);
-    //     return $danhSach;
-    // }
 
 }

@@ -1,5 +1,5 @@
 @extends('layouts.layouts_user')
-@section('title', 'Trang chi tiết sản phẩm')
+@section('title', 'Trang chi tiết món ăn')
 @section('content')
     @php
         $seach = DB::table('products')
@@ -338,6 +338,7 @@
                     <textarea id="note" maxlength="150"></textarea>
                 </div>
                 <!-- Thêm vào giỏ hàng -->
+                 <input type="hidden" id="table_id" value="{{ session('table_id') }}"> <!-- thêm dòng này -->
                 <button class="add-to-cart-btn" id="add-to-cart" onclick="addToCart()"
                     data-product-id="{{ $thongTinSanPham->id }}">
                     Thêm vào thực đơn <i class="fas fa-cart-plus"></i>
@@ -488,6 +489,7 @@
         const productId = document.getElementById('add-to-cart').dataset.productId;
         const quantity = parseInt(document.getElementById('soLuong').value) || 1;
         const note = document.getElementById('note').value.trim();
+        const tableId = document.getElementById('table_id').value; //thêm
 
         if (!selectedSizeId) return alertify.alert('Vui lòng chọn size món ăn!');
         if (quantity < 1 || quantity > 5) return alertify.alert('Số lượng phải từ 1 đến 5!');
@@ -507,6 +509,7 @@
             topping_quantities: toppingQuantities,
             quantity: quantity,
             note: note,
+            table_id: tableId, // thêm
             _token: '{{ csrf_token() }}'
         };
 
