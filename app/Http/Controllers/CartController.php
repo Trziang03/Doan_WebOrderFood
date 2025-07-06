@@ -9,35 +9,84 @@ use App\Models\Table;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderItemTopping;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 
 
 class CartController extends Controller
 {
     //
-    public function index(Request $request)
-    {
-        $table_id = session('table_id');
+    // public function index(Request $request)
+    // {
+    //     $table_id = session('table_id');
 
-        if (!$table_id || !is_numeric($table_id)) {
-            return redirect('/404')->with('error', 'Không xác định được bàn hoặc bàn không hợp lệ.');
-        }
+    //     if (!$table_id || !is_numeric($table_id)) {
+    //         return redirect('/404')->with('error', 'Không xác định được bàn hoặc bàn không hợp lệ.');
+    //     }
 
-        // Kiểm tra bàn có tồn tại không (tùy bạn có muốn kiểm tra lại không)
-        if (!Table::find($table_id)) {
-            return redirect('/404')->with('error', 'Bàn không tồn tại.');
-        }
+    //     // Kiểm tra bàn có tồn tại không (tùy bạn có muốn kiểm tra lại không)
+    //     if (!Table::find($table_id)) {
+    //         return redirect('/404')->with('error', 'Bàn không tồn tại.');
+    //     }
 
-        // Lấy danh sách sản phẩm trong giỏ hàng theo bàn
-        $cartItems = CartItem::with(['product', 'size', 'toppings.topping'])
-            ->where('table_id', $table_id)
-            ->get();
+    //     // Lấy danh sách sản phẩm trong giỏ hàng theo bàn
+    //     $cartItems = CartItem::with(['product', 'size', 'toppings.topping'])
+    //         ->where('table_id', $table_id)
+    //         ->get();
 
-        return view('User.profile.shoppingcart', [
-            'cartItems' => $cartItems,
-            'table_id' => $table_id,
-        ]);
+    //     return view('User.profile.shoppingcart', [
+    //         'cartItems' => $cartItems,
+    //         'table_id' => $table_id,
+    //     ]);
+    // }
+
+public function index(Request $request)
+{
+    $table_id = session('table_id');
+
+    // 1. Nếu không có session table_id => không xác định được bàn
+    if (!$table_id || !is_numeric($table_id)) {
+        return redirect('/404')->with('error', 'Không xác định được bàn hoặc bàn không hợp lệ.');
     }
+
+    // 2. Kiểm tra bàn có tồn tại không
+    $table = Table::find($table_id);
+    if (!$table) {
+        session()->forget(['table_id', 'qr_token']);
+        Cookie::queue(Cookie::forget('table_id'));
+        return redirect('/404')->with('error', 'Bàn không tồn tại.');
+    }
+
+    // 3. Kiểm tra trạng thái bàn (chỉ cho bàn đang phục vụ: table_status_id == 2)
+    if ($table->table_status_id != 2) {
+        // Xoá giỏ hàng gắn với bàn
+        CartItem::where('table_id', $table->id)->delete();
+
+        // Xoá session và cookie liên quan đến bàn
+        session()->forget(['table_id', 'qr_token']);
+        Cookie::queue(Cookie::forget('table_id'));
+
+        if ($table->table_status_id == 1) {
+            return redirect('/404')->with('error', 'Bàn chưa được kích hoạt.');
+        } elseif ($table->table_status_id == 3) {
+            return redirect('/404')->with('error', 'Bàn đang được dọn dẹp.');
+        } else {
+            return redirect('/404')->with('error', 'Bàn không hợp lệ.');
+        }
+    }
+
+    // 4. Lấy danh sách sản phẩm trong giỏ hàng theo bàn
+    $cartItems = CartItem::with(['product', 'size', 'toppings.topping'])
+        ->where('table_id', $table_id)
+        ->get();
+
+    // 5. Trả về view giỏ hàng
+    return view('User.profile.shoppingcart', [
+        'cartItems' => $cartItems,
+        'table_id' => $table_id,
+    ]);
+}
+
     public function addToCart(Request $request)
     {
         $validated = $request->validate([

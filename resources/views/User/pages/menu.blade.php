@@ -22,6 +22,11 @@
         <div class="product_search_lists">
             <div class="product_search_list_left">
                 <div>
+                    <div style="text-align: center; margin-bottom: 10px;font-size: 30px;">
+                        <strong>Bàn: {{ $table->name }}</strong>
+                    </div>
+                </div>
+                <div>
                     <h5><i class="fas fa-filter" style="margin-right: 5px;"></i>Bộ lọc tìm kiếm</h5>
                     <div class="product_search product_search_list_category">
                         <p class="category-toggle">Danh mục <i class="fas fa-sort-down"></i></p>
@@ -138,5 +143,28 @@
                 }
             }
         }
+    </script>
+    <script>
+        // Thời gian hết hạn từ Laravel (ISO 8601 format)
+        const qrExpiredAt = new Date("{{ session('qr_expired_at') }}").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = qrExpiredAt - now;
+
+            if (distance <= 0) {
+                document.getElementById("countdown").innerHTML = "Đã hết hạn";
+                // Optional: Tự reload hoặc chuyển hướng
+                window.location.href = "/404";
+                return;
+            }
+
+            const minutes = Math.floor(distance / 1000 / 60);
+            const seconds = Math.floor((distance / 1000) % 60);
+            document.getElementById("countdown").innerHTML = `${minutes} phút ${seconds} giây`;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Gọi ngay lập tức
     </script>
 @endsection

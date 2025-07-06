@@ -12,7 +12,6 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Order;
@@ -56,40 +55,192 @@ class UserController extends Controller
         ]);
     }
 
+    // public function showmenu(Request $request)
+    // {
+    //     // Trường hợp khách mới quét mã QR
+    //     if ($request->has('id') && $request->has('token')) {
+    //         $tableId = $request->input('id');
+    //         $token = $request->input('token');
+
+    //         $table = Table::where('id', $tableId)
+    //             ->where('token', $token)
+    //             ->first();
+
+    //         if (!$table) {
+    //             return redirect('/404')->with('error', 'Mã QR không hợp lệ.');
+    //         }
+
+    //         // Nếu bàn đang dọn thì chặn
+    //         if ($table->table_status_id == 3) {
+    //             return redirect('/404')->with('error', 'Bàn đang được dọn dẹp. Vui lòng quay lại sau.');
+    //         }
+
+    //         // Nếu bàn đang trống → đổi sang đang sử dụng
+    //         if ($table->table_status_id == 1) {
+    //             $table->table_status_id = 2; // Đang sử dụng
+    //             $table->save();
+    //         }
+
+    //         // 🔐 Lưu session và cookie cho khách mới
+    //         session([
+    //             'table_id' => $table->id,
+    //             'qr_token' => $token
+    //         ]);
+    //         Cookie::queue('table_id', encrypt($table->id), 3); // 3 phút
+    //     }
+
+    //     // 🟡 Trường hợp khách cũ quay lại
+    //     $table_id = session('table_id');
+
+    //     // Nếu không có trong session → lấy từ cookie
+    //     if (!$table_id && $request->hasCookie('table_id')) {
+    //         try {
+    //             $table_id = decrypt($request->cookie('table_id'));
+
+    //             $table = Table::find($table_id);
+    //             if ($table) {
+    //                 // Nếu đã bị đổi về trạng thái Trống hoặc Dọn → chặn truy cập
+    //                 if ($table->table_status_id == 1) {
+    //                     return redirect('/404')->with('error', 'Bàn đã được đặt lại. Vui lòng quét lại mã QR.');
+    //                 } elseif ($table->table_status_id == 3) {
+    //                     return redirect('/404')->with('error', 'Bàn đang được dọn dẹp. Vui lòng quay lại sau.');
+    //                 }
+
+    //                 // Khôi phục session
+    //                 session([
+    //                     'table_id' => $table->id,
+    //                     'qr_token' => $table->token
+    //                 ]);
+    //             }
+    //         } catch (\Exception $e) {
+    //             return redirect('/404')->with('error', 'Cookie bàn không hợp lệ.');
+    //         }
+    //     }
+
+    //     // Nếu không xác định được bàn → chuyển 404
+    //     if (!$table_id) {
+    //         return redirect('/404')->with('error', 'Không xác định được bàn.');
+    //     }
+
+    //     // Lấy thông tin bàn
+    //     $table = Table::find($table_id);
+    //     if (!$table) {
+    //         return redirect('/404')->with('error', 'Không tìm thấy bàn.');
+    //     }
+
+    //     // Kiểm tra trạng thái lần cuối
+    //     if ($table->table_status_id == 1) {
+    //         return redirect('/404')->with('error', 'Bàn đã được đặt lại. Vui lòng quét lại mã QR.');
+    //     } elseif ($table->table_status_id == 3) {
+    //         return redirect('/404')->with('error', 'Bàn đang được dọn dẹp. Vui lòng quay lại sau.');
+    //     }
+
+    //     // Lấy sản phẩm
+    //     $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
+
+    //     return view('user.pages.menu', [
+    //         'table' => $table,
+    //         'layTatCaSanPham' => $layTatCaSanPham
+    //     ]);
+    // }
+
     public function showmenu(Request $request)
-    {
+{
+    // 1. Nếu có 'id' và 'token' trên URL (quét QR lần đầu)
+    if ($request->has(['id', 'token'])) {
         $tableId = $request->input('id');
         $token = $request->input('token');
 
-        if ($tableId && $token) {
-            // Truy cập lần đầu từ mã QR
-            $table = Table::where('id', $tableId)->where('token', $token)->first();
-            if (!$table) {
-                abort(403, 'Mã QR không hợp lệ hoặc đã hết hạn.');
+        // 2. Tìm bàn có id và token khớp
+        $table = Table::where('id', $tableId)
+            ->where('token', $token)
+            ->first();
+
+        // 3. Không tìm thấy bàn => mã QR sai hoặc hết hạn
+        if (!$table) {
+            return redirect('/404')->with('error', 'Mã QR không hợp lệ hoặc đã hết hạn.');
+        }
+
+        // 4. Nếu bàn đang được dọn => chặn và xóa session + cookie
+        if ($table->table_status_id == 3) {
+            session()->forget(['table_id', 'qr_token']);
+            Cookie::queue(Cookie::forget('table_id'));
+            return redirect('/404')->with('error', 'Bàn đang được dọn dẹp.');
+        }
+
+        // ✅ 5. Nếu bàn đang trống (status = 1) => chuyển sang phục vụ (status = 2)
+        if ($table->table_status_id == 1) {
+            $table->table_status_id = 2;
+            $table->save();
+        }
+
+        // 6. Lưu session + cookie (3 phút)
+        session([
+            'table_id' => $table->id,
+            'qr_token' => $token
+        ]);
+        Cookie::queue('table_id', encrypt($table->id), 3);
+    }
+
+    // 7. Nếu không có id/token => quay lại từ trình duyệt (dùng session hoặc cookie)
+    $tableId = session('table_id');
+
+    if (!$tableId && $request->hasCookie('table_id')) {
+        try {
+            $tableId = decrypt($request->cookie('table_id'));
+            $table = Table::find($tableId);
+
+            // 8. Nếu bàn không hợp lệ hoặc đang dọn
+            if (!$table || $table->table_status_id == 3) {
+                session()->forget(['table_id', 'qr_token']);
+                Cookie::queue(Cookie::forget('table_id'));
+                return redirect('/404')->with('error', 'Bàn không hợp lệ hoặc đang được dọn dẹp.');
             }
 
-            // Lưu vào cookie + session
-            Cookie::queue('table_id', $table->id, 30); // cookie 30 phút
-            session(['table_id' => $table->id]);
+            // ✅ 9. Nếu bàn vẫn đang trống (1) => tự động chuyển thành đang phục vụ (2)
+            if ($table->table_status_id == 1) {
+                $table->table_status_id = 2;
+                $table->save();
+            }
+
+            // 10. Lưu lại session
+            session([
+                'table_id' => $table->id,
+                'qr_token' => $table->token
+            ]);
+        } catch (\Exception $e) {
+            return redirect('/404')->with('error', 'Cookie bàn không hợp lệ hoặc đã bị chỉnh sửa.');
         }
-
-        // Nếu không có id/token, lấy từ session hoặc cookie
-        $table_id = session('table_id') ?? $request->cookie('table_id');
-        if (!$table_id) {
-            return redirect('/404')->with('error', 'Không xác định được bàn hoặc bàn không hợp lệ.');
-        }
-
-        // Lấy lại thông tin bàn
-        $table = Table::find($table_id);
-
-        // Lấy toàn bộ sản phẩm
-        $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
-
-        return view('user.pages.menu', [
-            'table' => $table,
-            'layTatCaSanPham' => $layTatCaSanPham
-        ]);
     }
+
+    // 11. Không có bàn sau tất cả => chặn
+    if (!$tableId) {
+        return redirect('/404')->with('error', 'Không xác định được bàn.');
+    }
+
+    // 12. Lấy bàn lần cuối và kiểm tra trạng thái
+    $table = Table::find($tableId);
+    if (!$table) {
+        session()->forget(['table_id', 'qr_token']);
+        Cookie::queue(Cookie::forget('table_id'));
+        return redirect('/404')->with('error', 'Không tìm thấy bàn.');
+    }
+
+    if ($table->table_status_id == 3) {
+        session()->forget(['table_id', 'qr_token']);
+        Cookie::queue(Cookie::forget('table_id'));
+        return redirect('/404')->with('error', 'Bàn đang được dọn dẹp.');
+    }
+
+    // ✅ 13. Lấy danh sách sản phẩm
+    $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
+
+    // ✅ 14. Trả về giao diện menu
+    return view('user.pages.menu', [
+        'table' => $table,
+        'layTatCaSanPham' => $layTatCaSanPham
+    ]);
+}
 
     public function timKiemToanBo(Request $request)
     {
@@ -103,10 +254,23 @@ class UserController extends Controller
             })
             ->get();
 
+        // Lấy thông tin bàn từ session hoặc cookie (giống như showmenu)
+        $table_id = session('table_id');
+        if (!$table_id && $request->hasCookie('table_id')) {
+            try {
+                $table_id = decrypt($request->cookie('table_id'));
+            } catch (\Exception $e) {
+                $table_id = null;
+            }
+        }
+        $table = $table_id ? Table::find($table_id) : null;
+
         return view('User.pages.menu', [
             'layTatCaSanPham' => $layTatCaSanPham,
             'danhSachDanhMuc' => Category::where('status', 1)->get(),
             'keyword' => $keyword,
+            'qr_expired_at' => session('qr_expired_at'), // thêm thời gian hết hạn cho QR code đúng với session đã lưu
+            'table' => $table,
         ]);
     }
     public function timKiemSanPhamTheoDanhMuc($slug)
@@ -121,10 +285,22 @@ class UserController extends Controller
         // Lấy các sản phẩm thuộc danh mục
         $layTatCaSanPham = Product::where('category_id', $category->id)->where('status', 1)->get();
 
+        // Lấy thông tin bàn từ session hoặc cookie (giống như showmenu)
+        $table_id = session('table_id');
+        if (!$table_id && request()->hasCookie('table_id')) {
+            try {
+                $table_id = decrypt(request()->cookie('table_id'));
+            } catch (\Exception $e) {
+                $table_id = null;
+            }
+        }
+        $table = $table_id ? Table::find($table_id) : null;
+
         // Gửi dữ liệu ra view
         return view('User.pages.menu', [
             'layTatCaSanPham' => $layTatCaSanPham,
             'danhSachDanhMuc' => Category::where('status', 1)->get(),
+            'table' => $table,
         ]);
     }
     //Trang Giới Thiệu

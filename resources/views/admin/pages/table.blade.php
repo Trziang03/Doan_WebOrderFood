@@ -327,8 +327,8 @@
 
                     <div class="form-group-table">
                         <label for="access_limit">Số lượt truy cập cho phép</label>
-                        <input type="number" name="access_limit" id="access_limit" class="form-control" min="1"
-                            max="10" value="1" required oninput="checkAccessLimit(this)">
+                        <input type="number" name="access_limit" id="access_limit" class="form-control" min="1" max="10"
+                            value="1" required oninput="checkAccessLimit(this)">
                         <span id="access_limit_error" style="color: red; display: none;">
                             Số lượt truy cập không được vượt quá 10.
                         </span>
@@ -351,7 +351,7 @@
         <div class="grid-container">
             {{-- Hiển thị bàn thật --}}
             @foreach ($tables as $table)
-                <div class="table-box" id="table-box">
+                <div class="table-box" data-id="{{ $table->id }}">
                     <div class="table-title">{{ $table->name }}</div>
                     <div class="table-status">{{ $table->status->name }}</div>
                     @if ($table->qr_image_path)
@@ -399,20 +399,17 @@
                         </span>
                     </div>
                 </div>
-
-
                 <label for="editStatus">Trạng thái</label>
                 <select id="editStatus" name="table_status_id">
                     @foreach ($statuses as $status)
-                        <option value="{{ $status->id }}"
-                            {{ $table->table_status_id == $status->id ? 'selected' : '' }}>
+                        <option value="{{ $status->id }}" {{ $table->table_status_id == $status->id ? 'selected' : '' }}>
                             {{ $status->name }}
                         </option>
                     @endforeach
                 </select>
                 <label style="margin-top: 10px;" for="access_limit">Số lượt truy cập cho phép</label>
-                <input style="width: 40%;" type="number" id="access_limit" name="access_limit" min="1"
-                    max="10" value="{{ $table->access_limit }}" oninput="checkAccessLimit(this)">
+                <input style="width: 40%;" type="number" id="access_limit" name="access_limit" min="1" max="10"
+                    value="{{ $table->access_limit }}" oninput="checkAccessLimit(this)">
                 <small id="access_limit_error" style="color: red; display: none;">
                     Số lượt truy cập không được vượt quá 10.
                 </small>
@@ -421,8 +418,12 @@
                     <input type="checkbox" id="editQR" name="regen_qr">
                 </div>
                 <label>URL gọi món</label>
+                @php
+                    $link = route('user.menu', ['id' => $table->id], false) . '?token=' . $table->token;
+                    $fullUrl = 'https://7c8c-2001-ee0-4f0b-f270-f4b5-1a05-a39b-e660.ngrok-free.app' . $link;
+                @endphp
                 <p id="editQrUrl" style="font-size: 13px; word-break: break-word;">
-                    {{ asset('storage/qr-codes/' . $table->qr_code) }}
+                    {{ $fullUrl }}
                 </p>
 
                 <button type="submit" style="margin-left: 105px; margin-top: 10px;">Lưu thay đổi</button>
@@ -453,7 +454,32 @@
 
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        function updateTableStatuses() {
+            fetch('/admin/table/status')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(table => {
+                        const tableBox = document.querySelector(`.table-box[data-id='${table.id}']`);
+                        if (tableBox) {
+                            const statusEl = tableBox.querySelector('.table-status');
+                            if (statusEl) {
+                                statusEl.innerText = table.status_name;
+                            }
+                            // Optional: Thêm class theo status_id (ví dụ đổi màu)
+                            tableBox.classList.remove('status-1', 'status-2', 'status-3');
+                            tableBox.classList.add(`status-${table.status_id}`);
+                        }
+                    });
+                })
+                .catch(error => console.error('Lỗi khi cập nhật trạng thái:', error));
+        }
+        // Cập nhật mỗi 10000 mili giây
+        setInterval(updateTableStatuses, 10000);
+        updateTableStatuses(); // gọi lần đầu khi load
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
             const btn = document.getElementById('toggleForm');
             const form = document.getElementById('tableForm');
 
@@ -467,7 +493,6 @@
                 }
             });
         });
-
 
         function openEditPopup(table) {
             const form = document.getElementById('editTableForm');
@@ -538,21 +563,21 @@
 
     {{-- kiểm tra dữ liệu ngay khi nhập --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('updateTableForm').addEventListener('submit', validateName);
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('addTableForm');
 
-            form.addEventListener('submit', function(event) {
+            form.addEventListener('submit', function (event) {
                 event.preventDefault();
 
                 const isValid = validateNewTableName();
                 if (!isValid) return;
 
-                checkNewTableNameExists(function(isAvailable) {
+                checkNewTableNameExists(function (isAvailable) {
                     if (isAvailable) {
                         form.submit();
                     }
@@ -678,12 +703,12 @@
         }
 
 
-        document.getElementById('updateTableForm').addEventListener('submit', function(event) {
+        document.getElementById('updateTableForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
             if (!validateFormat()) return;
 
-            checkNameExists(function(isValid) {
+            checkNameExists(function (isValid) {
                 if (isValid) {
                     document.getElementById('updateTableForm').submit();
                 }
@@ -696,7 +721,7 @@
     {{-- kiểm tra duplicate name --}}
     <script></script>
     <script>
-        document.getElementById("toggleForm").onclick = function() {
+        document.getElementById("toggleForm").onclick = function () {
             document.getElementById("addTablePopup").style.display = "flex";
         }
 

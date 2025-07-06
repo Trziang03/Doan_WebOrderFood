@@ -15,6 +15,8 @@ class Table extends Model
         'name',
         'qr_code',
         'table_status_id',
+        'token',
+        'qr_expired_at',
     ];
 
     /**

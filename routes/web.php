@@ -103,6 +103,8 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');
     Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
     Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
+    Route::get('/admin/table/status', [AdminTableController::class, 'getStatuses']);
+
 
     Route::get('/table/checkin', function (Request $request) {
         $token = $request->query('token');
@@ -165,3 +167,4 @@ Route::view('/404', 'errors.404');
 // Route::middleware(['checkTable'])->group(function () {
 //     Route::get('/menu', [UserController::class, 'showmenu'])->name('user.menu');
 // });
+
