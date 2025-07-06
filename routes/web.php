@@ -50,7 +50,7 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::post('/admin/editWebsite', [AdminController::class, 'editWebsite'])->middleware(AdminRoleMiddleware::class)->name('admin.editWebsite');
     Route::post('/admin/editLogo', [AdminController::class, 'editLogo'])->middleware(AdminRoleMiddleware::class)->name('admin.editLogo');
 
-    //Route quan li danh mục
+    //Route quản lí danh mục
     Route::get('/admin/category', [AdminCategoryController::class, 'index'])->name('admin.category');
     Route::get('/admin/addcategory', [AdminCategoryController::class, 'addCategory'])->name('admin.category.addcategory');
     Route::post('/admin/addcategory/store', [AdminCategoryController::class, 'storeCategory'])->name('admin.category.storecategory');
@@ -66,11 +66,6 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/admin/changepw', [AdminController::class, 'changepw'])->name('admin.changepw');
     Route::post('/checkpw', [AdminController::class, 'IsPasswordChange'])->name('profile.checkpw');
     Route::post('/changepw', [AdminController::class, 'UpdatePassword'])->name('profile.changepw');
-
-    //Route dashboard
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-    Route::post('/admin/editWebsite', [AdminController::class, 'editWebsite'])->middleware(AdminRoleMiddleware::class)->name('admin.editWebsite');
-    Route::post('/admin/editLogo', [AdminController::class, 'editLogo'])->middleware(AdminRoleMiddleware::class)->name('admin.editLogo');
 
     //Route quản lí đơn hàng
     Route::get('/admin/order', [AdminOrderController::class, 'index'])->name('admin.order');
@@ -91,13 +86,6 @@ Route::middleware(['role:QL,NV'])->group(function () {
 
     Route::resource('/admin/product', AdminProductController::class);
 
-
-    //Route quan li lien he
-    Route::get('/admin/contact', [AdminContactController::class, 'showListContacts'])->name('admin.contact');
-    Route::delete('/admin/contact/delete/{id}', [AdminContactController::class, 'deleteContact'])->name('contact.delete');
-    Route::get('/admin/contact/update/{id}', [AdminContactController::class, 'updateContact'])->name('contact.update');
-
-
     //quản lý bàn ăn
     Route::get('/admin/table', [AdminTableController::class, 'index'])->name('admin.table');
     Route::post('/admin/table/store', [AdminTableController::class, 'store'])->name('admin.table.store');
@@ -105,37 +93,10 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
     Route::get('/admin/table/status', [AdminTableController::class, 'getStatuses']);
 
-
-    Route::get('/table/checkin', function (Request $request) {
-        $token = $request->query('token');
-        $table = Table::where('token', $token)->first();
-        if (!$table || !$table->qr_code) {
-            return response()->view('table.qr_expired', [], 403);
-        }
-        if (!$table) {
-            abort(404, 'Không tìm thấy bàn.');
-        }
-        //  cấm truy cập nếu trạng thái = 3
-        if ((int) $table->table_status_id === 3) {
-            return response()->view('errors.access_denied', [
-                'message' => 'Bàn đang được dọn dẹp. Vui lòng chọn bàn khác.'
-            ], 403);
-        }
-        Route::get('/check-table-name', [AdminTableController::class, 'checkDuplicateName']);
-
-
-        //Route quản lí món ăn
-        Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
-        Route::get('/admin/products/category/{id}', [AdminProductController::class, 'filterByCategory']);
-        Route::get('/admin/product/search', [AdminProductController::class, 'search'])->name('admin.product.search');
-        Route::get('/admin/product/filter', [AdminProductController::class, 'filter'])->name('admin.product.filter');
-        Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
-        Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
-
-        Route::resource('/admin/product', AdminProductController::class);
-    });
-
-
+    //Route quan li lien he
+    Route::get('/admin/contact', [AdminContactController::class, 'showListContacts'])->name('admin.contact');
+    Route::delete('/admin/contact/delete/{id}', [AdminContactController::class, 'deleteContact'])->name('contact.delete');
+    Route::get('/admin/contact/update/{id}', [AdminContactController::class, 'updateContact'])->name('contact.update');
 });
 
 //Phân quyền quản lý
@@ -147,7 +108,7 @@ Route::middleware(['role:QL'])->group(function () {
     Route::post('/admin/staff/{id}/update', [AdminStaffController::class, 'update'])->name('admin.staff.update');
 });
 
-//xác nhận đặt hàng và thanh toán
+//Xác nhận đặt hàng và thanh toán
 Route::controller(OrderController::class)->group(function () {
     Route::get('/payment', 'index')->name('user.payment');
     Route::post('/payment', 'completePayment')->name('complete-payment');
@@ -164,7 +125,4 @@ Route::controller(ProfileController::class)->group(function () {
 });
 
 Route::view('/404', 'errors.404');
-// Route::middleware(['checkTable'])->group(function () {
-//     Route::get('/menu', [UserController::class, 'showmenu'])->name('user.menu');
-// });
 

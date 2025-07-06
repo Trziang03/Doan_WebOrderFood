@@ -16,11 +16,9 @@ class Table extends Model
         'qr_code',
         'table_status_id',
         'token',
-        'qr_expired_at',
     ];
 
     /**
-     * Trạng thái của bàn (ví dụ: trống, đã đặt, đang phục vụ)
      */
     public function status()
     {

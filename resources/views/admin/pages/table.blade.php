@@ -325,15 +325,6 @@
                         </select>
                     </div>
 
-                    <div class="form-group-table">
-                        <label for="access_limit">Số lượt truy cập cho phép</label>
-                        <input type="number" name="access_limit" id="access_limit" class="form-control" min="1" max="10"
-                            value="1" required oninput="checkAccessLimit(this)">
-                        <span id="access_limit_error" style="color: red; display: none;">
-                            Số lượt truy cập không được vượt quá 10.
-                        </span>
-                    </div>
-
                     <div class="form-buttons">
                         <button class="btn" type="submit">Lưu thay đổi</button>
                     </div>
@@ -355,18 +346,14 @@
                     <div class="table-title">{{ $table->name }}</div>
                     <div class="table-status">{{ $table->status->name }}</div>
                     @if ($table->qr_image_path)
-                        {{-- <div class="table-qr">
-                            <img src="{{ asset('storage/' . $table->qr_image_path) }}" width="80">
-                        </div> --}}
                         <div class="table-qr">
                             <img src="{{ asset('storage/qr-codes/' . $table->qr_code) }}" width="80">
-                            <p>Link: {{ url('/table/checkin?token=' . $table->token) }}</p>
                         </div>
                     @endif
                     <div class="table-actions">
                         <button class="btn-action" onclick='openEditPopup(@json($table))'><i
                                 class="fa-regular fa-pen-to-square"></i></button>
-                        <button onclick="showQR({{ $table->id }})">📷</button>
+                        <button onclick="showQR({{ $table->id }})"><i class="fa fa-qrcode"></i></button>
                     </div>
                 </div>
             @endforeach
@@ -384,13 +371,11 @@
             <button class="btn-close-popup" onclick="closeEditPopup()">×</button>
             <h4>Cập nhật bàn ăn</h4>
 
-            <form style="padding: 5px 20px;" id="editTableForm" method="POST"
-                action="{{ route('admin.table.update', ['id' => $table->id]) }}">
+            <form id="editTableForm" method="POST" action="">
                 @csrf
                 <label for="editName">Số hiệu bàn</label>
                 <div class="col">
-                    <input type="text" id="editName" placeholder="Tên bàn" name="name" value="{{ $table->name }}"
-                        oninput="validateFormat()" data-id="{{ $table->id }}">
+                    <input type="text" id="editName" name="name" placeholder="Tên bàn" oninput="validateFormat()">
                     <div class="alert_error_validate">
                         <span id="name_error" style="color: red; font-size:12px;margin-left: 10px">
                             @error('name')
@@ -399,34 +384,25 @@
                         </span>
                     </div>
                 </div>
+
                 <label for="editStatus">Trạng thái</label>
                 <select id="editStatus" name="table_status_id">
                     @foreach ($statuses as $status)
-                        <option value="{{ $status->id }}" {{ $table->table_status_id == $status->id ? 'selected' : '' }}>
+                        <option value="{{ $status->id }}" @if ($table->table_status_id == $status->id) selected @endif>
                             {{ $status->name }}
                         </option>
                     @endforeach
                 </select>
-                <label style="margin-top: 10px;" for="access_limit">Số lượt truy cập cho phép</label>
-                <input style="width: 40%;" type="number" id="access_limit" name="access_limit" min="1" max="10"
-                    value="{{ $table->access_limit }}" oninput="checkAccessLimit(this)">
-                <small id="access_limit_error" style="color: red; display: none;">
-                    Số lượt truy cập không được vượt quá 10.
-                </small>
+
                 <div class="form-check">
-                    <label for="editQR">Đổi mã QR</label>
+                    <label for="editQR">Kích hoạt bàn</label>
                     <input type="checkbox" id="editQR" name="regen_qr">
                 </div>
-                <label>URL gọi món</label>
-                @php
-                    $link = route('user.menu', ['id' => $table->id], false) . '?token=' . $table->token;
-                    $fullUrl = 'https://7c8c-2001-ee0-4f0b-f270-f4b5-1a05-a39b-e660.ngrok-free.app' . $link;
-                @endphp
-                <p id="editQrUrl" style="font-size: 13px; word-break: break-word;">
-                    {{ $fullUrl }}
-                </p>
 
-                <button type="submit" style="margin-left: 105px; margin-top: 10px;">Lưu thay đổi</button>
+                <label>URL gọi món</label>
+                <p id="editQrUrl" style="font-size: 13px; word-break: break-word; margin-top: 0px;">{{ $table->qr_url }}</p>
+
+                <button type="submit" style="margin-left: 78px; margin-top: 20px;">Lưu thay đổi</button>
             </form>
         </div>
     </div>
@@ -473,8 +449,8 @@
                 })
                 .catch(error => console.error('Lỗi khi cập nhật trạng thái:', error));
         }
-        // Cập nhật mỗi 10000 mili giây
-        setInterval(updateTableStatuses, 10000);
+        // Cập nhật mỗi 3000 giây
+        setInterval(updateTableStatuses, 3000);
         updateTableStatuses(); // gọi lần đầu khi load
     </script>
 
@@ -500,7 +476,7 @@
 
             document.getElementById('editName').value = table.name;
             document.getElementById('editStatus').value = table.table_status_id;
-            document.getElementById('editQrUrl').innerText = table.qr_table ?? 'Chưa có';
+            document.getElementById('editQrUrl').innerText = table.qr_url;
 
             document.getElementById('optionPopup').style.display = 'block';
         }
@@ -539,26 +515,6 @@
 
         // Dữ liệu bàn từ Laravel truyền vào JavaScript
         window.tables = @json($tables);
-    </script>
-    <script>
-        function checkAccessLimit(input) {
-            const min = 1;
-            const max = 10;
-            const value = parseInt(input.value);
-            const error = document.getElementById('access_limit_error');
-
-            if (value < min) {
-                error.textContent = 'Số lượt truy cập không được nhỏ hơn 1.';
-                error.style.display = 'inline';
-                input.value = min;
-            } else if (value > max) {
-                error.textContent = 'Số lượt truy cập không được vượt quá 10.';
-                error.style.display = 'inline';
-                input.value = max;
-            } else {
-                error.style.display = 'none';
-            }
-        }
     </script>
 
     {{-- kiểm tra dữ liệu ngay khi nhập --}}
@@ -630,17 +586,6 @@
                     alertify.error('Lỗi khi kiểm tra tên bàn.');
                     callback(false);
                 });
-        }
-
-        function checkAccessLimit(input) {
-            const error = document.getElementById('access_limit_error');
-            const value = parseInt(input.value);
-
-            if (value > 10) {
-                error.style.display = 'block';
-            } else {
-                error.style.display = 'none';
-            }
         }
     </script>
     <script>
@@ -715,8 +660,6 @@
             });
         });
     </script>
-
-
 
     {{-- kiểm tra duplicate name --}}
     <script></script>

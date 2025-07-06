@@ -11,6 +11,7 @@ use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
 use Endroid\QrCode\Encoding\Encoding;
+use Illuminate\Support\Facades\URL;
 
 class AdminTableController extends Controller
 {
@@ -18,6 +19,12 @@ class AdminTableController extends Controller
     {
         $tables = Table::with('status')->get();
         $statuses = TableStatus::all();
+
+        // ✅ Gắn URL QR cho từng bàn
+        foreach ($tables as $table) {
+            $path = route('user.menu', ['id' => $table->id], false); // /menu?id=1
+            $table->qr_url = url($path . '&token=' . $table->token); // domain hiện tại + token
+        }
 
         return view('admin.pages.table', [
             'tables' => $tables,
@@ -72,7 +79,6 @@ class AdminTableController extends Controller
                 'regex:/^[a-zA-Z0-9\s]+$/',
             ],
             'table_status_id' => 'required|exists:table_status,id',
-            'access_limit' => 'required|integer|min:1',
         ], [
             'name.required' => 'Tên bàn không được để trống.',
             'name.string' => 'Tên bàn phải là chuỗi.',
@@ -82,10 +88,6 @@ class AdminTableController extends Controller
 
             'table_status_id.required' => 'Vui lòng chọn trạng thái bàn.',
             'table_status_id.exists' => 'Trạng thái bàn không hợp lệ.',
-
-            'access_limit.required' => 'Vui lòng nhập số lượt truy cập.',
-            'access_limit.integer' => 'Số lượt truy cập phải là số.',
-            'access_limit.min' => 'Số lượt truy cập tối thiểu là 1.',
         ]);
 
         $now = Carbon::now();
@@ -93,12 +95,10 @@ class AdminTableController extends Controller
         // 3. Cập nhật dữ liệu cơ bản
         $table->name = $request->name;
         $table->table_status_id = $request->table_status_id;
-        $table->access_limit = $request->access_limit;
 
         // 4. Nếu trạng thái là "Trống" (ID = 1), reset access count và tạo QR mới
         if ((int) $request->table_status_id === 1) {
             $this->generateQrForTable($table, $now);
-            $table->access_count = 0;
         }
 
         // 5. Nếu admin check vào "Đổi mã QR" → tạo mã mới
@@ -145,8 +145,6 @@ class AdminTableController extends Controller
         $table->name = $request->name;
         $table->table_status_id = $request->table_status_id;
         $table->token = Str::random(40);
-        $table->access_limit = $request->access_limit;
-        $table->access_count = 0;
         $table->save(); // Lưu trước để có ID
 
         // 3. Gọi hàm generate QR
@@ -156,33 +154,6 @@ class AdminTableController extends Controller
         $table->save();
 
         return redirect()->back()->with('message', 'Thêm bàn mới thành công');
-    }
-
-    public function checkin(Request $request)
-    {
-        $token = $request->query('token');
-        $table = Table::where('token', $token)->first();
-
-        if (!$table) {
-            return abort(404, 'Không tìm thấy bàn');
-        }
-
-        // Nếu bàn đang dọn dẹp → block
-        if ($table->table_status_id == 3) {
-            return response()->view('table.blocked');
-        }
-
-        // Nếu đã quá số lượt truy cập
-        if ($table->access_count >= $table->access_limit) {
-            return response()->view('table.too-many', ['table' => $table]);
-        }
-
-        // Tăng lượt truy cập
-        $table->access_count += 1;
-        $table->save();
-
-        // Tiếp tục truy cập menu gọi món
-        return view('order.menu', ['table' => $table]);
     }
 
 }
