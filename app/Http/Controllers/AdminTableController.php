@@ -141,7 +141,7 @@ class AdminTableController extends Controller
         $token = Str::random(40);
 
         // Tạo URL có kèm token
-        $url = route('user.menu', ['id' => $table->id]) . '?token=' . $token;
+        $url = route('user.menu', ['id' => $table->id]) . ',token=' . $token;
 
         $builder = new Builder(
             writer: new PngWriter(),
@@ -195,37 +195,37 @@ class AdminTableController extends Controller
     }
 
 
-    // public function handleQr(Request $request)
-    // {
-    //     $tableId = $request->query('table_id');
-
-    //     if (!$tableId || !Table::find($tableId)) {
-    //         return abort(404, 'Bàn không tồn tại');
-    //     }
-
-    //     // Lưu table_id vào session
-    //     session(['table_id' => $tableId]);
-
-    //     // Chuyển hướng về trang gọi món (hoặc trang chính)
-    //     return redirect('/'); // có thể đổi thành route của trang thực đơn
-    // }
-    public function handleQr($id, Request $request)
+    public function handleQr(Request $request)
     {
-        $token = $request->query('token');
+        $tableId = $request->query('table_id');
 
-        // Kiểm tra table tồn tại và token đúng
-        $table = Table::findOrFail($id);
-
-        if ($table->token !== $token) {
-            abort(403, 'Token không hợp lệ.');
+        if (!$tableId || !Table::find($tableId)) {
+            return abort(404, 'Bàn không tồn tại');
         }
 
-        // Redirect sang route user.menu, truyền theo table_id và token
-        return redirect()->route('user.menu', [
-            'table_id' => $id,
-            'token' => $token
-        ]);
+        // Lưu table_id vào session
+        session(['table_id' => $tableId]);
+
+        // Chuyển hướng về trang gọi món (hoặc trang chính)
+        return redirect('/'); // có thể đổi thành route của trang thực đơn
     }
+    // public function handleQr($id, Request $request)
+    // {
+    //     $token = $request->query('token');
+
+    //     // Kiểm tra table tồn tại và token đúng
+    //     $table = Table::findOrFail($id);
+
+    //     if ($table->token !== $token) {
+    //         abort(403, 'Token không hợp lệ.');
+    //     }
+
+    //     // Redirect sang route user.menu, truyền theo table_id và token
+    //     return redirect()->route('user.menu', [
+    //         'table_id' => $id,
+    //         'token' => $token
+    //     ]);
+    // }
 
 
     // public function update(Request $request, $id)
