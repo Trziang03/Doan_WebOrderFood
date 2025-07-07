@@ -11,7 +11,6 @@ use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
 use Endroid\QrCode\Encoding\Encoding;
-use Illuminate\Support\Facades\URL;
 
 class AdminTableController extends Controller
 {

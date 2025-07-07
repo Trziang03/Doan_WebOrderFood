@@ -120,16 +120,17 @@ class AdminOrderController extends Controller
 
 
     public function changeStatus($id)
-    {
-        $order = Order::findOrFail($id);
+{
+    $order = Order::findOrFail($id);
 
-        if ($order->order_status_id < 3) {
-            $order->order_status_id += 1;
-            $order->save();
-        }
-
-        return redirect()->route('admin.order');
+    if ($order->order_status_id < 4) {
+        $order->order_status_id += 1;
+        $order->save();
     }
+
+    $tab = request('tab', 'xacnhan');
+    return redirect()->back()->with('tab', $tab);
+}
 
     public function ajaxDetail($id)
     {
