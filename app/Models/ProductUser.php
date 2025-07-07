@@ -36,7 +36,6 @@ class ProductUser extends Model
                 'products.id',
                 'products.name',
                 'products.slug',
-                'products.rating',
                 'products.image_food',
                 'products.price',
                 'categories.name as category_name'

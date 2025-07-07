@@ -70,13 +70,55 @@
         border: 1px solid #ddd;
         vertical-align: top;
     }
+    /* css cái chuông thông báo */
+    .bell-notification {
+        position: relative;
+        display: inline-block;
+        margin-right: 16px;
+        cursor: pointer;
+        font-size: 20px;
+        color: #333;
+        transition: color 0.3s ease;
+    }
+
+    .bell-notification:hover {
+        color: #ff6f00;
+    }
+
+    .bell-badge {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background-color: red;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 50%;
+        box-shadow: 0 0 3px rgba(0,0,0,0.3);
+        animation: pulse 1s infinite;
+    }
+
+    /* Hiệu ứng rung nhẹ */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.15); }
+        100% { transform: scale(1); }
+    }
+
 </style>
 </style>
 @section('content')
     <div class="content" id="donhang">
         <div class="head">
             <div class="title">Quản Lý Đơn Hàng</div>
-            <div class="search">
+            <div class="search">   
+                <div class="bell-notification">
+                    <i class="fas fa-bell"></i>
+                    @if ($pendingCount > 0)
+                        <span class="bell-badge">{{ $pendingCount }}</span>
+                    @endif
+                </div>       
                 <form action="{{ route('admin.order') }}" method="GET">
                     <input type="text" name="keyword" placeholder="Tìm mã đơn hoặc bàn..." value="{{ request('keyword') }}">
                     <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -88,16 +130,33 @@
 
         {{-- ACTIVE TAB --}}
         @php
-            $activeTab = session('tab') ?? request('tab') ?? 'xacnhan';
+            $activeTab = session('tab') ?? (request('tab') ?? 'xacnhan');
         @endphp
 
-        <div class="tabs">
+        {{-- <div class="tabs">
             <div class="{{ $activeTab === 'xacnhan' ? 'active' : '' }}" data-target="xacnhan">Xác nhận</div>
             <div class="{{ $activeTab === 'dangchuanbi' ? 'active' : '' }}" data-target="dangchuanbi">Đang chuẩn bị</div>
             <div class="{{ $activeTab === 'daphucvu' ? 'active' : '' }}" data-target="daphucvu">Đã phục vụ</div>
             <div class="{{ $activeTab === 'chuathanhtoan' ? 'active' : '' }}" data-target="chuathanhtoan">Chưa thanh toán
             </div>
             <div class="{{ $activeTab === 'dathanhtoan' ? 'active' : '' }}" data-target="dathanhtoan">Đã thanh toán</div>
+        </div> --}}
+        <div class="tabs">
+            <div class="{{ $activeTab === 'xacnhan' ? 'active' : '' }}" data-target="xacnhan">
+                Xác nhận ({{ $statusCounts['xacnhan'] ?? 0 }})
+            </div>
+            <div class="{{ $activeTab === 'dangchuanbi' ? 'active' : '' }}" data-target="dangchuanbi">
+                Đang chuẩn bị ({{ $statusCounts['dangchuanbi'] ?? 0 }})
+            </div>
+            <div class="{{ $activeTab === 'daphucvu' ? 'active' : '' }}" data-target="daphucvu">
+                Đã phục vụ ({{ $statusCounts['daphucvu'] ?? 0 }})
+            </div>
+            <div class="{{ $activeTab === 'chuathanhtoan' ? 'active' : '' }}" data-target="chuathanhtoan">
+                Chưa thanh toán ({{ $statusCounts['chuathanhtoan'] ?? 0 }})
+            </div>
+            <div class="{{ $activeTab === 'dathanhtoan' ? 'active' : '' }}" data-target="dathanhtoan">
+                Đã thanh toán ({{ $statusCounts['dathanhtoan'] ?? 0 }})
+            </div>
         </div>
 
         @php
@@ -172,7 +231,8 @@
                                     @endif
 
                                     @if ($status['id'] === 4)
-                                        <a href="javascript:void(0)" class="btn-action view-order-detail" data-id="{{ $order->id }}">
+                                        <a href="javascript:void(0)" class="btn-action view-order-detail"
+                                            data-id="{{ $order->id }}">
                                             <i class="fa-solid fa-eye" style="color: green;"></i>
                                         </a>
                                     @endif
@@ -198,65 +258,65 @@
         </div>
         <!-- Popup Xóa -->
         <!-- <div class="popup_admin" id="popupxoa" style="display: none;">
-                            <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
-                            <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
-                            <p id="alert"></p>
-                            <div class="button">
-                                <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
-                                <button onclick="cancel('xoa')">Hủy</button>
-                            </div>
-                        </div> -->
+                                <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
+                                <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
+                                <p id="alert"></p>
+                                <div class="button">
+                                    <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
+                                    <button onclick="cancel('xoa')">Hủy</button>
+                                </div>
+                            </div> -->
     </div>
 @endsection
 
 @section('script')
     <!-- <script>
         function showDeletePopup(full_name, id) {
-        let popup = document.getElementById('popupxoa');
-        popup.children[0].textContent = `Bạn có thật sự muốn xóa đơn hàng của khách hàng ${full_name} ?`;
-        popup.querySelector("button[onclick^='deleteOrder']").dataset.id = id;
-        popup.style.display = "block";
+            let popup = document.getElementById('popupxoa');
+            popup.children[0].textContent = `Bạn có thật sự muốn xóa đơn hàng của khách hàng ${full_name} ?`;
+            popup.querySelector("button[onclick^='deleteOrder']").dataset.id = id;
+            popup.style.display = "block";
         }
 
         function deleteOrder(id) {
-        $.ajax({
-        type: "POST",
-        url: `/admin/order/delete/${id}`,
-        data: {
-        _token: '{{ csrf_token() }}'
-        },
-        success: function (data) {
-        alert(data);
-        location.reload();
-        },
-        error: function (xhr) {
-        alert('Có lỗi xảy ra: ' + xhr.responseText);
-        }
-        });
-        document.getElementById('popupxoa').style.display = "none";
+            $.ajax({
+                type: "POST",
+                url: `/admin/order/delete/${id}`,
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(data) {
+                    alert(data);
+                    location.reload();
+                },
+                error: function(xhr) {
+                    alert('Có lỗi xảy ra: ' + xhr.responseText);
+                }
+            });
+            document.getElementById('popupxoa').style.display = "none";
         }
 
         function cancel(type) {
-        document.getElementById(`popup${type}`).style.display = "none";
-                                                                    }
+            document.getElementById(`popup${type}`).style.display = "none";
+        }
     </script> -->
     <script>
-        $(document).ready(function () {
-            $('.view-order-detail').click(function () {
+        $(document).ready(function() {
+            $('.view-order-detail').click(function() {
                 var id = $(this).data('id');
                 $('#orderDetailModal').show();
                 $('#orderDetailContent').html('Đang tải...');
-                $.get('/admin/order/detail/' + id, function (data) {
+                $.get('/admin/order/detail/' + id, function(data) {
                     $('#orderDetailContent').html(data);
                 });
             });
 
-            $('.close-modal').click(function () {
+            $('.close-modal').click(function() {
                 $('#orderDetailModal').hide();
             });
 
             // Đóng khi bấm ra ngoài
-            $(window).click(function (e) {
+            $(window).click(function(e) {
                 if ($(e.target).is('#orderDetailModal')) {
                     $('#orderDetailModal').hide();
                 }
@@ -264,7 +324,7 @@
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const activeTab = urlParams.get('tab');
 
@@ -284,7 +344,7 @@
     </script>
     <script>
         document.querySelectorAll('.tabs > div').forEach(tab => {
-            tab.addEventListener('click', function () {
+            tab.addEventListener('click', function() {
                 const target = this.getAttribute('data-target');
                 const url = new URL(window.location.href);
 

@@ -73,17 +73,11 @@
                             </div>
                             <div class="form-group-product">
                                 <label>Trạng thái</label>
-                                @if ($isQL)
                                     <select name="status" required onchange="handleChangeStatus(this)">
                                         <option value="1" {{ $sanPham->status == 1 ? 'selected' : '' }}>Hiển thị
                                         </option>
                                         <option value="0" {{ $sanPham->status == 0 ? 'selected' : '' }}>Ẩn</option>
                                     </select>
-                                @else
-                                    <input type="text" class="form-control"
-                                        value="{{ $sanPham->status == 1 ? 'Hiển thị' : 'Ẩn' }}" disabled>
-                                @endif
-
                             </div>
                         </div>
 
