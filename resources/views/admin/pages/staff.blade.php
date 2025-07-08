@@ -1,118 +1,119 @@
 @extends('layouts.layouts_admin')
 @section('title', 'Trang quản lý nhân viên')
 @section('active-staff', 'active')
-@section('content')
 <style>
-    .popup-overlay {
+    .btn.add {
+        background-color: rgb(240, 145, 55);
+        color: white;
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 12px;
+        border-radius: 4px;
+        float: right;
+        margin-right: 0px;
+        margin-top: 1px;
+    }
+
+    .filter {
+        margin-top: 3px;
+        margin-right: 5px;
+        padding: 7px 30px;
+        border-radius: 5px;
+    }
+
+    td,
+    th {
+        word-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .modal {
         position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 9999;
+        z-index: 999;
     }
-    
-    .popup-content {
-        background: #fff;
-        padding: 30px;
-        border-radius: 16px;
-        width: 40%;
-        max-width: 500px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        animation: fadeIn 0.3s ease;
-    }
-    .alert_error_validate {
-    color: red;
-    font-size: 13px;
-    margin-top: 4px;
-}
 
-    
-    @keyframes fadeIn {
-        from {
-            transform: translateY(-10px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 800px;
     }
-    
-    .popup-content h3 {
-        text-align: center;
-        font-size: 22px;
-        font-weight: bold;
-        margin-bottom: 20px;
-        color: #333;
+
+    .form-grid {
+        display: flex;
+        gap: 20px;
     }
-    
-    .popup-content input {
-        width: 95%;
-        padding: 10px 14px;
-        margin-bottom: 12px;
+
+    .form-col {
+        flex: 1;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 15px;
+        border-radius: 5px;
         border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 15px;
-        transition: all 0.2s ease;
-        outline: none;
+        font-size: 14px;
     }
-    
-    .popup-content input:focus {
-        border-color: #ff9900;
-        box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.2);
+
+    .form-actions {
+        text-align: center;
     }
-    
-    .popup-content .btn {
-        padding: 8px 16px;
+
+    .btn {
+        padding: 10px 20px;
         border: none;
-        border-radius: 8px;
-        font-weight: bold;
+        border-radius: 6px;
         font-size: 14px;
         cursor: pointer;
-        transition: all 0.2s;
     }
-    
-    .popup-content .btn-add {
-        background-color: #ff9900;
+
+    .btn-success {
+        background-color: #28a745;
         color: white;
-        margin-right: 8px;
+        margin-right: 10px;
     }
-    
-    .popup-content .btn-add:hover {
-        background-color: #e68a00;
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
     }
-    
-    .popup-content .btn-close {
-        background-color: #ccc;
-        color: #333;
-    }
-    
-    .popup-content .btn-close:hover {
-        background-color: #b3b3b3;
-    }
-    </style>
-    
-    
-<div class="content" id="dashboard">
-    <div class="head">
-        <div class="title">Quản lý nhân viên</div>
-        <button onclick="openPopup()" class="btn btn-primary">+ Thêm nhân viên</button>
-    </div>
-    <div class="separator_x"></div>
-    <div class="area">
-        <table class="table table-bordered">
+</style>
+@section('content')
+    <div class="content" id="staffmanagement">
+        <div class="head">
+            <div class="title">Quản lý nhân viên</div>
+            <div class="search">
+                <form action="{{ route('admin.staff') }}" method="GET">
+                    <input type="text" name="keyword" placeholder="Tìm nhân viên..." value="{{ request('keyword') }}">
+                    <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="separator_x"></div>
+        <button onclick="openModal()" class="btn add">
+            <i class="fa-solid fa-plus"></i> Thêm nhân viên
+        </button>
+        <table>
             <thead>
                 <tr>
-                    <th>Tên</th>
+                    <th>Họ tên</th>
                     <th>Email</th>
-                    <th>Số điện thoại</th>
-                    <th>Giới tính</th>
-                    <th>Ngày sinh</th>
-                    <th>Vai trò</th>
+                    <th>SĐT</th>
                     <th>Trạng thái</th>
-                    <th>Sửa</th>
+                    <th>Vai trò</th>
+                    <th style="width: 48px;">Sửa</th>
+                    <th style="width: 48px;">Xóa</th>
                 </tr>
             </thead>
             <tbody>
@@ -120,14 +121,15 @@
                     <tr>
                         <td>{{ $staff->full_name }}</td>
                         <td>{{ $staff->email }}</td>
-                        <td>{{ $staff->phone ?? 'Không có' }}</td>
-                        <td>{{ $staff->gender}}</td>
-                        <td>{{ $staff->date_of_birth }}</td>
+                        <td>{{ $staff->phone }}</td>
+                        <td>{{ $staff->status == 1 ? 'Kích hoạt' : 'Tạm khóa' }}</td>
                         <td>{{ $staff->role }}</td>
-                        <td>{{ $staff->status == 1 ? 'Đang hoạt động' : 'Tạm khóa' }}</td>
-                        <td>
-                            <a href="{{ route('admin.staff.profile', ['id' => $staff->id]) }}">
-                                <i class="fa-regular fa-pen-to-square"></i>
+                        <td style="text-align: center;">
+                            <button onclick="openEditModal({{ $staff->id }})" class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i></button>
+                        </td>
+                        <td style="text-align: center;">
+                            <a onclick="popup('delete', {{ $staff->id }})" data-id="{{ $staff->id }}">
+                                <i class="fa-regular fa-trash-can"></i>
                             </a>
                         </td>
                     </tr>
@@ -136,81 +138,150 @@
         </table>
     </div>
 
-{{-- popup thêm nhân viên khi thêm có role mặc định là NV --}}
-    <div id="popupForm" class="popup-overlay" style="display:none;">
-        <div class="popup-content">
-            <h3>THÊM NHÂN VIÊN</h3>
-            <form action="{{ route('admin.staff.store') }}" method="POST" id="addStaffForm" enctype="multipart/form-data">
+    {{-- Popup --}}
+    <div class="modal" id="addUserModal" style="display: none;">
+        <div class="modal-content">
+            <h2>THÊM NHÂN VIÊN</h2>
+            <form id="addUserForm" method="POST" action="{{ route('admin.staff.store') }}">
                 @csrf
-                <input name="username" placeholder="Tài khoản.." value="{{ old('username') }}" required>
-                <input name="fullname" placeholder="Họ và tên.." value="{{ old('fullname') }}" required>
-                <input name="phone" placeholder="Số điện thoại.." value="{{ old('phone') }}" required>
-                <input name="email" placeholder="Email.." type="email" value="{{ old('email') }}" required>
-                <input name="password" placeholder="Mật khẩu.." type="password" required>
-                <input name="password_confirmation" placeholder="Xác nhận mật khẩu.." type="password" required>
+                <div class="form-grid">
+                    <div class="form-col">
+                        <input type="text" name="username" class="form-control" placeholder="Tài Khoản">
+                        <input type="text" name="full_name" class="form-control" placeholder="Họ và tên">
+                        <select name="gender" class="form-control">
+                            <option value="">-- Giới tính --</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                        <input type="date" name="date_of_birth" class="form-control">
+                        <input type="text" name="phone" class="form-control" placeholder="Số điện thoại">
+                    </div>
 
-                <button type="submit" class="btn btn-add">Thêm</button>
-                <button type="button" onclick="closePopup()" class="btn btn-close">Đóng</button>
+                    <div class="form-col">
+                        <input type="email" name="email" class="form-control" placeholder="Email">
+                        <input type="password" name="password" class="form-control" placeholder="Mật khẩu">
+                        <input type="password" name="password_confirmation" class="form-control"
+                            placeholder="Xác nhận password">
+                        <select name="role" class="form-control">
+                            <option value="">-- Vai trò --</option>
+                            <option value="QL">Admin</option>
+                            <option value="NV">Nhân viên</option>
+                        </select>
+                        <select name="status" class="form-control">
+                            <option value="">-- Trạng thái --</option>
+                            <option value="1">Kích hoạt</option>
+                            <option value="0">Tạm khóa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal()">Đóng</button>
+                </div>
             </form>
         </div>
     </div>
+    {{-- Popup Sửa --}}
+<div class="modal" id="editUserModal" style="display: none;">
+    <div class="modal-content">
+        <h2>SỬA NHÂN VIÊN</h2>
+        <form id="editUserForm" method="POST">
+            @csrf
+            <input type="hidden" id="edit_id">
 
-    
+            <div class="form-grid">
+                <div class="form-col">
+                    <input type="text" name="username" id="edit_username" class="form-control" placeholder="Tài Khoản">
+                    <input type="text" name="full_name" id="edit_full_name" class="form-control" placeholder="Họ và tên">
+                    <select name="gender" id="edit_gender" class="form-control">
+                        <option value="">-- Giới tính --</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                    <input type="date" name="date_of_birth" id="edit_date_of_birth" class="form-control">
+                </div>
+
+                <div class="form-col">
+                    <input type="email" name="email" id="edit_email" class="form-control" placeholder="Email">
+                    <input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Số điện thoại">
+                    <select name="role" id="edit_role" class="form-control">
+                        <option value="">-- Vai trò --</option>
+                        <option value="QL">Admin</option>
+                        <option value="NV">Nhân viên</option>
+                    </select>
+                    <select name="status" id="edit_status" class="form-control">
+                        <option value="">-- Trạng thái --</option>
+                        <option value="1">Kích hoạt</option>
+                        <option value="0">Tạm khóa</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <button type="button" class="btn btn-danger" onclick="closeEditModal()">Đóng</button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection
+
 @section('script')
     <script>
-        function openPopup() {
-            document.getElementById('popupForm').style.display = 'flex';
+        function openModal() {
+            document.getElementById('addUserModal').style.display = 'flex';
         }
-        function closePopup() {
-            document.getElementById('popupForm').style.display = 'none';
+
+        function closeModal() {
+            document.getElementById('addUserModal').style.display = 'none';
         }
     </script>
     <script>
-        document.getElementById('addStaffForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-        
-            const form = e.target;
-            const formData = new FormData(form);
-            
-            // Xóa lỗi cũ
-            document.querySelectorAll('.alert_error_validate').forEach(el => el.remove());
-        
-            fetch("{{ route('admin.staff.ajaxStore') }}", {
-                method: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: formData
-            })
-            .then(async response => {
-                if (!response.ok) {
-                    const data = await response.json();
-                    if (data.errors) {
-                        for (const [key, messages] of Object.entries(data.errors)) {
-                            const input = form.querySelector(`[name="${key}"]`);
-                            const error = document.createElement('div');
-                            error.className = 'alert_error_validate';
-                            error.style.color = 'red';
-                            error.textContent = messages[0];
-                            input.parentNode.insertBefore(error, input.nextSibling);
-                        }
-                    }
-                    throw new Error('Validation failed');
-                }
-        
-                return response.json();
-            })
+    function openEditModal(id) {
+        fetch('/admin/staff/' + id + '/edit')
+            .then(res => res.json())
             .then(data => {
-                alert(data.message);
-                closePopup();
-                location.reload(); // refresh danh sách nếu có
-            })
-            .catch(error => {
-                console.error(error);
+                document.getElementById('edit_id').value = data.id;
+                document.getElementById('edit_username').value = data.username;
+                document.getElementById('edit_full_name').value = data.full_name;
+                document.getElementById('edit_gender').value = data.gender;
+                document.getElementById('edit_date_of_birth').value = data.date_of_birth;
+                document.getElementById('edit_phone').value = data.phone;
+                document.getElementById('edit_email').value = data.email;
+                document.getElementById('edit_role').value = data.role;
+                document.getElementById('edit_status').value = data.status;
+
+                document.getElementById('editUserModal').style.display = 'block';
             });
+    }
+
+    function closeEditModal() {
+        document.getElementById('editUserModal').style.display = 'none';
+    }
+
+    document.getElementById('editUserForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        let id = document.getElementById('edit_id').value;
+        let form = new FormData(this);
+
+        fetch('/admin/staff/' + id + '/update', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: form
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Cập nhật thành công!');
+                closeEditModal();
+                location.reload();
+            } else {
+                alert('Có lỗi xảy ra!');
+            }
         });
-    </script>
-        
+    });
+</script>
 @endsection

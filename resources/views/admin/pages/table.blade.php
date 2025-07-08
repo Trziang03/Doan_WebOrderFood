@@ -325,15 +325,6 @@
                         </select>
                     </div>
 
-                    <div class="form-group-table">
-                        <label for="access_limit">Số lượt truy cập cho phép</label>
-                        <input type="number" name="access_limit" id="access_limit" class="form-control" min="1"
-                            max="10" value="1" required oninput="checkAccessLimit(this)">
-                        <span id="access_limit_error" style="color: red; display: none;">
-                            Số lượt truy cập không được vượt quá 10.
-                        </span>
-                    </div>
-
                     <div class="form-buttons">
                         <button class="btn" type="submit">Lưu thay đổi</button>
                     </div>
@@ -351,22 +342,18 @@
         <div class="grid-container">
             {{-- Hiển thị bàn thật --}}
             @foreach ($tables as $table)
-                <div class="table-box" id="table-box">
+                <div class="table-box" data-id="{{ $table->id }}">
                     <div class="table-title">{{ $table->name }}</div>
                     <div class="table-status">{{ $table->status->name }}</div>
                     @if ($table->qr_image_path)
-                        {{-- <div class="table-qr">
-                            <img src="{{ asset('storage/' . $table->qr_image_path) }}" width="80">
-                        </div> --}}
                         <div class="table-qr">
                             <img src="{{ asset('storage/qr-codes/' . $table->qr_code) }}" width="80">
-                            <p>Link: {{ url('/table/checkin?token=' . $table->token) }}</p>
                         </div>
                     @endif
                     <div class="table-actions">
                         <button class="btn-action" onclick='openEditPopup(@json($table))'><i
                                 class="fa-regular fa-pen-to-square"></i></button>
-                        <button onclick="showQR({{ $table->id }})">📷</button>
+                        <button onclick="showQR({{ $table->id }})"><i class="fa fa-qrcode"></i></button>
                     </div>
                 </div>
             @endforeach
@@ -384,13 +371,11 @@
             <button class="btn-close-popup" onclick="closeEditPopup()">×</button>
             <h4>Cập nhật bàn ăn</h4>
 
-            <form style="padding: 5px 20px;" id="editTableForm" method="POST"
-                action="{{ route('admin.table.update', ['id' => $table->id]) }}">
+            <form id="editTableForm" method="POST" action="">
                 @csrf
                 <label for="editName">Số hiệu bàn</label>
                 <div class="col">
-                    <input type="text" id="editName" placeholder="Tên bàn" name="name" value="{{ $table->name }}"
-                        oninput="validateFormat()" data-id="{{ $table->id }}">
+                    <input type="text" id="editName" name="name" placeholder="Tên bàn" oninput="validateFormat()">
                     <div class="alert_error_validate">
                         <span id="name_error" style="color: red; font-size:12px;margin-left: 10px">
                             @error('name')
@@ -400,32 +385,24 @@
                     </div>
                 </div>
 
-
                 <label for="editStatus">Trạng thái</label>
                 <select id="editStatus" name="table_status_id">
                     @foreach ($statuses as $status)
-                        <option value="{{ $status->id }}"
-                            {{ $table->table_status_id == $status->id ? 'selected' : '' }}>
+                        <option value="{{ $status->id }}" @if ($table->table_status_id == $status->id) selected @endif>
                             {{ $status->name }}
                         </option>
                     @endforeach
                 </select>
-                <label style="margin-top: 10px;" for="access_limit">Số lượt truy cập cho phép</label>
-                <input style="width: 40%;" type="number" id="access_limit" name="access_limit" min="1"
-                    max="10" value="{{ $table->access_limit }}" oninput="checkAccessLimit(this)">
-                <small id="access_limit_error" style="color: red; display: none;">
-                    Số lượt truy cập không được vượt quá 10.
-                </small>
+
                 <div class="form-check">
-                    <label for="editQR">Đổi mã QR</label>
+                    <label for="editQR">Kích hoạt bàn</label>
                     <input type="checkbox" id="editQR" name="regen_qr">
                 </div>
-                <label>URL gọi món</label>
-                <p id="editQrUrl" style="font-size: 13px; word-break: break-word;">
-                    {{ asset('storage/qr-codes/' . $table->qr_code) }}
-                </p>
 
-                <button type="submit" style="margin-left: 105px; margin-top: 10px;">Lưu thay đổi</button>
+                <label>URL gọi món</label>
+                <p id="editQrUrl" style="font-size: 13px; word-break: break-word; margin-top: 0px;">{{ $table->qr_url }}</p>
+
+                <button type="submit" style="margin-left: 78px; margin-top: 20px;">Lưu thay đổi</button>
             </form>
         </div>
     </div>
@@ -453,7 +430,32 @@
 
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        function updateTableStatuses() {
+            fetch('/admin/table/status')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(table => {
+                        const tableBox = document.querySelector(`.table-box[data-id='${table.id}']`);
+                        if (tableBox) {
+                            const statusEl = tableBox.querySelector('.table-status');
+                            if (statusEl) {
+                                statusEl.innerText = table.status_name;
+                            }
+                            // Optional: Thêm class theo status_id (ví dụ đổi màu)
+                            tableBox.classList.remove('status-1', 'status-2', 'status-3');
+                            tableBox.classList.add(`status-${table.status_id}`);
+                        }
+                    });
+                })
+                .catch(error => console.error('Lỗi khi cập nhật trạng thái:', error));
+        }
+        // Cập nhật mỗi 3000 giây
+        setInterval(updateTableStatuses, 3000);
+        updateTableStatuses(); // gọi lần đầu khi load
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
             const btn = document.getElementById('toggleForm');
             const form = document.getElementById('tableForm');
 
@@ -468,14 +470,13 @@
             });
         });
 
-
         function openEditPopup(table) {
             const form = document.getElementById('editTableForm');
             form.action = '/admin/table/update/' + table.id;
 
             document.getElementById('editName').value = table.name;
             document.getElementById('editStatus').value = table.table_status_id;
-            document.getElementById('editQrUrl').innerText = table.qr_table ?? 'Chưa có';
+            document.getElementById('editQrUrl').innerText = table.qr_url;
 
             document.getElementById('optionPopup').style.display = 'block';
         }
@@ -515,44 +516,24 @@
         // Dữ liệu bàn từ Laravel truyền vào JavaScript
         window.tables = @json($tables);
     </script>
-    <script>
-        function checkAccessLimit(input) {
-            const min = 1;
-            const max = 10;
-            const value = parseInt(input.value);
-            const error = document.getElementById('access_limit_error');
-
-            if (value < min) {
-                error.textContent = 'Số lượt truy cập không được nhỏ hơn 1.';
-                error.style.display = 'inline';
-                input.value = min;
-            } else if (value > max) {
-                error.textContent = 'Số lượt truy cập không được vượt quá 10.';
-                error.style.display = 'inline';
-                input.value = max;
-            } else {
-                error.style.display = 'none';
-            }
-        }
-    </script>
 
     {{-- kiểm tra dữ liệu ngay khi nhập --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('updateTableForm').addEventListener('submit', validateName);
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('addTableForm');
 
-            form.addEventListener('submit', function(event) {
+            form.addEventListener('submit', function (event) {
                 event.preventDefault();
 
                 const isValid = validateNewTableName();
                 if (!isValid) return;
 
-                checkNewTableNameExists(function(isAvailable) {
+                checkNewTableNameExists(function (isAvailable) {
                     if (isAvailable) {
                         form.submit();
                     }
@@ -605,17 +586,6 @@
                     alertify.error('Lỗi khi kiểm tra tên bàn.');
                     callback(false);
                 });
-        }
-
-        function checkAccessLimit(input) {
-            const error = document.getElementById('access_limit_error');
-            const value = parseInt(input.value);
-
-            if (value > 10) {
-                error.style.display = 'block';
-            } else {
-                error.style.display = 'none';
-            }
         }
     </script>
     <script>
@@ -678,12 +648,12 @@
         }
 
 
-        document.getElementById('updateTableForm').addEventListener('submit', function(event) {
+        document.getElementById('updateTableForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
             if (!validateFormat()) return;
 
-            checkNameExists(function(isValid) {
+            checkNameExists(function (isValid) {
                 if (isValid) {
                     document.getElementById('updateTableForm').submit();
                 }
@@ -691,12 +661,10 @@
         });
     </script>
 
-
-
     {{-- kiểm tra duplicate name --}}
     <script></script>
     <script>
-        document.getElementById("toggleForm").onclick = function() {
+        document.getElementById("toggleForm").onclick = function () {
             document.getElementById("addTablePopup").style.display = "flex";
         }
 

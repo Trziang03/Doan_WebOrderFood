@@ -1,5 +1,5 @@
 @extends('layouts.layouts_admin')
-@section('title', 'Trang Dashboard')
+@section('title', 'Trang cập nhật thông tin NV')
 @section('content')
 <div class="content" id="dashboard">
     <div class="head">
@@ -8,7 +8,7 @@
     </div>
     <div class="separator_x"></div>
     <div class="area">
-        <div class="infor">        
+        <div class="infor">
             <form action="{{ route('admin.staff.update', ['id' => $staff->id]) }}"  method="POST">
                 @csrf
                 <div>

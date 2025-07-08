@@ -15,10 +15,10 @@ class Table extends Model
         'name',
         'qr_code',
         'table_status_id',
+        'token',
     ];
 
     /**
-     * Trạng thái của bàn (ví dụ: trống, đã đặt, đang phục vụ)
      */
     public function status()
     {

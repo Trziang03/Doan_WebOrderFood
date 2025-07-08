@@ -6,33 +6,62 @@ use Illuminate\Http\Request;
 use App\Models\CartItem;
 use App\Models\CartItemTopping;
 use App\Models\Table;
-use App\Models\Product;
 use App\Models\Order;
-use App\Models\ProductVariant;
 use App\Models\OrderItem;
 use App\Models\OrderItemTopping;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 
 
 class CartController extends Controller
 {
-    //
     public function index(Request $request)
     {
         $table_id = session('table_id');
-        if (!$table_id) {
-            return redirect()->back()->with('error', 'Không xác định được bàn.');
+
+        // 1. Nếu không có session table_id => không xác định được bàn
+        if (!$table_id || !is_numeric($table_id)) {
+            return redirect('/404')->with('error', 'Không xác định được bàn hoặc bàn không hợp lệ.');
         }
 
-        // Lấy danh sách sản phẩm trong giỏ (CartItem), kèm thông tin product, size và toppings
+        // 2. Kiểm tra bàn có tồn tại không
+        $table = Table::find($table_id);
+        if (!$table) {
+            session()->forget(['table_id', 'qr_token']);
+            Cookie::queue(Cookie::forget('table_id'));
+            return redirect('/404')->with('error', 'Bàn không tồn tại.');
+        }
+
+        // 3. Kiểm tra trạng thái bàn (chỉ cho bàn đang phục vụ: table_status_id == 2)
+        if ($table->table_status_id != 2) {
+            // Xoá giỏ hàng gắn với bàn
+            CartItem::where('table_id', $table->id)->delete();
+
+            // Xoá session và cookie liên quan đến bàn
+            session()->forget(['table_id', 'qr_token']);
+            Cookie::queue(Cookie::forget('table_id'));
+
+            if ($table->table_status_id == 1) {
+                return redirect('/404')->with('error', 'Bàn chưa được kích hoạt.');
+            } elseif ($table->table_status_id == 3) {
+                return redirect('/404')->with('error', 'Bàn đang được dọn dẹp.');
+            } else {
+                return redirect('/404')->with('error', 'Bàn không hợp lệ.');
+            }
+        }
+
+        // 4. Lấy danh sách sản phẩm trong giỏ hàng theo bàn
         $cartItems = CartItem::with(['product', 'size', 'toppings.topping'])
             ->where('table_id', $table_id)
             ->get();
 
+        // 5. Trả về view giỏ hàng
         return view('User.profile.shoppingcart', [
             'cartItems' => $cartItems,
+            'table_id' => $table_id,
         ]);
     }
+
     public function addToCart(Request $request)
     {
         $validated = $request->validate([
@@ -41,9 +70,10 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1|max:5',
             'note' => 'nullable|string|max:150',
             'topping_quantities' => 'nullable|array',
+            'table_id' => 'required|integer', // thêm dòng này
         ]);
 
-        $table_id = session('table_id');
+        $table_id = $validated['table_id'];
         if (!$table_id) {
             return response()->json(['success' => false, 'message' => 'Không xác định được bàn.'], 400);
         }
@@ -95,9 +125,9 @@ class CartController extends Controller
         }
     }
 
-    private function getCartQuantityByTable($tableId)
+    private function getCartQuantityByTable($table_id)
     {
-        return CartItem::where('table_id', $tableId)->sum('quantity');
+        return CartItem::where('table_id', $table_id)->sum('quantity');
     }
 
     public function deleteItemCart(Request $request, int $cart_item_id)
@@ -306,87 +336,87 @@ class CartController extends Controller
         return $total;
     }
 
-public function submitCart(Request $request)
-{
-    $table_id = session('table_id');
-    if (!$table_id) {
-        return redirect()->back()->with('error', 'Không xác định được bàn.');
-    }
-
-    $cartItems = CartItem::with(['product', 'size', 'toppings.topping'])
-        ->where('table_id', $table_id)
-        ->get();
-
-    if ($cartItems->isEmpty()) {
-        return redirect()->back()->with('error', 'Giỏ hàng trống.');
-    }
-
-    DB::beginTransaction();
-    try {
-        $total_price = 0;
-
-        foreach ($cartItems as $item) {
-            $sizePrice = $item->size ? $item->size->price : 0;
-            $productPrice = ($item->product->price ?? 0) + $sizePrice;
-
-            $toppingTotal = $item->toppings->reduce(function ($carry, $t) {
-                return $carry + (($t->topping->price ?? 0) * $t->quantity);
-            }, 0);
-
-            $total_price += ($productPrice + $toppingTotal) * $item->quantity;
+    public function submitCart(Request $request)
+    {
+        $table_id = session('table_id');
+        if (!$table_id) {
+            return redirect()->back()->with('error', 'Không xác định được bàn.');
         }
 
-        $order = Order::create([
-            'order_code' => 'ORD' . now()->timestamp,
-            'table_id' => $table_id,
-            'total_price' => round($total_price, 2),
-            'payment_method_id' => 1,
-            'order_status_id' => 0, // trạng thái "chờ xác nhận"
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $cartItems = CartItem::with(['product', 'size', 'toppings.topping'])
+            ->where('table_id', $table_id)
+            ->get();
 
-        foreach ($cartItems as $item) {
-            $sizePrice = $item->size ? $item->size->price : 0;
-            $productPrice = ($item->product->price ?? 0) + $sizePrice;
+        if ($cartItems->isEmpty()) {
+            return redirect()->back()->with('error', 'Giỏ hàng trống.');
+        }
 
-            $toppingTotal = $item->toppings->reduce(function ($carry, $t) {
-                return $carry + (($t->topping->price ?? 0) * $t->quantity);
-            }, 0);
+        DB::beginTransaction();
+        try {
+            $total_price = 0;
 
-            $totalPricePerItem = round(($productPrice + $toppingTotal) * $item->quantity, 2);
+            foreach ($cartItems as $item) {
+                $sizePrice = $item->size ? $item->size->price : 0;
+                $productPrice = ($item->product->price ?? 0) + $sizePrice;
 
-            $orderItem = OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item->product_id,
-                'size_id' => $item->size_id,
-                'quantity' => $item->quantity,
-                'note' => $item->note ?? '',
-                'total_price' => $totalPricePerItem,
+                $toppingTotal = $item->toppings->reduce(function ($carry, $t) {
+                    return $carry + (($t->topping->price ?? 0) * $t->quantity);
+                }, 0);
+
+                $total_price += ($productPrice + $toppingTotal) * $item->quantity;
+            }
+
+            $order = Order::create([
+                'order_code' => 'ORD' . now()->timestamp,
+                'table_id' => $table_id,
+                'total_price' => round($total_price, 2),
+                'payment_method_id' => 1,
+                'order_status_id' => 0, // trạng thái "chờ xác nhận"
                 'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
-            foreach ($item->toppings as $t) {
-                OrderItemTopping::create([
-                    'order_item_id' => $orderItem->id,
-                    'topping_id' => $t->topping_id,
-                    'quantity' => $t->quantity,
-                    'price' => $t->price,
+            foreach ($cartItems as $item) {
+                $sizePrice = $item->size ? $item->size->price : 0;
+                $productPrice = ($item->product->price ?? 0) + $sizePrice;
+
+                $toppingTotal = $item->toppings->reduce(function ($carry, $t) {
+                    return $carry + (($t->topping->price ?? 0) * $t->quantity);
+                }, 0);
+
+                $totalPricePerItem = round(($productPrice + $toppingTotal) * $item->quantity, 2);
+
+                $orderItem = OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item->product_id,
+                    'size_id' => $item->size_id,
+                    'quantity' => $item->quantity,
+                    'note' => $item->note ?? '',
+                    'total_price' => $totalPricePerItem,
+                    'created_at' => now(),
                 ]);
+
+                foreach ($item->toppings as $t) {
+                    OrderItemTopping::create([
+                        'order_item_id' => $orderItem->id,
+                        'topping_id' => $t->topping_id,
+                        'quantity' => $t->quantity,
+                        'price' => $t->price,
+                    ]);
+                }
             }
+
+            // Xóa giỏ hàng sau khi đặt hàng thành công
+            CartItemTopping::whereIn('cart_item_id', $cartItems->pluck('id'))->delete();
+            CartItem::where('table_id', $table_id)->delete();
+
+            DB::commit();
+            return redirect()->route('user.payment')->with('success', 'Gửi đơn hàng thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Gửi giỏ hàng thất bại: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Lỗi khi gửi đơn hàng.');
         }
-
-        // Xóa giỏ hàng sau khi đặt hàng thành công
-        CartItemTopping::whereIn('cart_item_id', $cartItems->pluck('id'))->delete();
-        CartItem::where('table_id', $table_id)->delete();
-
-        DB::commit();
-        return redirect()->route('user.payment')->with('success', 'Gửi đơn hàng thành công!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::error('Gửi giỏ hàng thất bại: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Lỗi khi gửi đơn hàng.');
     }
-}
 
 }

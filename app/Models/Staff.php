@@ -19,9 +19,10 @@ class Staff extends Model
         'phone',
         'role',
         'gender',
+        'status',
         'date_of_birth',
         'password',
         'image',
     ];
-    
+
 }

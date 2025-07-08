@@ -17,7 +17,9 @@ class AdminOrderController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->keyword;
-
+        $pendingCount = Order::whereHas('status', function ($q) {
+            $q->where('name', 'Chờ xác nhận');
+        })->count();
         $orders = Order::with(['table', 'paymentMethod', 'orderStatus', 'orderItems.product', 'orderItems.size'])
             ->when($keyword, function ($query) use ($keyword) {
                 $query->where(function ($q) use ($keyword) {
@@ -115,21 +117,45 @@ class AdminOrderController extends Controller
             ->orderByDesc('id')
             ->paginate(10);
 
-        return view('admin.pages.order', ['orders' => $orders]);
+            // Thống kê số lượng đơn hàng theo trạng thái
+            $statusCounts = [
+                'xacnhan' => \App\Models\Order::whereHas('status', function ($q) {
+                    $q->where('name', 'Chờ xác nhận');
+                })->count(),
+
+                'dangchuanbi' => \App\Models\Order::whereHas('status', function ($q) {
+                    $q->where('name', 'Đang chuẩn bị');
+                })->count(),
+
+                'daphucvu' => \App\Models\Order::whereHas('status', function ($q) {
+                    $q->where('name', 'Đã phục vụ');
+                })->count(),
+
+                'chuathanhtoan' => \App\Models\Order::whereHas('status', function ($q) {
+                    $q->where('name', 'Chưa thanh toán');
+                })->count(),
+
+                'dathanhtoan' => \App\Models\Order::whereHas('status', function ($q) {
+                    $q->where('name', 'Đã thanh toán');
+                })->count(),
+            ];
+
+        return view('admin.pages.order', ['orders' => $orders, 'statusCounts' => $statusCounts, 'pendingCount' => $pendingCount]);
     }
 
 
     public function changeStatus($id)
-    {
-        $order = Order::findOrFail($id);
+{
+    $order = Order::findOrFail($id);
 
-        if ($order->order_status_id < 3) {
-            $order->order_status_id += 1;
-            $order->save();
-        }
-
-        return redirect()->route('admin.order');
+    if ($order->order_status_id < 4) {
+        $order->order_status_id += 1;
+        $order->save();
     }
+
+    $tab = request('tab', 'xacnhan');
+    return redirect()->back()->with('tab', $tab);
+}
 
     public function ajaxDetail($id)
     {

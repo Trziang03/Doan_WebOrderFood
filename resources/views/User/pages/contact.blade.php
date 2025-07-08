@@ -20,7 +20,7 @@
                         <div style="text-align:center; width: 80%;margin-left: 40px; margin-top:5px;font-size: 13px;">
                             <p>Địa chỉ: {{ $lienKetWebsite->address }} - Số điện thoại: {{ $lienKetWebsite->phone }} -
                                 Email : {{ $lienKetWebsite->email }}</p>
-                            <p>©2024 - Bản quyền thuộc về {{ $lienKetWebsite->name }}</p>
+                            <p>©2025 - Bản quyền thuộc về {{ $lienKetWebsite->name }}</p>
                         </div>
                     </div>
                 </div>

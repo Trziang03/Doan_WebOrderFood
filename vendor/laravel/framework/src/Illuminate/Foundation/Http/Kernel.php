@@ -77,8 +77,9 @@ class Kernel implements KernelContract
      *
      * @var array<string, class-string|string>
      */
-    protected $middlewareAliases = [];
+    protected $middlewareAliases = [
 
+    ];
     /**
      * All of the registered request duration handlers.
      *

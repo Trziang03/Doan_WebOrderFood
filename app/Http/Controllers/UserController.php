@@ -11,10 +11,9 @@ use App\Models\Table;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ImageRating;
+
 use App\Models\Order;
 
 class UserController extends Controller
@@ -25,7 +24,6 @@ class UserController extends Controller
 
         $danhSachMonAn = ProductUser::LayThongTinSanPham('Món ăn');
         $danhSachDoUong = ProductUser::LayThongTinSanPham('Đồ uống');
-        // $danhSachBanChay = ProductUser::SanPhamBanChay();
         return view('User.pages.index')->with([
             "danhSachMonAn" => $danhSachMonAn,
             "danhSachDoUong" => $danhSachDoUong,
@@ -57,32 +55,104 @@ class UserController extends Controller
         ]);
     }
 
-    public function menu()
+    public function showmenu(Request $request)
     {
+        // 1. Nếu có 'id' và 'token' trên URL (quét QR lần đầu)
+        if ($request->has(['id', 'token'])) {
+            $tableId = $request->input('id');
+            $token = $request->input('token');
+
+            // 2. Tìm bàn có id và token khớp
+            $table = Table::where('id', $tableId)
+                ->where('token', $token)
+                ->first();
+
+            // 3. Không tìm thấy bàn => mã QR sai hoặc hết hạn
+            if (!$table) {
+                return redirect('/404')->with('error', 'Mã QR không hợp lệ hoặc đã hết hạn.');
+            }
+
+            // 4. Nếu bàn đang được dọn => chặn và xóa session + cookie
+            if ($table->table_status_id == 3) {
+                session()->forget(['table_id', 'qr_token']);
+                Cookie::queue(Cookie::forget('table_id'));
+                return redirect('/404')->with('error', 'Bàn đang được dọn dẹp.');
+            }
+
+            // 5. Nếu bàn đang trống (status = 1) => chuyển sang phục vụ (status = 2)
+            if ($table->table_status_id == 1) {
+                $table->table_status_id = 2;
+                $table->save();
+            }
+
+            // 6. Lưu session + cookie (3 phút)
+            session([
+                'table_id' => $table->id,
+                'qr_token' => $token
+            ]);
+            Cookie::queue('table_id', encrypt($table->id), 3);
+        }
+
+        // 7. Nếu không có id/token => quay lại từ trình duyệt (dùng session hoặc cookie)
+        $tableId = session('table_id');
+
+        if (!$tableId && $request->hasCookie('table_id')) {
+            try {
+                $tableId = decrypt($request->cookie('table_id'));
+                $table = Table::find($tableId);
+
+                // 8. Nếu bàn không hợp lệ hoặc đang dọn
+                if (!$table || $table->table_status_id == 3) {
+                    session()->forget(['table_id', 'qr_token']);
+                    Cookie::queue(Cookie::forget('table_id'));
+                    return redirect('/404')->with('error', 'Bàn không hợp lệ hoặc đang được dọn dẹp.');
+                }
+
+                // 9. Nếu bàn vẫn đang trống (1) => tự động chuyển thành đang phục vụ (2)
+                if ($table->table_status_id == 1) {
+                    $table->table_status_id = 2;
+                    $table->save();
+                }
+
+                // 10. Lưu lại session
+                session([
+                    'table_id' => $table->id,
+                    'qr_token' => $table->token
+                ]);
+            } catch (\Exception $e) {
+                return redirect('/404')->with('error', 'Cookie bàn không hợp lệ hoặc đã bị chỉnh sửa.');
+            }
+        }
+
+        // 11. Không có bàn sau tất cả => chặn
+        if (!$tableId) {
+            return redirect('/404')->with('error', 'Không xác định được bàn.');
+        }
+
+        // 12. Lấy bàn lần cuối và kiểm tra trạng thái
+        $table = Table::find($tableId);
+        if (!$table) {
+            session()->forget(['table_id', 'qr_token']);
+            Cookie::queue(Cookie::forget('table_id'));
+            return redirect('/404')->with('error', 'Không tìm thấy bàn.');
+        }
+
+        if ($table->table_status_id == 3) {
+            session()->forget(['table_id', 'qr_token']);
+            Cookie::queue(Cookie::forget('table_id'));
+            return redirect('/404')->with('error', 'Bàn đang được dọn dẹp.');
+        }
+
+        // 13. Lấy danh sách sản phẩm
         $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
-        return view('user.pages.menu', ['layTatCaSanPham' => $layTatCaSanPham]);
+
+        // 14. Trả về giao diện menu
+        return view('user.pages.menu', [
+            'table' => $table,
+            'layTatCaSanPham' => $layTatCaSanPham
+        ]);
     }
 
-    // public function menu(Request $request)
-    // {
-    //     $tableId = $request->query('table_id');
-    //     $token = $request->query('token');
-    
-    //     // Kiểm tra hợp lệ
-    //     $table = Table::findOrFail($tableId);
-    
-    //     if ($table->token !== $token) {
-    //         abort(403, 'Token không hợp lệ');
-    //     }
-    
-    //     // Lấy toàn bộ sản phẩm
-    //     $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
-    
-    //     return view('user.pages.menu', [
-    //         'layTatCaSanPham' => $layTatCaSanPham,
-    //         'table' => $table
-    //     ]);
-    // }
     public function timKiemToanBo(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -91,15 +161,27 @@ class UserController extends Controller
         // Tìm trong tất cả sản phẩm (không phụ thuộc danh mục)
         $layTatCaSanPham = Product::where('status', 1)
             ->where(function ($query) use ($keyword) {
-                $query->where('name', 'like', '%' . $keyword . '%')
-                    ->orWhere('description', 'like', '%' . $keyword . '%');
+                $query->where('name', 'like', '%' . $keyword . '%');
             })
             ->get();
+
+        // Lấy thông tin bàn từ session hoặc cookie (giống như showmenu)
+        $table_id = session('table_id');
+        if (!$table_id && $request->hasCookie('table_id')) {
+            try {
+                $table_id = decrypt($request->cookie('table_id'));
+            } catch (\Exception $e) {
+                $table_id = null;
+            }
+        }
+        $table = $table_id ? Table::find($table_id) : null;
 
         return view('User.pages.menu', [
             'layTatCaSanPham' => $layTatCaSanPham,
             'danhSachDanhMuc' => Category::where('status', 1)->get(),
             'keyword' => $keyword,
+            'qr_expired_at' => session('qr_expired_at'), // thêm thời gian hết hạn cho QR code đúng với session đã lưu
+            'table' => $table,
         ]);
     }
     public function timKiemSanPhamTheoDanhMuc($slug)
@@ -114,17 +196,28 @@ class UserController extends Controller
         // Lấy các sản phẩm thuộc danh mục
         $layTatCaSanPham = Product::where('category_id', $category->id)->where('status', 1)->get();
 
+        // Lấy thông tin bàn từ session hoặc cookie (giống như showmenu)
+        $table_id = session('table_id');
+        if (!$table_id && request()->hasCookie('table_id')) {
+            try {
+                $table_id = decrypt(request()->cookie('table_id'));
+            } catch (\Exception $e) {
+                $table_id = null;
+            }
+        }
+        $table = $table_id ? Table::find($table_id) : null;
+
         // Gửi dữ liệu ra view
         return view('User.pages.menu', [
             'layTatCaSanPham' => $layTatCaSanPham,
             'danhSachDanhMuc' => Category::where('status', 1)->get(),
+            'table' => $table,
         ]);
     }
     //Trang Giới Thiệu
     public function GioiThieu()
     {
-        $danhSachBaiViet = Blog::layTatCaBaiViet();
-        return view('user.pages.blog')->with('danhSachBaiViet', $danhSachBaiViet);
+        return view('user.pages.blog');
     }
 
     //Trang Liên Hệ
@@ -205,55 +298,5 @@ class UserController extends Controller
         return redirect()->back();
     }
 
-
-
-    public function addContact(Request $req)
-    {
-        $validate = $req->validate([
-            'name' => 'required|string|regex:/^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]+$/|max:50',
-            'email' => 'required|email|max:25',
-            'phone' => 'required|string|regex:/^[0-9]{10}$/',
-            'title' => 'required|regex:/^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]+$/|max:255',
-            'content' => 'required|regex:/^[a-zA-ZàáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]+$/|string',
-        ], [
-            'name.required' => 'Bạn chưa nhập họ tên',
-            'name.regex' => 'Bạn không được phép nhập ký tự đặc biệt ở họ và tên',
-            'name.max' => 'Họ và tên vừa nhập đã vượt 50 ký tự.',
-            'email.required' => 'Bạn chưa nhập Email.',
-            'email.email' => 'Email vừa nhập chưa hợp lệ.',
-            'email.max' => 'Email vừa nhập đã vượt 25 ký tự.',
-            'phone.required' => 'Bạn chưa nhập số điện thoại.',
-            'phone.regex' => 'Số điện thoại chỉ được nhập là số và chỉ được 10 ký tự',
-            'title.required' => 'Bạn chưa nhập tiêu đề.',
-            'title.regex' => 'Bạn không được phép nhập ký tự đặc biệt ở tiêu đề',
-            'title.max' => 'chỉ được nhập tối đã 255 ký tự',
-            'content.required' => 'Bạn chưa nhập nội dung.',
-            'content.regex' => 'Bạn không được phép nhập ký tự đặc biệt ở nội dung',
-        ]);
-
-        $data = new Contact();
-        $data->id = $req['id'];
-        $data->name = $req['name'];
-        $data->title = $req['title'];
-        $data->content = $req['content'];
-        $data->email = $req['email'];
-        $data->phone = $req['phone'];
-        $data->save();
-        return redirect()->route('user.contact')->with('msg', 'Gửi liên hệ thành công!');
-    }
-
-    // public function getRating($id, $sao = 0)
-    // {
-    //     $rating = Rating::HienThiRating($id, $sao);
-    //     return response()->json([
-    //         'data' => $rating
-    //     ]);
-    // }
-
-    // public function GetDanhSachDanhGia($user, $code)
-    // {
-    //     $danhSach = Rating::DanhGia($user, $code);
-    //     return $danhSach;
-    // }
 
 }
