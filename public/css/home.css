@@ -702,7 +702,7 @@ html {
 }
 .product_search_list_price_popup button{
     display: block;
-    width: 95%;
+    width: 70%;
     color: #000;
     border: 1px solid rgb(22, 66, 60);
     margin-bottom: 5px;

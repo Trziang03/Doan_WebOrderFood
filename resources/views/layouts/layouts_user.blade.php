@@ -27,12 +27,12 @@
     <link rel="stylesheet" href="{{ secure_asset('css/home.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/user_min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/user_min_two.css') }}">
-    {{-- <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout_user.css') }}">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user_min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/user_min_two.css') }}"> --}}
+    <link rel="stylesheet" href="{{ asset('css/user_min_two.css') }}">
     <title>@yield('title', 'Trang chủ') - GiDu Food</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 

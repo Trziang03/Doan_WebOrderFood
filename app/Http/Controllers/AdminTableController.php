@@ -38,7 +38,7 @@ class AdminTableController extends Controller
 
         // Tạo đường dẫn URL với ID và token
         $path = route('user.menu', ['id' => $table->id], false);
-        $fullUrl = ' https://3f92-113-185-64-1.ngrok-free.app' . $path . '&token=' . $token;
+        $fullUrl = ' https://a60842154842.ngrok-free' . $path . '&token=' . $token;
 
         // Tạo ảnh QR mới
         $builder = new Builder(
