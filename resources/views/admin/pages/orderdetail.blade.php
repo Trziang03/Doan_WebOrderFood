@@ -16,7 +16,8 @@
                         <td><strong>Bàn:</strong> {{ $order->table->name ?? 'Không có' }}</td>
                     </tr>
                     <tr>
-                        <td><strong>Phương thức thanh toán:</strong> {{ $order->paymentMethod->name_method ?? '---' }}
+                        <td><strong>Phương thức thanh toán:</strong>
+                            {{ $order->paymentMethod->name_method ?? '---' }}
                         </td>
                         <td><strong>Trạng thái đơn:</strong> {{ $order->orderStatus->name ?? '---' }}</td>
                     </tr>
@@ -41,7 +42,7 @@
                                 <td style="width: 150px;">{{ $item->product->name ?? '[Đã xóa]' }}</td>
                                 <td>{{ $item->size->name ?? '---' }}</td>
                                 <td style="width: 100px;">{{ $item->quantity }}</td>
-                                <td style="width: 150px;">
+                                <td>
                                     {{ number_format($item->product->price, 0, '.', '.') }}đ
                                     @if(!empty($item->size) && $item->size->price > 0)
                                         + {{ number_format($item->size->price, 0, '.', '.') }}đ (Size)
@@ -112,5 +113,10 @@
         window.print();
         document.body.innerHTML = originalContents;
         location.reload(); // reload lại để trở về như cũ (nếu cần)
+    });
+</script>
+<script>
+    window.addEventListener("paymentMethodUpdated", function(e) {
+        document.getElementById("paymentMethodDisplay").textContent = e.detail.method_name;
     });
 </script>

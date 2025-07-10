@@ -202,7 +202,6 @@ img {
 
 .navbar-bottom>.navbar_item_second>ul li:first-child form {
     display: flex;
-    align-items: center;
     width: 400px;
     overflow: hidden;
     border-radius: 20px;
@@ -1124,7 +1123,6 @@ footer {
 .search-form {
     position: relative;
     display: flex;
-    align-items: center;
 }
 
 .search-input {

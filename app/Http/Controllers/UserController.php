@@ -85,12 +85,15 @@ class UserController extends Controller
                 $table->save();
             }
 
-            // 6. Lưu session + cookie (3 phút)
+            // 6. Lưu session + cookie (1 phút)
             session([
                 'table_id' => $table->id,
                 'qr_token' => $token
             ]);
-            Cookie::queue('table_id', encrypt($table->id), 3);
+
+            session()->forget('current_order_code'); // Thêm dòng này
+
+            Cookie::queue('table_id', encrypt($table->id), 1);
         }
 
         // 7. Nếu không có id/token => quay lại từ trình duyệt (dùng session hoặc cookie)
@@ -119,6 +122,7 @@ class UserController extends Controller
                     'table_id' => $table->id,
                     'qr_token' => $table->token
                 ]);
+                session()->forget('current_order_code'); // thêm tại đây nếu cần
             } catch (\Exception $e) {
                 return redirect('/404')->with('error', 'Cookie bàn không hợp lệ hoặc đã bị chỉnh sửa.');
             }
@@ -180,7 +184,6 @@ class UserController extends Controller
             'layTatCaSanPham' => $layTatCaSanPham,
             'danhSachDanhMuc' => Category::where('status', 1)->get(),
             'keyword' => $keyword,
-            'qr_expired_at' => session('qr_expired_at'), // thêm thời gian hết hạn cho QR code đúng với session đã lưu
             'table' => $table,
         ]);
     }

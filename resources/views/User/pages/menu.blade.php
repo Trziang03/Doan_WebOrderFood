@@ -22,8 +22,8 @@
         <div class="product_search_lists">
             <div class="product_search_list_left">
                 <div>
-                    <div style="text-align: center; margin-bottom: 10px;font-size: 30px;">
-                        <strong>Bàn: {{ $table->name }}</strong>
+                    <div style="text-align: center; margin-bottom: 10px;font-size: 25px;">
+                        <strong>Bàn: {{ $table->name ?? ' ' }}</strong>
                     </div>
                 </div>
                 <div>
@@ -63,7 +63,7 @@
                         </div>
                         <div class="page" id="page"></div>
                     @else
-                    <div style="color: black; text-align:center; width:100%; margin-top:120px; height: 176px;">
+                    <div style="color: black; text-align:center; width:100%; margin-top:155px; height: 176px;">
                         <h3>Không tìm thấy món ăn nào</h3>
                     </div>
                 @endif
@@ -145,26 +145,92 @@
         }
     </script>
     <script>
-        // Thời gian hết hạn từ Laravel (ISO 8601 format)
-        const qrExpiredAt = new Date("{{ session('qr_expired_at') }}").getTime();
+        function buyNowSearch(productId) {
+            const data = {
+                product_id: productId,
+                size_id: 1,       // mặc định size là 1
+                quantity: 1,
+                note: ''          // không cần ghi chú
+                // Không gửi topping
+                // Không cần gửi table_id nếu lưu trong session
+            };
 
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = qrExpiredAt - now;
+            fetch("/cart/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        // Cập nhật cả desktop và mobile icon
+                        const desktopCart = document.getElementById('cart-quantity');
+                        if (desktopCart) {
+                            desktopCart.textContent = res.cart.totalQuantity;
+                        }
+                        const mobileCart = document.querySelector('.number_cart_mb_tl');
+                        if (mobileCart) {
+                            mobileCart.textContent = res.cart.totalQuantity;
+                        }
+                        return alertify.alert("Thông báo", res.message);
+                    } else {
+                        return alertify.alert("Thông báo", res.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    return alertify.alert("Thông báo", "Lỗi kết nối máy chủ!");
+                });
+        }
+    </script>
+    <!-- <script>
+        function autoCheckTableStatus() {
+            fetch('admin/table/check-status')
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 'blocked') {
+                        // Reset icon giỏ hàng về 0
+                        const desktopCart = document.getElementById('cart-quantity');
+                        if (desktopCart) desktopCart.textContent = '0';
 
-            if (distance <= 0) {
-                document.getElementById("countdown").innerHTML = "Đã hết hạn";
-                // Optional: Tự reload hoặc chuyển hướng
-                window.location.href = "/404";
-                return;
-            }
+                        const mobileCart = document.querySelector('.number_cart_mb_tl');
+                        if (mobileCart) mobileCart.textContent = '0';
 
-            const minutes = Math.floor(distance / 1000 / 60);
-            const seconds = Math.floor((distance / 1000) % 60);
-            document.getElementById("countdown").innerHTML = `${minutes} phút ${seconds} giây`;
+                        alertify.alert("Thông báo", res.message, function () {
+                            window.location.href = '/404';
+                        });
+                    }
+                });
         }
 
-        setInterval(updateCountdown, 1000);
-        updateCountdown(); // Gọi ngay lập tức
-    </script>
+        // Gợi ý: 5s kiểm tra 1 lần
+        setInterval(autoCheckTableStatus, 5000);
+    </script> -->
+    <script>
+    function autoCheckTableStatus() {
+        fetch('/table/check-status') 
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'blocked') {
+                    // Ẩn nút "Xem đơn hàng"
+                    const container = document.getElementById('order-link-container');
+                    if (container) container.innerHTML = '';
+
+                    // Xóa giỏ hàng số lượng
+                    document.getElementById('cart-quantity')?.textContent = '0';
+                    document.querySelector('.number_cart_mb_tl')?.textContent = '0';
+
+                    alertify.alert("Thông báo", res.message, function () {
+                        window.location.href = '/404'; // Hoặc về trang chủ
+                    });
+                }
+            });
+    }
+
+    autoCheckTableStatus();
+    setInterval(autoCheckTableStatus, 10000); // Kiểm tra mỗi 10s
+</script>
 @endsection

@@ -60,7 +60,7 @@
     }
 </style>
 @section('content')
-    <div class="container my-4">
+    <div class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
     <h5 class="fw-bold mb-0">
         Thông tin đặt món: Bàn số {{ $order->table_id }} | Ngày: {{ $order->created_at->format('d F, Y') }}
@@ -69,6 +69,20 @@
     <button class="btn btn-success mt-2 mt-md-0" data-bs-toggle="modal" data-bs-target="#paymentModal">
         Thanh toán
     </button>
+
+    @php
+        $canCancel = now()->diffInMinutes($order->created_at) < 3 && $order->order_status_id == 0; // 0 = trạng thái "Xác nhận", cho phép hủy
+    @endphp
+
+    @if($canCancel)
+        <form action="{{ route('payment.cancel', $order->id) }}" method="POST" class="mt-2 mt-md-0">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn hủy đơn hàng?')">
+                Hủy đơn
+            </button>
+        </form>
+    @endif
 </div>
         <div class="row mt-3 gy-3">
             <!-- Order Summary -->
@@ -99,7 +113,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($orderItems as $item)
+                            @foreach ($order->orderItems as $item)
                                 <tr>
                                     <td class="d-flex align-items-center gap-2">
                                         <img src="{{ asset($item->product->image_food) }}" alt="{{ $item->product->name }}"
@@ -132,7 +146,7 @@
                 </div>
                 <!-- Mobile-friendly order display -->
                 <div class="order-card">
-                    @foreach($orderItems as $item)
+                    @foreach ($order->orderItems as $item)
                         <div class="card mb-3">
                             <div class="card-body d-flex flex-column gap-2">
                                 <div class="d-flex gap-3">
@@ -171,41 +185,62 @@
         </div>
 
         <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-4">
-            {{ $orderItems->links() }}
-        </div>
+
     </div>
 
     <!-- Modal chọn phương thức thanh toán -->
+<!-- Modal chọn phương thức thanh toán -->
 <div class="modal fade" id="paymentModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title">🔐 Chọn phương thức thanh toán</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+            <form id="paymentForm" action="{{ route('payment.update', $order->id) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-            <div class="modal-body">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="payment_method_id" value="1" id="cod">
-                    <label class="form-check-label" for="cod">💵 Thanh toán COD</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="payment_method_id" value="2" id="qr">
-                    <label class="form-check-label" for="qr">🏦 Chuyển khoản QR</label>
+                <div class="modal-header">
+                    <h5 class="modal-title">Chọn phương thức thanh toán</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <!-- Mã QR - Ẩn ban đầu -->
-                <div id="qrImageContainer" class="mt-3 d-none text-center">
-                    <img src="{{ asset('images/QR.png') }}" alt="Mã QR chuyển khoản" class="img-fluid" style="max-width: 250px;">
-                    <p class="mt-2 mb-0 text-muted">Vui lòng quét mã để chuyển khoản</p>
-                </div>
-            </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment_method_id" value="1" id="cod">
+                        <label class="form-check-label" for="cod">💵 Thanh toán COD</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment_method_id" value="2" id="qr">
+                        <label class="form-check-label" for="qr">🏦 Chuyển khoản QR</label>
+                    </div>
 
-            <div class="modal-footer justify-content-center">
-                <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
-            </div>
+                    <!-- Mã QR - sẽ hiển thị nếu chọn chuyển khoản -->
+                    @php
+                        $total = 0;
+                        foreach ($order->orderItems as $item) {
+                            $productPrice = $item->product->price;
+                            if ($item->size && strtolower($item->size->name) !== 's') {
+                                $productPrice += $item->size->price ?? 0;
+                            }
+                            $base = $productPrice * $item->quantity;
+                            $topping = $item->orderItemToppings->sum(fn($t) => $t->price * $t->quantity);
+                            $total += $base + $topping;
+                        }
+
+                        $qrLink = "https://img.vietqr.io/image/VBA-6600029686868-compact.png?amount={$total}&addInfo=Thanh+toan+don+" . $order->order_code;
+                    @endphp
+
+                    <div id="qrImageContainer" class="mt-3 text-center d-none">
+                        <img src="{{ $qrLink }}" alt="Mã QR chuyển khoản Agribank" class="img-fluid" style="max-width: 250px;">
+                        <p class="mt-2 mb-0 text-muted">Vui lòng quét mã để chuyển khoản Agribank</p>
+                        <p class="text-muted small">Số tiền: <strong>{{ number_format($total, 0, '.', '.') }}đ</strong><br>
+                        Nội dung chuyển khoản: <strong>Thanh toan don {{ $order->order_code }}</strong></p>
+                    </div>
+                </div>
+
+                <div class="modal-footer justify-content-center">
+                    <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -217,16 +252,17 @@
         const qrRadio = document.getElementById('qr');
         const qrContainer = document.getElementById('qrImageContainer');
 
-        function toggleQR() {
-            if (qrRadio.checked) {
-                qrContainer.classList.remove('d-none');
-            } else {
+        codRadio.addEventListener('change', function () {
+            if (codRadio.checked) {
                 qrContainer.classList.add('d-none');
             }
-        }
+        });
 
-        codRadio.addEventListener('change', toggleQR);
-        qrRadio.addEventListener('change', toggleQR);
+        qrRadio.addEventListener('change', function () {
+            if (qrRadio.checked) {
+                qrContainer.classList.remove('d-none');
+            }
+        });
     });
 </script>
 @endsection

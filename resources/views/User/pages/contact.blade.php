@@ -18,7 +18,7 @@
                             style="border:0;" allowfullscreen="" loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                         <div style="text-align:center; width: 80%;margin-left: 40px; margin-top:5px;font-size: 13px;">
-                            <p>Địa chỉ: {{ $lienKetWebsite->address }} - Số điện thoại: {{ $lienKetWebsite->phone }} -
+                            <p>Địa chỉ: {{ $lienKetWebsite->address }} - Số điện thoại: {{ $lienKetWebsite->phone }}
                                 Email : {{ $lienKetWebsite->email }}</p>
                             <p>©2025 - Bản quyền thuộc về {{ $lienKetWebsite->name }}</p>
                         </div>

@@ -9,7 +9,13 @@
         <div>
             <ul>
                 <li><a href="{{ route('user.blog') }}">Giới thiệu</a></li>
-                <li><a href="{{ route('user.contact') }}">Liên hệ</a></li>
+                <li>
+                    @if(session('current_order_code'))
+                        <a href="{{ route('user.payment', ['order_code' => session('current_order_code')]) }}">
+                            Xem đơn hàng
+                        </a>
+                    @endif
+                </li>
             </ul>
         </div>
         <div>
@@ -62,8 +68,15 @@
                 <ul>
                     <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
                     <li><a href="{{route('user.menu')}}">Menu</a></li>
+                    <li><a href="{{ route('user.qr.info') }}">Xem mã QR</a></li>
                     <li><a href="{{ route('user.blog') }}">Giới Thiệu</a></li>
-                    <li><a href="{{ route('user.contact') }}">Liên Hệ</a></li>
+                    <li>
+                        @if(session('current_order_code'))
+                            <a href="{{ route('user.payment', ['order_code' => session('current_order_code')]) }}">
+                                Xem đơn hàng
+                            </a>
+                        @endif
+                    </li>
                     {{-- @guest
                     <li><a href="" onclick="handleLogin(event)"><i class="far fa-user-circle"
                                 style="margin-right:5px"></i>Đăng nhập</a></li>
@@ -92,8 +105,15 @@
                                     {{ session('cart')->totalQuantity }}
                                 @endif
                             </span></i>Giỏ hàng</a></li>
-                <li class="cart__header_mb_tl"><a href="{{ route('user.shoppingcart') }}"><i
-                            class="fas fa-shopping-cart"><span class="number_cart_mb_tl">0</span></i></a></li>
+                <li class="cart__header_mb_tl">
+                    <a href="{{ route('user.shoppingcart') }}">
+                        <i class="fas fa-shopping-cart">
+                            <span class="number_cart_mb_tl">
+                                {{ session('cart') ? session('cart')->totalQuantity : 0 }}
+                            </span>
+                        </i>
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>

@@ -89,6 +89,14 @@ class AdminStaffController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function destroy($id)
+    {
+        $staff = Staff::findOrFail($id);
+        $staff->delete();
+
+        return redirect()->back()->with('success', 'Xóa nhân viên thành công!');
+    }
 }
 
 

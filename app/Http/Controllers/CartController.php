@@ -62,6 +62,96 @@ class CartController extends Controller
         ]);
     }
 
+    public function add(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|integer',
+            'size_id' => 'required|integer',
+            'quantity' => 'required|integer|min:1|max:5',
+            'note' => 'nullable|string|max:150',
+            'topping_quantities' => 'nullable|array',
+        ]);
+
+        $table_id = session('table_id');
+
+        DB::beginTransaction();
+        try {
+            $query = CartItem::where('table_id', $table_id)
+                ->where('product_id', $validated['product_id'])
+                ->where('size_id', $validated['size_id'])
+                ->where('note', $validated['note']);
+
+            $existingItem = $query->first();
+            $sameTopping = true;
+
+            if ($existingItem) {
+                $existingToppings = collect($existingItem->toppings()->get())->pluck('quantity', 'topping_id')->map(fn($q) => (int) $q)->toArray();
+                $newToppings = collect($validated['topping_quantities'] ?? [])->map(fn($q) => (int) $q)->toArray();
+
+                if ($existingToppings != $newToppings) {
+                    $sameTopping = false;
+                }
+            }
+
+            if ($existingItem && $sameTopping) {
+                $existingItem->quantity += $validated['quantity'];
+                $existingItem->save();
+            } else {
+                $existingItem = CartItem::create([
+                    'table_id' => $table_id,
+                    'product_id' => $validated['product_id'],
+                    'size_id' => $validated['size_id'],
+                    'quantity' => $validated['quantity'],
+                    'note' => $validated['note'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                if (!empty($validated['topping_quantities'])) {
+                    foreach ($validated['topping_quantities'] as $toppingId => $qty) {
+                        if ((int) $qty > 0) {
+                            $topping = \App\Models\Topping::find($toppingId);
+                            $toppingPrice = $topping ? $topping->price : 0;
+
+                            CartItemTopping::create([
+                                'cart_item_id' => $existingItem->id,
+                                'topping_id' => $toppingId,
+                                'quantity' => $qty,
+                                'price' => $toppingPrice,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            $totalQuantity = CartItem::where('table_id', $table_id)->sum('quantity');
+            // Cập nhật lại session giỏ hàng
+            session([
+                'cart' => (object) [
+                    'totalQuantity' => $totalQuantity
+                ]
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã thêm vào giỏ hàng thành công!',
+                'cart' => [
+                    'totalQuantity' => $totalQuantity
+                ]
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Lỗi thêm giỏ hàng: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Không xác định được bàn! Quét mã QR để sử dụng',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function addToCart(Request $request)
     {
         $validated = $request->validate([
@@ -70,7 +160,7 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1|max:5',
             'note' => 'nullable|string|max:150',
             'topping_quantities' => 'nullable|array',
-            'table_id' => 'required|integer', // thêm dòng này
+            'table_id' => 'required|integer',
         ]);
 
         $table_id = $validated['table_id'];
@@ -80,6 +170,43 @@ class CartController extends Controller
 
         DB::beginTransaction();
         try {
+            // Lấy danh sách topping để so sánh
+            $newToppings = $validated['topping_quantities'] ?? [];
+
+            // Tìm xem đã có sản phẩm giống trong giỏ chưa
+            $existingItems = CartItem::where([
+                'table_id' => $table_id,
+                'product_id' => $validated['product_id'],
+                'size_id' => $validated['size_id'],
+                'note' => $validated['note'] ?? null,
+            ])->get();
+
+            foreach ($existingItems as $item) {
+                $existingToppings = $item->toppings->pluck('quantity', 'topping_id')->toArray();
+
+                if ($existingToppings == $newToppings) {
+                    // Nếu trùng topping → tăng số lượng
+                    $item->quantity += $validated['quantity'];
+                    $item->updated_at = now();
+                    $item->save();
+
+                    DB::commit();
+                    $totalQuantity = $this->getCartQuantityByTable($table_id);
+                    session([
+                        'cart' => (object) [
+                            'totalQuantity' => $totalQuantity
+                        ]
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Đã cập nhật giỏ hàng.',
+                        'cart' => ['totalQuantity' => $totalQuantity]
+                    ]);
+                }
+            }
+
+            // Nếu không trùng → tạo mới
             $cartItem = CartItem::create([
                 'table_id' => $table_id,
                 'product_id' => $validated['product_id'],
@@ -90,33 +217,39 @@ class CartController extends Controller
                 'updated_at' => now(),
             ]);
 
-            if (!empty($validated['topping_quantities'])) {
-                foreach ($validated['topping_quantities'] as $toppingId => $qty) {
+            if (!empty($newToppings)) {
+                foreach ($newToppings as $toppingId => $qty) {
                     if ((int) $qty > 0) {
-                        // Lấy giá topping từ database
-                        $toppingModel = \App\Models\Topping::find($toppingId);
-                        $toppingPrice = $toppingModel ? $toppingModel->price : 0;
+                        $topping = \App\Models\Topping::find($toppingId);
+                        $price = $topping ? $topping->price : 0;
+
                         CartItemTopping::create([
                             'cart_item_id' => $cartItem->id,
                             'topping_id' => $toppingId,
                             'quantity' => $qty,
-                            'price' => $toppingPrice,
+                            'price' => $price,
                         ]);
                     }
                 }
             }
 
             DB::commit();
+            $totalQuantity = $this->getCartQuantityByTable($table_id);
+            session([
+                'cart' => (object) [
+                    'totalQuantity' => $totalQuantity
+                ]
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Đã thêm vào giỏ hàng thành công!',
-                'cart' => [
-                    'totalQuantity' => $this->getCartQuantityByTable($table_id),
-                ]
+                'cart' => ['totalQuantity' => $totalQuantity]
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Add to cart failed: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Lỗi khi thêm vào giỏ hàng!',
@@ -148,6 +281,8 @@ class CartController extends Controller
 
             // Xóa toppings trước (nếu có)
             CartItemTopping::where('cart_item_id', $cartItem->id)->delete();
+
+            session()->forget('cart'); //xóa session icon cart
 
             // Xóa cart item
             $cartItem->delete();
@@ -184,6 +319,8 @@ class CartController extends Controller
 
             // Xóa các item trong giỏ
             CartItem::where('table_id', $table_id)->delete();
+
+            session()->forget('cart'); //xóa session icon cart
 
             return response()->json([
                 'success' => true,
@@ -406,17 +543,23 @@ class CartController extends Controller
                 }
             }
 
+            \Log::info('Phương thức gửi:', ['method' => $request->method()]);
+
             // Xóa giỏ hàng sau khi đặt hàng thành công
             CartItemTopping::whereIn('cart_item_id', $cartItems->pluck('id'))->delete();
             CartItem::where('table_id', $table_id)->delete();
-
+            session()->forget('cart');
             DB::commit();
-            return redirect()->route('user.payment')->with('success', 'Gửi đơn hàng thành công!');
+            
+            if ($order->table_id == session('table_id')) {
+                session(['current_order_code' => $order->order_code]);
+            }
+            return redirect()->route('user.payment', ['order_code' => $order->order_code])->with('message', 'Đặt hàng thành công!');
+
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Gửi giỏ hàng thất bại: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Lỗi khi gửi đơn hàng.');
         }
     }
-
 }

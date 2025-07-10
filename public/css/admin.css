@@ -772,8 +772,8 @@ table tr td {
 
 .btn-action {
     display: inline-block;
-    margin-top: 0px;
-    padding: 6px 12px;
+    margin-top: 5px;
+    padding: 10px 10px;
     background-color: orange;
     color: white !important;
     text-decoration: none;
@@ -797,9 +797,9 @@ table tr td {
 .modal-content {
     background: #fff;
     border-radius: 8px;
-    padding: 20px;
+    padding: 40px;
     margin: 70px auto;
-    max-width: 300px;
+    max-width: 400px;
     /* Giới hạn chiều rộng tối đa */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     position: relative;
@@ -831,7 +831,7 @@ table tr td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
-    width: 50px;
+    width: 70px;
 }
 
 .modal-content h2 {
