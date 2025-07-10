@@ -106,6 +106,8 @@ Route::middleware(['role:QL'])->group(function () {
     Route::post('/admin/staff/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
     Route::get('/admin/staff/{id}/edit', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
     Route::post('/admin/staff/{id}/update', [AdminStaffController::class, 'update'])->name('admin.staff.update');
+    Route::delete('/admin/staffs/{id}', [AdminStaffController::class, 'destroy'])->name('staff.destroy');
+
 });
 
 //Xác nhận đặt hàng và thanh toán

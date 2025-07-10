@@ -57,6 +57,8 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/layout_user.js') }}"></script>
+    <script src="{{ secure_asset('js/layout_user.js') }}"></script>
+
     <script src="https://a77f-113-185-64-1.ngrok-free.app/js/layout_user.js"></script>
     @yield('script')
     <script>

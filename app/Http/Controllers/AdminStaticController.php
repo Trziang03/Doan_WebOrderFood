@@ -18,12 +18,12 @@ class AdminStaticController extends Controller
         for ($month = 1; $month <= 12; $month++) {
             $sum[$month - 1] = Order::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->where('order_status_id', 0) //nhớ đổi status đơn hàng thành đã thanh toán
+                ->where('order_status_id', 4) //nhớ đổi status đơn hàng thành đã thanh toán
                 ->sum('total_price');
 
             $count[$month - 1] = Order::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->where('order_status_id', 0)
+                ->where('order_status_id', 4)
                 ->count();
         }
 

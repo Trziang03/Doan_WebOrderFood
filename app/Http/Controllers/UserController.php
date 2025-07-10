@@ -148,6 +148,12 @@ class UserController extends Controller
 
         $layTatCaSanPham = Product::with('sizes')->get();
 
+        //lưu token vào session
+        if ($request->has('token')) {
+            session(['user_token' => $request->token]);
+        }
+    
+
         // 14. Trả về giao diện menu
         return view('user.pages.menu', [
             'table' => $table,

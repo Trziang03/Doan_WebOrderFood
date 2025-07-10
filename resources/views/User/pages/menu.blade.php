@@ -75,43 +75,9 @@
         }
 
         .btn-toggle-filter {
-            background-color: #ffa34d;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            margin: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-panel {
-            position: fixed;
-            top: 0;
-            right: -70%;
-            /* Trượt ra từ bên phải */
-            width: 65%;
-            max-width: 320px;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            /* nền mờ nhẹ */
-            backdrop-filter: blur(10px);
-            z-index: 9999;
-            transition: right 0.3s ease;
-            padding: 20px;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Khi mở */
-        .filter-panel.open {
-            right: 0;
-        }
-
-        .btn-toggle-filter {
-            position: fixed;
-            top: 80px;
-            left: 10px;
-            z-index: 10000;
+            top: 80px ;
+            right: 10px;
+            left: auto;
             background-color: #ffa34d;
             color: white;
             padding: 10px 12px;
@@ -120,6 +86,30 @@
             font-size: 14px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
+
+
+        .filter-panel {
+            position: fixed;
+            top: 0;
+            left: -70%;
+            /* Trượt ra từ bên trái */
+            width: 60%;
+            max-width: 320px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            /* nền mờ nhẹ */
+            backdrop-filter: blur(50px);
+            z-index: 9999;
+            transition: left 0.3s ease;
+            padding: 20px;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Khi mở */
+        .filter-panel.open {
+            left: 0;
+        }
+
 
 
         .filter-header {
@@ -167,15 +157,18 @@
     <section class="container_css product_searchs">
         <div class="product_search_lists">
             <div class="product_search_list_left">
-                <div>
+                <div >
                     <div style="text-align: center; margin-bottom: 10px;font-size: 30px;">
-                        <strong>Bàn: {{ $table->name }}</strong>
+                        <strong style="margin-top: 10px;">Bàn: {{ $table->name }}</strong>
+                        <div>
+                            <button onclick="toggleFilterPanel()" class="btn-toggle-filter">
+                                <i class="fas fa-filter"></i> Bộ lọc
+                            </button>
+        
+                        </div>
+    
                     </div>
-                    <button onclick="toggleFilterPanel()" class="btn-toggle-filter">
-                        <i class="fas fa-filter"></i> Bộ lọc
-                    </button>
                 </div>
-                <div>
                     <div class="filter-panel" id="filterPanel">
                         <div class="filter-header">
                             <span>Bộ lọc</span>
@@ -216,7 +209,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
             <div class="product_search_list_right">
                 <div class="product_search_list_right_items">

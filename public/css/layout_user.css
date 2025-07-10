@@ -339,6 +339,7 @@ img {
     z-index: 1000;
     transition: transform 0.3s ease, left 0.3s ease;
     width: 50%;
+
 }
 
 .checkbox_input_hidden:checked~.navbar_hidden_mb_tl {
@@ -996,7 +997,7 @@ footer {
     display: none;
     position: fixed;
     width: 400px;
-    top: 50%;
+    top: 35%;
     padding: 20px 30px;
     border-radius: 15px;
     left: 50%;

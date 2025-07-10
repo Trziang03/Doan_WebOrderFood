@@ -136,6 +136,32 @@
                 @endforeach
             </tbody>
         </table>
+        <div class="popup_admin" id="popupstaff" style="display: none;">
+            <h3 style="color: white;">Bạn có thật sự muốn xóa nhân viên này?</h3>
+            <p style="color: white;">* Nhân viên bị xóa sẽ không thể khôi phục *</p>
+        
+            <label style="color:white;">
+                Nhập từ <strong style="color: yellow;">XÓA</strong> để xác nhận:
+            </label>
+            <input type="text" id="confirmInput" placeholder="Nhập XÓA..." />
+        
+            <div style="margin-top: 10px;">
+                <input type="checkbox" id="confirmCheckbox" />
+                <label for="confirmCheckbox" style="color: white;">Tôi đồng ý với hành động này</label>
+            </div>
+        
+            <p id="alert" style="color: red;"></p>
+        
+            <div class="button">
+                <form id="deleteForm" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" id="deleteBtn" disabled>Đồng ý</button>
+                    <button type="button" onclick="cancel('dm')">Hủy</button>
+                </form>
+            </div>
+        </div>
+        
     </div>
 
     {{-- Popup --}}
@@ -284,4 +310,53 @@
         });
     });
 </script>
+
+<script>
+    let staffIdToDelete = null;
+
+    function popup(type, id) {
+        if (type === 'delete') {
+            staffIdToDelete = id;
+            document.getElementById('popupstaff').style.display = 'block';
+            document.getElementById('confirmInput').value = '';
+            document.getElementById('confirmCheckbox').checked = false;
+            document.getElementById('deleteBtn').disabled = true;
+            document.getElementById('alert').innerText = '';
+            
+            // Set form action
+            const deleteForm = document.getElementById('deleteForm');
+            deleteForm.action = `/admin/staffs/${id}`; // cập nhật đúng route xóa
+        }
+    }
+
+    function cancel(type) {
+        if (type === 'dm') {
+            document.getElementById('popupstaff').style.display = 'none';
+        }
+    }
+
+    // Bật nút xóa nếu người dùng nhập đúng
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('confirmInput');
+        const checkbox = document.getElementById('confirmCheckbox');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const alert = document.getElementById('alert');
+
+        function validateDelete() {
+            const isTextValid = input.value.trim().toUpperCase() === 'XÓA';
+            const isChecked = checkbox.checked;
+            deleteBtn.disabled = !(isTextValid && isChecked);
+
+            if (!isTextValid && input.value !== '') {
+                alert.innerText = 'Bạn phải nhập chính xác từ "XÓA"';
+            } else {
+                alert.innerText = '';
+            }
+        }
+
+        input.addEventListener('input', validateDelete);
+        checkbox.addEventListener('change', validateDelete);
+    });
+</script>
+
 @endsection
