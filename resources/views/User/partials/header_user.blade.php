@@ -51,7 +51,7 @@
             </div>
             <ul style="padding-left:0">
                 <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                <li><a href="{{route('user.menu')}}">Menu</a></li>
+                <li><a href="{{ route('user.menu') }}">Menu</a></li>
             </ul>
         </div>
         <div class="navbar_item_second">
@@ -66,21 +66,28 @@
             <nav class="navbar_hidden_mb_tl">
                 <label for="checkbox_hidden"><i class="fas fa-times"></i></label>
                 <ul>
-                    <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                    <li><a href="{{route('user.menu')}}">Menu</a></li>
-                    <li><a href="{{ route('user.qr.info') }}">Xem mã QR</a></li>
-                    <li><a href="{{ route('user.blog') }}">Giới Thiệu</a></li>
-                    <li>
-                        @if(session('current_order_code'))
-                            <a href="{{ route('user.payment', ['order_code' => session('current_order_code')]) }}">
-                                Xem đơn hàng
-                            </a>
+                    <li><a href="{{ route('user.index',['token' => request()->get('token')]) }}">Trang chủ</a></li>
+                    <li><a href="{{ route('user.menu', ['token' => request()->get('token')]) }}">Menu</a></li>
+                    <li><a href="{{ route('user.blog', ['token' => request()->get('token')]) }}">Giới Thiệu</a></li>
+                    @auth
+                        <li><a href="{{ route('admin.index',['token' => request()->get('token')]) }} ">Trang quản trị</a></li>
+                        <li><a href="{{ route('logout',['token' => request()->get('token')]) }}">Đăng xuất</a></li>
+                    @else
+                        {{-- kiểm tra token nếu người dùng quét mã sẽ có token và sẽ ẩn nút đăng nhập --}}
+                        @if (!session()->has('user_token'))
+                            <li>
+                                <a href="" onclick="handleLogin(event)">
+                                    <i class="far fa-user-circle" style="margin-right:5px"></i>Đăng nhập
+                                </a>
+                            </li>
                         @endif
-                    </li>
+                    @endauth
+
+
                     {{-- @guest
                     <li><a href="" onclick="handleLogin(event)"><i class="far fa-user-circle"
                                 style="margin-right:5px"></i>Đăng nhập</a></li>
-                    @endguest --}}
+                    @endguest  --}}
                     {{-- @auth
                     <li><a href="{{ route('profile.index') }} ">Thông tin cá nhân</a></li>
                     <li><a href="{{ route('logout') }}">Đăng xuất</a></li>
@@ -90,7 +97,8 @@
             <ul>
                 <li class="search-wrapper">
                     <form action="{{ route('user.search.all') }}" method="GET" class="search-form">
-                        <input type="search" name="keyword" placeholder="Tìm kiếm..." value="{{ request('keyword') }}">
+                        <input type="search" name="keyword" placeholder="Tìm kiếm..."
+                            value="{{ request('keyword') }}">
                         <button type="submit" class="search-btn">
                             <i class="fas fa-search"></i>
                         </button>
