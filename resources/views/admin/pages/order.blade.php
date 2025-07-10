@@ -1,3 +1,4 @@
+
 @extends('layouts.layouts_admin')
 @section('title', 'Trang quản lý đơn hàng')
 @section('active-order', 'active')
@@ -11,7 +12,7 @@
         margin-bottom: 12px;
         border-radius: 4px;
         float: right;
-        margin-right: 0px;
+        margin-right: 55px;
         margin-top: 1px;
     }
 
@@ -70,57 +71,15 @@
         border: 1px solid #ddd;
         vertical-align: top;
     }
-    /* css cái chuông thông báo */
-    .bell-notification {
-        position: relative;
-        display: inline-block;
-        margin-right: 16px;
-        cursor: pointer;
-        font-size: 20px;
-        color: #333;
-        transition: color 0.3s ease;
-    }
-
-    .bell-notification:hover {
-        color: #ff6f00;
-    }
-
-    .bell-badge {
-        position: absolute;
-        top: -6px;
-        right: -10px;
-        background-color: red;
-        color: white;
-        font-size: 11px;
-        font-weight: bold;
-        padding: 2px 6px;
-        border-radius: 50%;
-        box-shadow: 0 0 3px rgba(0,0,0,0.3);
-        animation: pulse 1s infinite;
-    }
-
-    /* Hiệu ứng rung nhẹ */
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.15); }
-        100% { transform: scale(1); }
-    }
-
-</style>
 </style>
 @section('content')
     <div class="content" id="donhang">
         <div class="head">
             <div class="title">Quản Lý Đơn Hàng</div>
-            <div class="search">   
-                <div class="bell-notification">
-                    <i class="fas fa-bell"></i>
-                    @if ($pendingCount > 0)
-                        <span class="bell-badge">{{ $pendingCount }}</span>
-                    @endif
-                </div>       
+            <div class="search">
                 <form action="{{ route('admin.order') }}" method="GET">
-                    <input type="text" name="keyword" placeholder="Tìm mã đơn hoặc bàn..." value="{{ request('keyword') }}">
+                    <input type="text" name="keyword" placeholder="Tìm mã đơn hoặc bàn..."
+                        value="{{ request('keyword') }}">
                     <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
             </div>
@@ -128,49 +87,9 @@
 
         <div class="separator_x"></div>
 
-        {{-- ACTIVE TAB --}}
-        @php
-            $activeTab = session('tab') ?? (request('tab') ?? 'xacnhan');
-        @endphp
-
-        {{-- <div class="tabs">
-            <div class="{{ $activeTab === 'xacnhan' ? 'active' : '' }}" data-target="xacnhan">Xác nhận</div>
-            <div class="{{ $activeTab === 'dangchuanbi' ? 'active' : '' }}" data-target="dangchuanbi">Đang chuẩn bị</div>
-            <div class="{{ $activeTab === 'daphucvu' ? 'active' : '' }}" data-target="daphucvu">Đã phục vụ</div>
-            <div class="{{ $activeTab === 'chuathanhtoan' ? 'active' : '' }}" data-target="chuathanhtoan">Chưa thanh toán
-            </div>
-            <div class="{{ $activeTab === 'dathanhtoan' ? 'active' : '' }}" data-target="dathanhtoan">Đã thanh toán</div>
-        </div> --}}
-        <div class="tabs">
-            <div class="{{ $activeTab === 'xacnhan' ? 'active' : '' }}" data-target="xacnhan">
-                Xác nhận ({{ $statusCounts['xacnhan'] ?? 0 }})
-            </div>
-            <div class="{{ $activeTab === 'dangchuanbi' ? 'active' : '' }}" data-target="dangchuanbi">
-                Đang chuẩn bị ({{ $statusCounts['dangchuanbi'] ?? 0 }})
-            </div>
-            <div class="{{ $activeTab === 'daphucvu' ? 'active' : '' }}" data-target="daphucvu">
-                Đã phục vụ ({{ $statusCounts['daphucvu'] ?? 0 }})
-            </div>
-            <div class="{{ $activeTab === 'chuathanhtoan' ? 'active' : '' }}" data-target="chuathanhtoan">
-                Chưa thanh toán ({{ $statusCounts['chuathanhtoan'] ?? 0 }})
-            </div>
-            <div class="{{ $activeTab === 'dathanhtoan' ? 'active' : '' }}" data-target="dathanhtoan">
-                Đã thanh toán ({{ $statusCounts['dathanhtoan'] ?? 0 }})
-            </div>
-        </div>
-
-        @php
-            $statuses = [
-                ['id' => 0, 'name' => 'xacnhan'],
-                ['id' => 1, 'name' => 'dangchuanbi'],
-                ['id' => 2, 'name' => 'daphucvu'],
-                ['id' => 3, 'name' => 'chuathanhtoan'],
-                ['id' => 4, 'name' => 'dathanhtoan'],
-            ];
-        @endphp
-
-        @foreach ($statuses as $status)
-            <div class="table {{ $activeTab === $status['name'] ? 'active' : '' }}" id="{{ $status['name'] }}">
+        @if (request('keyword'))
+            {{-- HIỂN THỊ KẾT QUẢ TÌM KIẾM --}}
+            <div class="table active">
                 <table>
                     <thead>
                         <tr>
@@ -185,69 +104,147 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $orders = App\Models\Order::where('order_status_id', $status['id'])
-                                ->orderBy('updated_at', 'desc')
-                                ->paginate(7, ['*'], $status['name']);
-                        @endphp
-
-                        @foreach ($orders as $order)
-                            <tr>
-                                <td style="text-align: center;">{{ $order->order_code }}</td>
-                                <td style="text-align: center;">{{ $order->table->name ?? 'N/A' }}</td>
-                                <td>
-                                    @foreach ($order->orderItems as $item)
-                                        {{ $item->product->name ?? '---' }} - "Size {{ $item->size->name ?? '' }}"
-                                        x{{ $item->quantity }}<br>
-                                    @endforeach
-                                </td>
-                                <td style="text-align: center;">{{ $order->note }}</td>
-                                <td style="text-align: center;">
-                                    @php
-                                        $total = 0;
-                                        foreach ($order->orderItems as $item) {
-                                            $price = $item->product->price;
-                                            if ($item->size && strtolower($item->size->name) !== 's') {
-                                                $price += $item->size->price ?? 0;
-                                            }
-                                            $base = $price * $item->quantity;
-                                            $toppingTotal = 0;
-                                            foreach ($item->orderItemToppings as $topping) {
-                                                $toppingTotal += $topping->price * $topping->quantity;
-                                            }
-                                            $total += $base + $toppingTotal;
-                                        }
-                                    @endphp
-                                    {{ number_format($total, 0, '.', '.') }}đ
-                                </td>
-                                <td style="text-align: center;">{{ $order->orderStatus->name }}</td>
-                                <td style="text-align: center;">{{ $order->created_at->format('d/m/Y H:i:s') }}</td>
-                                <td style="text-align: center;">
-                                    @if ($status['id'] !== 4)
-                                        <a href="{{ route('admin.order.change-status', ['id' => $order->id]) }}?tab={{ $status['name'] }}"
+                        @if ($orders->count() > 0)
+                            @foreach ($orders as $order)
+                                <tr>
+                                    <td>{{ $order->order_code }}</td>
+                                    <td>{{ $order->table->name ?? '-' }}</td>
+                                    <td>
+                                        @foreach ($order->orderItems as $item)
+                                            {{ $item->product->name }} (x{{ $item->quantity }})<br>
+                                        @endforeach
+                                    </td>
+                                    <td>{{ $order->note }}</td>
+                                    <td>{{ number_format($order->total_price) }}đ</td>
+                                    <td>{{ $order->orderStatus->name }}</td>
+                                    <td>{{ $order->updated_at->format('d/m/Y H:i') }}</td>
+                                    <td style="text-align: center;">
+                                        <a href="{{ route('admin.order.change-status', ['id' => $order->id]) }}"
                                             class="btn-action">
                                             <i class="fa-solid fa-sync-alt" style="color: #007bff;"></i>
                                         </a>
-                                    @endif
-
-                                    @if ($status['id'] === 4)
-                                        <a href="javascript:void(0)" class="btn-action view-order-detail"
-                                            data-id="{{ $order->id }}">
-                                            <i class="fa-solid fa-eye" style="color: green;"></i>
-                                        </a>
-                                    @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 20px; color: #a94442;">
+                                    Không tìm thấy kết quả phù hợp với từ khóa "<strong>{{ request('keyword') }}</strong>".
                                 </td>
                             </tr>
-                        @endforeach
+                        @endif
                     </tbody>
                 </table>
-
-                {{-- PHÂN TRANG GIỮ TAB --}}
-                <div style="text-align: center;">
-                    {{ $orders->appends(['tab' => $status['name']])->links() }}
+                <div class="pagination-wrapper">
+                    {{ $orders->appends(request()->query())->links() }}
                 </div>
             </div>
-        @endforeach
+        @else
+            {{-- HIỂN THỊ THEO TABS --}}
+            @php
+                $activeTab = session('tab') ?? (request('tab') ?? 'xacnhan');
+
+                $statuses = [
+                    ['id' => 0, 'name' => 'xacnhan', 'label' => 'Xác nhận'],
+                    ['id' => 1, 'name' => 'dangchuanbi', 'label' => 'Đang chuẩn bị'],
+                    ['id' => 2, 'name' => 'daphucvu', 'label' => 'Đã phục vụ'],
+                    ['id' => 3, 'name' => 'chothanhtoan', 'label' => 'Chờ thanh toán'],
+                    ['id' => 4, 'name' => 'dathanhtoan', 'label' => 'Đã thanh toán'],
+                    ['id' => 5, 'name' => 'dahuy', 'label' => 'Đã hủy'],
+                ];
+            @endphp
+
+            <div class="tabs">
+                @foreach ($statuses as $status)
+                    <div class="{{ $activeTab === $status['name'] ? 'active' : '' }}" data-target="{{ $status['name'] }}">
+                        {{ $status['label'] }} ({{ $statusCounts[$status['name']] ?? 0 }})
+                    </div>
+                @endforeach
+            </div>
+
+            @foreach ($statuses as $status)
+                <div class="table {{ $activeTab === $status['name'] ? 'active' : '' }}" id="{{ $status['name'] }}">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 12%;">Mã đơn</th>
+                                <th style="width: 8%;">Mã bàn</th>
+                                <th style="width: 25%;">Món ăn</th>
+                                <th style="width: 14%;">Ghi chú</th>
+                                <th style="width: 10%;">Tổng tiền</th>
+                                <th style="width: 13%;">Thời gian</th>
+                                <th style="width: 8%;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($ordersByStatus[$status['name']] ?? [] as $order)
+                                <tr>
+                                    <td>{{ $order->order_code }}</td>
+                                    <td>{{ $order->table->name ?? '-' }}</td>
+                                    <td>
+                                        @foreach ($order->orderItems as $item)
+                                            <div style="margin-bottom: 8px;">
+                                                <strong>
+                                                    {{ $item->product->name }} (x{{ $item->quantity }})
+                                                    @if ($item->size)
+                                                        - Size: {{ $item->size->name }}
+                                                    @endif
+                                                </strong><br>
+                                                @if ($item->toppings && $item->toppings->count() > 0)
+                                                    <ul style="margin: 0 0 0 15px; padding-left: 0; list-style-type: disc;">
+                                                        @foreach ($item->toppings as $topping)
+                                                            <li>{{ $topping->name }} (x{{ $topping->pivot->quantity }})
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </td>
+                                    <td>{{ $order->note }}</td>
+                                    <td>{{ number_format($order->total_price) }}đ</td>
+                                    <td>{{ $order->updated_at->format('d/m/Y H:i') }}</td>
+                                    <td style="text-align: center;">
+                                        @if ($status['id'] === 5)
+                                            {{-- Nút xoá đơn hàng --}}
+                                            <form action="{{ route('admin.order.delete', ['id' => $order->id]) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');"
+                                                style="display: inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-action">
+                                                    <i class="fa-regular fa-trash-can"
+                                                        style="color: red; font-size: 18px;"></i>
+                                                </button>
+                                            </form>
+                                        @elseif ($status['id'] === 4)
+                                            {{-- Nút xem chi tiết --}}
+                                            <a href="javascript:void(0)" class="btn-action view-order-detail"
+                                                data-id="{{ $order->id }}">
+                                                <i class="fa-solid fa-eye" style="color: green;"></i>
+                                            </a>
+                                        @else
+                                            {{-- Nút đổi trạng thái --}}
+                                            <a href="{{ route('admin.order.change-status', ['id' => $order->id]) }}?tab={{ $status['name'] }}"
+                                                class="btn-action">
+                                                <i class="fa-solid fa-sync-alt" style="color: #007bff;"></i>
+                                            </a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+
+                    @if (isset($ordersByStatus[$status['name']]))
+                        <div class="pagination-wrapper">
+                            {{ $ordersByStatus[$status['name']]->appends(request()->query())->links() }}
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        @endif
 
         <!-- Modal -->
         <div id="orderDetailModal" class="modal" style="display:none;">
@@ -258,14 +255,14 @@
         </div>
         <!-- Popup Xóa -->
         <!-- <div class="popup_admin" id="popupxoa" style="display: none;">
-                                <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
-                                <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
-                                <p id="alert"></p>
-                                <div class="button">
-                                    <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
-                                    <button onclick="cancel('xoa')">Hủy</button>
-                                </div>
-                            </div> -->
+                            <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
+                            <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
+    <p id="alert"></p>
+                            <div class="button">
+                                <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
+                                <button onclick="cancel('xoa')">Hủy</button>
+                            </div>
+                        </div> -->
     </div>
 @endsection
 

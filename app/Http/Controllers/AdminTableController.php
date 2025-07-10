@@ -11,6 +11,8 @@ use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
 use Endroid\QrCode\Encoding\Encoding;
+use App\Models\CartItem;
+use Illuminate\Support\Facades\Cookie;
 
 class AdminTableController extends Controller
 {
@@ -19,7 +21,7 @@ class AdminTableController extends Controller
         $tables = Table::with('status')->get();
         $statuses = TableStatus::all();
 
-        // ✅ Gắn URL QR cho từng bàn
+        // Gắn URL QR cho từng bàn
         foreach ($tables as $table) {
             $path = route('user.menu', ['id' => $table->id], false); // /menu?id=1
             $table->qr_url = url($path . '&token=' . $table->token); // domain hiện tại + token
@@ -38,7 +40,7 @@ class AdminTableController extends Controller
 
         // Tạo đường dẫn URL với ID và token
         $path = route('user.menu', ['id' => $table->id], false);
-        $fullUrl = ' https://3f92-113-185-64-1.ngrok-free.app' . $path . '&token=' . $token;
+        $fullUrl = 'https://98cd3a6c9c6a.ngrok-free.app' . $path . '&token=' . $token;
 
         // Tạo ảnh QR mới
         $builder = new Builder(
@@ -95,7 +97,7 @@ class AdminTableController extends Controller
         $table->name = $request->name;
         $table->table_status_id = $request->table_status_id;
 
-        // 4. Nếu trạng thái là "Trống" (ID = 1), reset access count và tạo QR mới
+        // 4. Nếu trạng thái là "Trống" (ID = 1) tạo QR mới
         if ((int) $request->table_status_id === 1) {
             $this->generateQrForTable($table, $now);
         }
@@ -105,9 +107,14 @@ class AdminTableController extends Controller
             $this->generateQrForTable($table, $now);
         }
 
-        // 6. Nếu trạng thái là "Đang dọn bàn" (ID = 3), tạo token mới (nếu bạn vẫn dùng khóa token)
+        // 6. Nếu trạng thái là "Đang dọn bàn" (ID = 3)     tạo token mới
         if ((int) $request->table_status_id === 3) {
             $table->token = Str::random(40);
+        }
+
+        if ((int) $request->table_status_id === 1 || (int) $request->table_status_id === 3) {
+            // Xoá mã đơn hàng khỏi session
+            session()->forget('current_order_code');
         }
 
         $table->save();
@@ -130,13 +137,47 @@ class AdminTableController extends Controller
         return response()->json($result);
     }
 
+    public function checkStatus(Request $request)
+    {
+        $tableId = session('table_id');
+
+        if (!$tableId) {
+            return response()->json([
+                'status' => 'blocked',
+                'message' => 'Không tìm thấy bàn.'
+            ]);
+        }
+
+        $table = Table::find($tableId);
+
+        if (!$table || $table->table_status_id == 3) {
+            $cartItems = CartItem::with('toppings')->where('table_id', $tableId)->get();
+
+            foreach ($cartItems as $item) {
+                $item->toppings()->delete(); // Xoá topping
+                $item->delete();             // Xoá món chính
+            }
+
+            session()->forget(['table_id', 'qr_token', 'current_order_code']);
+            Cookie::queue(Cookie::forget('table_id'));
+
+            \Log::info('Session hiện tại sau khi xoá:', session()->all());
+
+            return response()->json([
+                'status' => 'blocked',
+                'message' => 'Bàn đang được dọn. Giỏ hàng đã bị xoá.'
+            ]);
+        }
+
+        return response()->json(['status' => 'ok']);
+    }
+
     public function store(Request $request)
     {
         // 1. Validate
         $request->validate([
             'name' => 'required|string|max:255|unique:tables,name',
             'table_status_id' => 'required|exists:table_status,id',
-            'access_limit' => 'required|integer|min:1',
         ]);
 
         // 2. Tạo table mới

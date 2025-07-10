@@ -125,12 +125,19 @@
                         <td>{{ $staff->status == 1 ? 'Kích hoạt' : 'Tạm khóa' }}</td>
                         <td>{{ $staff->role }}</td>
                         <td style="text-align: center;">
-                            <button onclick="openEditModal({{ $staff->id }})" class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i></button>
+                            <button onclick="openEditModal({{ $staff->id }})" class="btn btn-warning"><i
+                                    class="fa-regular fa-pen-to-square"></i></button>
                         </td>
                         <td style="text-align: center;">
-                            <a onclick="popup('delete', {{ $staff->id }})" data-id="{{ $staff->id }}">
-                                <i class="fa-regular fa-trash-can"></i>
-                            </a>
+                            <form action="{{ route('admin.staff.destroy', $staff->id) }}" method="POST"
+                                onsubmit="return confirm('Bạn có chắc chắn muốn xoá nhân viên này không?');"
+                                style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
@@ -183,48 +190,49 @@
         </div>
     </div>
     {{-- Popup Sửa --}}
-<div class="modal" id="editUserModal" style="display: none;">
-    <div class="modal-content">
-        <h2>SỬA NHÂN VIÊN</h2>
-        <form id="editUserForm" method="POST">
-            @csrf
-            <input type="hidden" id="edit_id">
+    <div class="modal" id="editUserModal" style="display: none;">
+        <div class="modal-content">
+            <h2>SỬA NHÂN VIÊN</h2>
+            <form id="editUserForm" method="POST">
+                @csrf
+                <input type="hidden" id="edit_id">
 
-            <div class="form-grid">
-                <div class="form-col">
-                    <input type="text" name="username" id="edit_username" class="form-control" placeholder="Tài Khoản">
-                    <input type="text" name="full_name" id="edit_full_name" class="form-control" placeholder="Họ và tên">
-                    <select name="gender" id="edit_gender" class="form-control">
-                        <option value="">-- Giới tính --</option>
-                        <option value="Nam">Nam</option>
-                        <option value="Nữ">Nữ</option>
-                    </select>
-                    <input type="date" name="date_of_birth" id="edit_date_of_birth" class="form-control">
+                <div class="form-grid">
+                    <div class="form-col">
+                        <input type="text" name="username" id="edit_username" class="form-control" placeholder="Tài Khoản">
+                        <input type="text" name="full_name" id="edit_full_name" class="form-control"
+                            placeholder="Họ và tên">
+                        <select name="gender" id="edit_gender" class="form-control">
+                            <option value="">-- Giới tính --</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                        <input type="date" name="date_of_birth" id="edit_date_of_birth" class="form-control">
+                    </div>
+
+                    <div class="form-col">
+                        <input type="email" name="email" id="edit_email" class="form-control" placeholder="Email">
+                        <input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Số điện thoại">
+                        <select name="role" id="edit_role" class="form-control">
+                            <option value="">-- Vai trò --</option>
+                            <option value="QL">Admin</option>
+                            <option value="NV">Nhân viên</option>
+                        </select>
+                        <select name="status" id="edit_status" class="form-control">
+                            <option value="">-- Trạng thái --</option>
+                            <option value="1">Kích hoạt</option>
+                            <option value="0">Tạm khóa</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-col">
-                    <input type="email" name="email" id="edit_email" class="form-control" placeholder="Email">
-                    <input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Số điện thoại">
-                    <select name="role" id="edit_role" class="form-control">
-                        <option value="">-- Vai trò --</option>
-                        <option value="QL">Admin</option>
-                        <option value="NV">Nhân viên</option>
-                    </select>
-                    <select name="status" id="edit_status" class="form-control">
-                        <option value="">-- Trạng thái --</option>
-                        <option value="1">Kích hoạt</option>
-                        <option value="0">Tạm khóa</option>
-                    </select>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    <button type="button" class="btn btn-danger" onclick="closeEditModal()">Đóng</button>
                 </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
-                <button type="button" class="btn btn-danger" onclick="closeEditModal()">Đóng</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 @endsection
 
 @section('script')
@@ -238,50 +246,50 @@
         }
     </script>
     <script>
-    function openEditModal(id) {
-        fetch('/admin/staff/' + id + '/edit')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('edit_id').value = data.id;
-                document.getElementById('edit_username').value = data.username;
-                document.getElementById('edit_full_name').value = data.full_name;
-                document.getElementById('edit_gender').value = data.gender;
-                document.getElementById('edit_date_of_birth').value = data.date_of_birth;
-                document.getElementById('edit_phone').value = data.phone;
-                document.getElementById('edit_email').value = data.email;
-                document.getElementById('edit_role').value = data.role;
-                document.getElementById('edit_status').value = data.status;
+        function openEditModal(id) {
+            fetch('/admin/staff/' + id + '/edit')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('edit_id').value = data.id;
+                    document.getElementById('edit_username').value = data.username;
+                    document.getElementById('edit_full_name').value = data.full_name;
+                    document.getElementById('edit_gender').value = data.gender;
+                    document.getElementById('edit_date_of_birth').value = data.date_of_birth;
+                    document.getElementById('edit_phone').value = data.phone;
+                    document.getElementById('edit_email').value = data.email;
+                    document.getElementById('edit_role').value = data.role;
+                    document.getElementById('edit_status').value = data.status;
 
-                document.getElementById('editUserModal').style.display = 'block';
-            });
-    }
+                    document.getElementById('editUserModal').style.display = 'block';
+                });
+        }
 
-    function closeEditModal() {
-        document.getElementById('editUserModal').style.display = 'none';
-    }
+        function closeEditModal() {
+            document.getElementById('editUserModal').style.display = 'none';
+        }
 
-    document.getElementById('editUserForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        let id = document.getElementById('edit_id').value;
-        let form = new FormData(this);
+        document.getElementById('editUserForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            let id = document.getElementById('edit_id').value;
+            let form = new FormData(this);
 
-        fetch('/admin/staff/' + id + '/update', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: form
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                alert('Cập nhật thành công!');
-                closeEditModal();
-                location.reload();
-            } else {
-                alert('Có lỗi xảy ra!');
-            }
+            fetch('/admin/staff/' + id + '/update', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: form
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cập nhật thành công!');
+                        closeEditModal();
+                        location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra!');
+                    }
+                });
         });
-    });
-</script>
+    </script>
 @endsection

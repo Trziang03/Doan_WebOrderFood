@@ -14,148 +14,148 @@ use Illuminate\Support\Carbon;
 
 class AdminOrderController extends Controller
 {
+
     public function index(Request $request)
     {
         $keyword = $request->keyword;
-        $pendingCount = Order::whereHas('status', function ($q) {
-            $q->where('name', 'Chờ xác nhận');
+        $pendingCount = Order::whereHas('orderStatus', function ($q) {
+            $q->where('name', 'Xác nhận');
         })->count();
-        $orders = Order::with(['table', 'paymentMethod', 'orderStatus', 'orderItems.product', 'orderItems.size'])
-            ->when($keyword, function ($query) use ($keyword) {
-                $query->where(function ($q) use ($keyword) {
-                    $dateExact = null;
-                    $monthYear = null;
-                    $yearOnly = null;
-                    $dayMonth = null;
-                    $monthOnly = null;
-                    $dayOnly = null;
 
-                    try {
-                        $dateExact = Carbon::createFromFormat('d/m/Y', $keyword)->format('Y-m-d');
-                    } catch (\Exception $e) {
+        $orders = null;
+        $ordersByStatus = [];
+        $statusCounts = [];
+
+        if ($keyword) {
+            // Tìm kiếm theo keyword hoặc ngày/tháng
+            $parsed = $this->parseKeywordDateRanges($keyword);
+
+            $orders = Order::with(['table', 'paymentMethod', 'orderItems.product', 'orderItems.size'])
+                ->where(function ($q) use ($keyword, $parsed) {
+                    $q->where('order_code', 'like', "%$keyword%")
+                        ->orWhere('total_price', 'like', "%$keyword%")
+                        ->orWhereHas('table', fn($q2) => $q2->where('name', 'like', "%$keyword%"))
+                        ->orWhereHas('orderItems.product', fn($q2) => $q2->where('name', 'like', "%$keyword%"));
+
+                    if ($parsed['dateExact']) {
+                        $q->orWhereDate('created_at', $parsed['dateExact']);
                     }
 
-                    try {
-                        $monthYearCarbon = Carbon::createFromFormat('m/Y', $keyword);
-                        $monthYear = [
-                            $monthYearCarbon->copy()->startOfMonth()->format('Y-m-d'),
-                            $monthYearCarbon->copy()->endOfMonth()->format('Y-m-d'),
-                        ];
-                    } catch (\Exception $e) {
-                    }
-
-                    if (preg_match('/^\d{4}$/', $keyword)) {
-                        $yearOnly = [
-                            Carbon::createFromDate($keyword, 1, 1)->format('Y-m-d'),
-                            Carbon::createFromDate($keyword, 12, 31)->format('Y-m-d'),
-                        ];
-                    }
-
-                    try {
-                        $dayMonthCarbon = Carbon::createFromFormat('d/m', $keyword);
-                        $dayMonth = [
-                            Carbon::createFromDate(now()->year, $dayMonthCarbon->month, $dayMonthCarbon->day)->startOfDay()->format('Y-m-d'),
-                            Carbon::createFromDate(now()->year, $dayMonthCarbon->month, $dayMonthCarbon->day)->endOfDay()->format('Y-m-d'),
-                        ];
-                    } catch (\Exception $e) {
-                    }
-
-                    if (preg_match('/^\d{1,2}$/', $keyword)) {
-                        $num = intval($keyword);
-                        if ($num >= 1 && $num <= 12) {
-                            // Month only
-                            $monthCarbon = Carbon::createFromDate(now()->year, $num, 1);
-                            $monthOnly = [
-                                $monthCarbon->startOfMonth()->format('Y-m-d'),
-                                $monthCarbon->endOfMonth()->format('Y-m-d'),
-                            ];
-                        } elseif ($num >= 1 && $num <= 31) {
-                            // Day only (rare use case)
-                            $dayOnly = $num;
+                    foreach (['monthYear', 'dayMonth', 'yearOnly', 'monthOnly'] as $rangeKey) {
+                        if ($parsed[$rangeKey]) {
+                            $q->orWhereBetween('created_at', $parsed[$rangeKey]);
                         }
                     }
 
-                    // Các điều kiện tìm kiếm chính
-                    $q->where('order_code', 'like', "%$keyword%")
-                        ->orWhere('total_price', 'like', "%$keyword%")
-                        ->orWhereHas('table', function ($q2) use ($keyword) {
-                        $q2->where('name', 'like', "%$keyword%");
-                    })
-                        ->orWhereHas('status', function ($q2) use ($keyword) {
-                        $q2->where('name', 'like', "%$keyword%");
-                    })
-                        ->orWhereHas('orderItems.product', function ($q2) use ($keyword) {
-                        $q2->where('name', 'like', "%$keyword%");
-                    });
-
-                    // Các điều kiện về ngày
-                    if ($dateExact) {
-                        $q->orWhereDate('created_at', $dateExact);
+                    if ($parsed['dayOnly']) {
+                        $q->orWhereRaw('DAY(created_at) = ?', [$parsed['dayOnly']]);
                     }
-
-                    if ($dayMonth) {
-                        $q->orWhereBetween('created_at', $dayMonth);
-                    }
-
-                    if ($monthYear) {
-                        $q->orWhereBetween('created_at', $monthYear);
-                    }
-
-                    if ($yearOnly) {
-                        $q->orWhereBetween('created_at', $yearOnly);
-                    }
-
-                    if ($monthOnly) {
-                        $q->orWhereBetween('created_at', $monthOnly);
-                    }
-
-                    if ($dayOnly) {
-                        $q->orWhereRaw('DAY(created_at) = ?', [$dayOnly]);
-                    }
-                });
-            })
-            ->orderByDesc('id')
-            ->paginate(10);
-
-            // Thống kê số lượng đơn hàng theo trạng thái
-            $statusCounts = [
-                'xacnhan' => \App\Models\Order::whereHas('status', function ($q) {
-                    $q->where('name', 'Chờ xác nhận');
-                })->count(),
-
-                'dangchuanbi' => \App\Models\Order::whereHas('status', function ($q) {
-                    $q->where('name', 'Đang chuẩn bị');
-                })->count(),
-
-                'daphucvu' => \App\Models\Order::whereHas('status', function ($q) {
-                    $q->where('name', 'Đã phục vụ');
-                })->count(),
-
-                'chuathanhtoan' => \App\Models\Order::whereHas('status', function ($q) {
-                    $q->where('name', 'Chưa thanh toán');
-                })->count(),
-
-                'dathanhtoan' => \App\Models\Order::whereHas('status', function ($q) {
-                    $q->where('name', 'Đã thanh toán');
-                })->count(),
+                })
+                ->orderByDesc('id')
+                ->paginate(7)
+                ->appends(['keyword' => $keyword]); // giữ lại keyword trên thanh phân trang
+        } else {
+            // Khi không tìm kiếm, xử lý hiển thị theo tabs trạng thái
+            $orderTabs = [
+                'xacnhan' => 0,
+                'dangchuanbi' => 1,
+                'daphucvu' => 2,
+                'chothanhtoan' => 3,
+                'dathanhtoan' => 4,
+                'dahuy' => 5,
             ];
 
-        return view('admin.pages.order', ['orders' => $orders, 'statusCounts' => $statusCounts, 'pendingCount' => $pendingCount]);
+            foreach ($orderTabs as $key => $statusId) {
+                $ordersByStatus[$key] = Order::with(['table', 'orderStatus', 'orderItems.product'])
+                    ->where('order_status_id', $statusId)
+                    ->orderByDesc('updated_at')
+                    ->paginate(7, ['*'], $key); // mỗi tab có phân trang riêng (ví dụ: ?xacnhan=2)
+
+                $statusCounts[$key] = $ordersByStatus[$key]->total();
+            }
+        }
+
+        return view('admin.pages.order', [
+            'orders' => $orders,
+            'pendingCount' => $pendingCount,
+            'statusCounts' => $statusCounts,
+            'ordersByStatus' => $ordersByStatus,
+        ]);
     }
 
+    /**
+     * Phân tích từ khóa ngày tháng để tìm kiếm linh hoạt
+     */
+    private function parseKeywordDateRanges($keyword)
+    {
+        $dateExact = null;
+        $monthYear = null;
+        $yearOnly = null;
+        $dayMonth = null;
+        $monthOnly = null;
+        $dayOnly = null;
 
+        try {
+            $dateExact = Carbon::createFromFormat('d/m/Y', $keyword)->format('Y-m-d');
+        } catch (\Exception $e) {
+        }
+
+        try {
+            $monthYearCarbon = Carbon::createFromFormat('m/Y', $keyword);
+            $monthYear = [
+                $monthYearCarbon->copy()->startOfMonth()->format('Y-m-d'),
+                $monthYearCarbon->copy()->endOfMonth()->format('Y-m-d'),
+            ];
+        } catch (\Exception $e) {
+        }
+
+        if (preg_match('/^\d{4}$/', $keyword)) {
+            $yearOnly = [
+                Carbon::createFromDate($keyword, 1, 1)->format('Y-m-d'),
+                Carbon::createFromDate($keyword, 12, 31)->format('Y-m-d'),
+            ];
+        }
+
+        try {
+            $dayMonthCarbon = Carbon::createFromFormat('d/m', $keyword);
+            $dayMonth = [
+                Carbon::createFromDate(now()->year, $dayMonthCarbon->month, $dayMonthCarbon->day)->startOfDay()->format('Y-m-d'),
+                Carbon::createFromDate(now()->year, $dayMonthCarbon->month, $dayMonthCarbon->day)->endOfDay()->format('Y-m-d'),
+            ];
+        } catch (\Exception $e) {
+        }
+
+        if (preg_match('/^\d{1,2}$/', $keyword)) {
+            $num = intval($keyword);
+            if ($num >= 1 && $num <= 12) {
+                $monthCarbon = Carbon::createFromDate(now()->year, $num, 1);
+                $monthOnly = [
+                    $monthCarbon->startOfMonth()->format('Y-m-d'),
+                    $monthCarbon->endOfMonth()->format('Y-m-d'),
+                ];
+            } elseif ($num >= 1 && $num <= 31) {
+                $dayOnly = $num;
+            }
+        }
+
+        return compact('dateExact', 'monthYear', 'yearOnly', 'dayMonth', 'monthOnly', 'dayOnly');
+    }
+
+    /**
+     * Phân tích từ khóa ngày tháng để tìm kiếm linh hoạt
+     */
     public function changeStatus($id)
-{
-    $order = Order::findOrFail($id);
+    {
+        $order = Order::findOrFail($id);
 
-    if ($order->order_status_id < 4) {
-        $order->order_status_id += 1;
-        $order->save();
+        if ($order->order_status_id < 4) {
+            $order->order_status_id += 1;
+            $order->save();
+        }
+
+        $tab = request('tab', 'xacnhan');
+        return redirect()->back()->with('tab', $tab);
     }
-
-    $tab = request('tab', 'xacnhan');
-    return redirect()->back()->with('tab', $tab);
-}
 
     public function ajaxDetail($id)
     {
@@ -176,9 +176,22 @@ class AdminOrderController extends Controller
             return response('<b>Lỗi:</b> ' . $e->getMessage(), 500);
         }
     }
-    public function update(Request $request, $id)
+    public function destroy($id)
     {
+        $order = Order::findOrFail($id);
 
+        foreach ($order->orderItems as $item) {
+            // Xoá các topping của từng item
+            $item->orderItemToppings()->delete();
+        }
+
+        // Xoá các item của đơn
+        $order->orderItems()->delete();
+
+        // Xoá đơn hàng
+        $order->delete();
+
+        return redirect()->back()->with('success', 'Đơn hàng đã được xoá thành công.');
     }
 
     public function store(Request $request)

@@ -19,7 +19,8 @@
 
                 @if ($seach)
                     <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                    <li><a href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => $seach->slug]) }}">{{ $seach->category }}</a></li>
+                    <li><a href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => $seach->slug]) }}">{{ $seach->category }}</a>
+                    </li>
                     <!-- Truy xuất đúng tên trường -->
                     <li><a href="{{ route('detail', $slug) }}">{{ $seach->product }}</a></li>
                 @endif
@@ -271,6 +272,7 @@
             .product_detail_right h4 {
                 font-size: 28px;
             }
+
             .product_detail_right_price span {
                 font-size: 24px;
             }
@@ -329,7 +331,7 @@
                 <!-- Số lượng -->
                 <div class="quantity-box">
                     <button onclick="giamSoLuong()">-</button>
-                    <input type="text" id="soLuong" min="1" max="5" value="1">
+                    <input type="text" id="soLuong" min="1" max="20" value="1">
                     <button onclick="tangSoLuong()">+</button>
                 </div>
                 <!-- Thêm ghi chú -->
@@ -338,7 +340,7 @@
                     <textarea id="note" maxlength="150"></textarea>
                 </div>
                 <!-- Thêm vào giỏ hàng -->
-                 <input type="hidden" id="table_id" value="{{ session('table_id') }}"> <!-- thêm dòng này -->
+                <input type="hidden" id="table_id" value="{{ session('table_id') }}"> <!-- thêm dòng này -->
                 <button class="add-to-cart-btn" id="add-to-cart" onclick="addToCart()"
                     data-product-id="{{ $thongTinSanPham->id }}">
                     Thêm vào thực đơn <i class="fas fa-cart-plus"></i>
@@ -349,184 +351,185 @@
 @endsection
 @section('script')
     <script>
-    let selectedSizeId = null;
-    let toppingQuantities = {};
-    let sizePrices = {}, toppingPrices = {};
-    let basePrice = 0;
+        let selectedSizeId = null;
+        let toppingQuantities = {};
+        let sizePrices = {}, toppingPrices = {};
+        let basePrice = 0;
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const basePriceElement = document.getElementById('giaGoc');
-        basePrice = parseFloat(basePriceElement?.dataset.basePrice || 0);
+        document.addEventListener("DOMContentLoaded", () => {
+            const basePriceElement = document.getElementById('giaGoc');
+            basePrice = parseFloat(basePriceElement?.dataset.basePrice || 0);
 
-        document.querySelectorAll('.size-button').forEach(btn => {
-            const id = btn.dataset.sizeId;
-            sizePrices[id] = parseFloat(btn.dataset.price || 0);
+            document.querySelectorAll('.size-button').forEach(btn => {
+                const id = btn.dataset.sizeId;
+                sizePrices[id] = parseFloat(btn.dataset.price || 0);
+            });
+
+            document.querySelectorAll('.topping-button').forEach(btn => {
+                const id = btn.dataset.toppingId;
+                toppingPrices[id] = parseFloat(btn.dataset.price || 0);
+            });
+
+            const firstSize = document.querySelector('.size-button');
+            if (firstSize) {
+                selectedSizeId = firstSize.dataset.sizeId;
+                firstSize.classList.add('color_active');
+            }
+
+            updatePrice();
         });
 
-        document.querySelectorAll('.topping-button').forEach(btn => {
-            const id = btn.dataset.toppingId;
-            toppingPrices[id] = parseFloat(btn.dataset.price || 0);
-        });
-
-        const firstSize = document.querySelector('.size-button');
-        if (firstSize) {
-            selectedSizeId = firstSize.dataset.sizeId;
-            firstSize.classList.add('color_active');
-        }
-
-        updatePrice();
-    });
-
-    // Size chọn
-    function chonSize(id, price, btn) {
-        selectedSizeId = id;
-        document.querySelectorAll('.size-button').forEach(b => b.classList.remove('color_active'));
-        btn.classList.add('color_active');
-        updatePrice();
-    }
-
-    // Topping chọn
-    function chonTopping(id, price, btn) {
-        const current = toppingQuantities[id] || 0;
-        if (current >= 3) {
-            return alertify.alert('Thông báo', 'Bạn chỉ được chọn tối đa 3 phần cho mỗi loại topping!');
-        }
-
-        toppingQuantities[id] = current + 1;
-        btn.classList.add('color_active');
-
-        const dot = btn.querySelector('.topping-quantity-dot');
-        if (dot) {
-            dot.style.display = 'flex';
-            dot.textContent = toppingQuantities[id];
-        }
-
-        const removeDot = btn.querySelector('.topping-remove-dot');
-        if (removeDot) removeDot.style.display = 'block';
-
-        updatePrice();
-    }
-
-    // Topping giảm
-    function giamTopping(id, span) {
-        if (!toppingQuantities[id]) return;
-
-        toppingQuantities[id]--;
-        const btn = span.closest('.topping-button');
-
-        if (toppingQuantities[id] <= 0) {
-            delete toppingQuantities[id];
-            btn.classList.remove('color_active');
-            btn.querySelector('.topping-quantity-dot')?.style.setProperty('display', 'none');
-            btn.querySelector('.topping-remove-dot')?.style.setProperty('display', 'none');
-        } else {
-            btn.querySelector('.topping-quantity-dot').textContent = toppingQuantities[id];
-        }
-
-        updatePrice();
-    }
-
-    // Số lượng món
-    function tangSoLuong() {
-        const input = document.getElementById('soLuong');
-        let value = parseInt(input.value) || 1;
-
-        if (value >= 5) {
-            return alertify.alert('Bạn chỉ được chọn tối đa 5 phần cho mỗi món!');
-        }
-
-        input.value = value + 1;
-        updatePrice();
-    }
-
-    function giamSoLuong() {
-        const input = document.getElementById('soLuong');
-        let value = parseInt(input.value) || 1;
-
-        if (value > 1) {
-            input.value = value - 1;
+        // Size chọn
+        function chonSize(id, price, btn) {
+            selectedSizeId = id;
+            document.querySelectorAll('.size-button').forEach(b => b.classList.remove('color_active'));
+            btn.classList.add('color_active');
             updatePrice();
         }
-    }
 
-    document.getElementById('soLuong').addEventListener('input', function () {
-        let value = this.value.trim();
-        if (!/^\d+$/.test(value)) {
-            this.value = 1;
-            alertify.alert('Số lượng phải là số nguyên từ 1 đến 5!');
-        }
-
-        let parsed = parseInt(this.value);
-        if (parsed < 1) this.value = 1;
-        else if (parsed > 5) {
-            this.value = 5;
-            alertify.alert('Bạn chỉ được chọn tối đa 5 phần cho mỗi món!');
-        } else {
-            this.value = parsed;
-        }
-
-        updatePrice();
-    });
-
-    // Tính tổng tiền
-    function updatePrice() {
-        const quantity = parseInt(document.getElementById('soLuong').value) || 1;
-        const sizePrice = sizePrices[selectedSizeId] || 0;
-
-        let toppingTotal = 0;
-        for (let id in toppingQuantities) {
-            toppingTotal += (toppingPrices[id] || 0) * toppingQuantities[id];
-        }
-
-        const unitPrice = basePrice + sizePrice + toppingTotal;
-        const totalPrice = unitPrice * quantity;
-
-        document.getElementById('giaHienThi').textContent = totalPrice.toLocaleString() + ' đ';
-    }
-
-    // Thêm vào giỏ hàng
-    function addToCart() {
-        const productId = document.getElementById('add-to-cart').dataset.productId;
-        const quantity = parseInt(document.getElementById('soLuong').value) || 1;
-        const note = document.getElementById('note').value.trim();
-        const tableId = document.getElementById('table_id').value; //thêm
-
-        if (!selectedSizeId) return alertify.alert('Vui lòng chọn size món ăn!');
-        if (quantity < 1 || quantity > 5) return alertify.alert('Số lượng phải từ 1 đến 5!');
-
-        // Tạo danh sách topping
-        document.querySelectorAll('.topping-input').forEach(input => {
-            const toppingId = input.dataset.toppingId;
-            const qty = parseInt(input.value);
-            if (qty > 0) {
-                toppingQuantities[toppingId] = qty;
+        // Topping chọn
+        function chonTopping(id, price, btn) {
+            const current = toppingQuantities[id] || 0;
+            if (current >= 20) {
+                return alertify.alert('Thông báo', 'Bạn chỉ được chọn tối đa 20 phần cho mỗi loại topping!');
             }
+
+            toppingQuantities[id] = current + 1;
+            btn.classList.add('color_active');
+
+            const dot = btn.querySelector('.topping-quantity-dot');
+            if (dot) {
+                dot.style.display = 'flex';
+                dot.textContent = toppingQuantities[id];
+            }
+
+            const removeDot = btn.querySelector('.topping-remove-dot');
+            if (removeDot) removeDot.style.display = 'block';
+
+            updatePrice();
+        }
+
+        // Topping giảm
+        function giamTopping(id, span) {
+            if (!toppingQuantities[id]) return;
+
+            toppingQuantities[id]--;
+            const btn = span.closest('.topping-button');
+
+            if (toppingQuantities[id] <= 0) {
+                delete toppingQuantities[id];
+                btn.classList.remove('color_active');
+                btn.querySelector('.topping-quantity-dot')?.style.setProperty('display', 'none');
+                btn.querySelector('.topping-remove-dot')?.style.setProperty('display', 'none');
+            } else {
+                btn.querySelector('.topping-quantity-dot').textContent = toppingQuantities[id];
+            }
+
+            updatePrice();
+        }
+
+        // Số lượng món
+        function tangSoLuong() {
+            const input = document.getElementById('soLuong');
+            let value = parseInt(input.value) || 1;
+
+            if (value >= 20) {
+                return alertify.alert('Bạn chỉ được chọn tối đa 20 phần cho mỗi món!');
+            }
+
+            input.value = value + 1;
+            updatePrice();
+        }
+
+        function giamSoLuong() {
+            const input = document.getElementById('soLuong');
+            let value = parseInt(input.value) || 1;
+
+            if (value > 1) {
+                input.value = value - 1;
+                updatePrice();
+            }
+        }
+
+        document.getElementById('soLuong').addEventListener('input', function () {
+            let value = this.value.trim();
+            if (!/^\d+$/.test(value)) {
+                this.value = 1;
+                alertify.alert('Số lượng phải là số nguyên từ 1 đến 5!');
+            }
+
+            let parsed = parseInt(this.value);
+            if (parsed < 1) this.value = 1;
+            else if (parsed > 20) {
+                this.value = 20;
+                alertify.alert('Bạn chỉ được chọn tối đa 20 phần cho mỗi món!');
+            } else {
+                this.value = parsed;
+            }
+
+            updatePrice();
         });
 
-        const payload = {
-            product_id: productId,
-            size_id: selectedSizeId,
-            topping_quantities: toppingQuantities,
-            quantity: quantity,
-            note: note,
-            table_id: tableId, // thêm
-            _token: '{{ csrf_token() }}'
-        };
+        // Tính tổng tiền
+        function updatePrice() {
+            const quantity = parseInt(document.getElementById('soLuong').value) || 1;
+            const sizePrice = sizePrices[selectedSizeId] || 0;
 
-        $.post('/add-to-cart', payload)
-            .done(data => {
-                if (data.success) {
-                    alertify.success(data.message);
-                    if (data.cart?.totalQuantity !== undefined) {
-                        $('#cart-quantity').text(data.cart.totalQuantity);
-                    }
-                } else {
-                    alertify.alert(data.message);
+            let toppingTotal = 0;
+            for (let id in toppingQuantities) {
+                toppingTotal += (toppingPrices[id] || 0) * toppingQuantities[id];
+            }
+
+            const unitPrice = basePrice + sizePrice + toppingTotal;
+            const totalPrice = unitPrice * quantity;
+
+            document.getElementById('giaHienThi').textContent = totalPrice.toLocaleString() + ' đ';
+        }
+
+        // Thêm vào giỏ hàng
+        function addToCart() {
+            const productId = document.getElementById('add-to-cart').dataset.productId;
+            const quantity = parseInt(document.getElementById('soLuong').value) || 1;
+            const note = document.getElementById('note').value.trim();
+            const tableId = document.getElementById('table_id').value; //thêm
+
+            if (!selectedSizeId) return alertify.alert('Vui lòng chọn size món ăn!');
+            if (quantity < 1 || quantity > 20) return alertify.alert('Số lượng phải từ 1 đến 20!');
+
+            // Tạo danh sách topping
+            document.querySelectorAll('.topping-input').forEach(input => {
+                const toppingId = input.dataset.toppingId;
+                const qty = parseInt(input.value);
+                if (qty > 0) {
+                    toppingQuantities[toppingId] = qty;
                 }
-            })
-            .fail(() => {
-                alertify.alert('Không thể thêm vào giỏ hàng lúc này!');
             });
-    }
-</script>
+
+            const payload = {
+                product_id: productId,
+                size_id: selectedSizeId,
+                topping_quantities: toppingQuantities,
+                quantity: quantity,
+                note: note,
+                table_id: tableId, // thêm
+                _token: '{{ csrf_token() }}'
+            };
+
+            $.post('/add-to-cart', payload)
+                .done(data => {
+                    if (data.success) {
+                        if (data.cart?.totalQuantity !== undefined) {
+                            $('#cart-quantity').text(data.cart.totalQuantity);
+                            $('.number_cart_mb_tl').text(data.cart.totalQuantity);
+                        }
+                        return alertify.alert("Thông báo", data.message);
+                    } else {
+                        return alertify.alert("Thông báo", data.message);
+                    }
+                })
+                .fail(() => {
+                    return alertify.alert("Thông báo", "Không xác định được bàn! Quét mã QR để sử dụng");
+                });
+        }
+    </script>
 @endsection

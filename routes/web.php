@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 // use Illuminate\Support\Facades\Request;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminOrderController;
@@ -12,10 +13,10 @@ use App\Http\Controllers\AdminProductController;
 use App\Http\Controllers\AdminStaticController;
 use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\AdminCategoryController;
-use App\Http\Controllers\AdminContactController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Models\Order;
 
 
 Route::controller(UserController::class)->group(function () {
@@ -34,6 +35,7 @@ Route::controller(UserController::class)->group(function () {
 
 Route::controller(CartController::class)->group(function () {
     Route::get('/shopping-cart', 'index')->name('user.shoppingcart');
+    Route::post('/cart/add', 'add')->name('cart.add');
     Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
     Route::delete('/cart/delete-item/{cart_item_id}', 'deleteItemCart');
     Route::delete('/cart/delete-all', 'deleteAllItem');
@@ -41,7 +43,6 @@ Route::controller(CartController::class)->group(function () {
     Route::patch('/cart/minus/{cart_item_id}', 'minusOnQuantity');
     Route::post('/cart/submit', 'submitCart')->name('cart.submit');
 });
-
 
 //Phân quyền quản lý và nhân viên
 Route::middleware(['role:QL,NV'])->group(function () {
@@ -71,6 +72,7 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/admin/order', [AdminOrderController::class, 'index'])->name('admin.order');
     Route::get('/admin/order/change-status/{id}', [AdminOrderController::class, 'changeStatus'])->name('admin.order.change-status');
     Route::get('/admin/order/detail/{id}', [AdminOrderController::class, 'ajaxDetail'])->name('admin.order.ajaxDetail');
+    Route::delete('/admin/order/delete/{id}', [AdminOrderController::class, 'destroy'])->name('admin.order.delete');
 
     //Route quản lí thống kê
     Route::get('/admin/statistical', [AdminStaticController::class, 'index'])->name('admin.static');
@@ -92,11 +94,8 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::post('/admin/table/update/{id}', [AdminTableController::class, 'update'])->name('admin.table.update');
     Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
     Route::get('/admin/table/status', [AdminTableController::class, 'getStatuses']);
+    Route::get('/table/check-status', [AdminTableController::class, 'checkStatus']);
 
-    //Route quan li lien he
-    Route::get('/admin/contact', [AdminContactController::class, 'showListContacts'])->name('admin.contact');
-    Route::delete('/admin/contact/delete/{id}', [AdminContactController::class, 'deleteContact'])->name('contact.delete');
-    Route::get('/admin/contact/update/{id}', [AdminContactController::class, 'updateContact'])->name('contact.update');
 });
 
 //Phân quyền quản lý
@@ -106,12 +105,15 @@ Route::middleware(['role:QL'])->group(function () {
     Route::post('/admin/staff/store', [AdminStaffController::class, 'store'])->name('admin.staff.store');
     Route::get('/admin/staff/{id}/edit', [AdminStaffController::class, 'edit'])->name('admin.staff.edit');
     Route::post('/admin/staff/{id}/update', [AdminStaffController::class, 'update'])->name('admin.staff.update');
+    Route::delete('/admin/staff/{id}', [AdminStaffController::class, 'destroy'])->name('admin.staff.destroy');
 });
 
 //Xác nhận đặt hàng và thanh toán
 Route::controller(OrderController::class)->group(function () {
-    Route::get('/payment', 'index')->name('user.payment');
-    Route::post('/payment', 'completePayment')->name('complete-payment');
+    Route::get('/payment/{order_code}','index')->name('user.payment');
+    Route::put('/payment/{id}/cancel',  'cancel')->name('payment.cancel');
+    Route::get('/qr-info', 'showQR')->name('user.qr.info');
+    Route::put('/payment/{id}', 'updatePaymentMethod')->name('payment.update');
 });
 
 //Route profile
@@ -125,4 +127,8 @@ Route::controller(ProfileController::class)->group(function () {
 });
 
 Route::view('/404', 'errors.404');
+
+Route::get('/debug-session', function () {
+    return session()->all(); // xem toàn bộ session
+});
 

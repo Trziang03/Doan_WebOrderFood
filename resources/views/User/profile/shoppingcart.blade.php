@@ -3,7 +3,7 @@
 @section('content')
     <div class="shopping_cart container_css" id="shopping_cart">
         @if ($cartItems->isEmpty())
-            <h3 style="height:183px; text-align:center; margin-top:105px">Chưa có món ăn nào <br>
+            <h3 style="height:183px; text-align:center; margin-top:140px">Chưa có món ăn nào <br>
             <a href="{{ route('user.menu') }}" style="display:inline-block; margin-top:10px;">Đặt món ngay ?</a></h3>
         @else
             <div class="shopping_cart_main" id="cart-main">
@@ -93,8 +93,8 @@
                 })
             ) }} <sup>đ</sup>
                             </p>
-                            <form action="{{ route('cart.submit') }}" method="POST">
-                                @csrf
+                            <form action="/cart/submit" method="POST">
+                            @csrf
                                 <button type="submit" class="btn" style="background-color: rgb(240, 145, 55);
                                                         width: 100%;
                                                         border: none;
@@ -204,6 +204,7 @@
 
             function updateAfterChange(cart) {
                 $('#cart-quantity').text(cart.totalQuantity);
+                $('.number_cart_mb_tl').text(cart.totalQuantity); // mobile
                 $('#item-total').text(formatNumber(Number(cart.totalPrice)) + ' đ');
             }
 
@@ -217,7 +218,8 @@
             // Hiển thị lại khi giỏ trống
             function afterDeleteAll() {
                 $('#cart-quantity').text(0);
-                $('#cart-main').empty().append('<h3 style="text-align:center;margin-top: 118px;height: 150px;">Thực đơn trống</h3>');
+                $('.number_cart_mb_tl').text(0);
+                $('#cart-main').empty().append('<h3 style="text-align:center;margin-top: 150px;height: 150px;">Thực đơn trống</h3>');
             }
 
             // Format tiền
@@ -245,7 +247,8 @@
             let index = 1;
 
             function LoadPage(page) {
-                const container = document.querySelector("#list-product-variant");
+                const container = document.querySelector("#list-product");
+                if (!container) return;
                 container.innerHTML = "";
                 const begin = (page - 1) * itemsPage;
                 const end = begin + itemsPage;

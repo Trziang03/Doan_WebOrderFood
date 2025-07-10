@@ -195,35 +195,35 @@
     <div id="optionPopup">
         <div class="popup-content">
             <h4>Thêm Topping hoặc Size</h4>
-    
+
             {{-- Form Topping --}}
             <form action="{{ route('admin.topping.store') }}" method="POST" onsubmit="return validateForm('topping')" style="margin-bottom: 20px;">
                 @csrf
                 <label for="toppingName">Tên Topping</label>
                 <input type="text" id="toppingName" name="name" oninput="validateName(this, 'toppingNameError')" required>
                 <span id="toppingNameError" class="input-error"></span>
-    
+
                 <label for="toppingPrice">Giá Topping</label>
                 <input type="text" id="toppingPrice" name="price" oninput="validatePrice(this, 'toppingPriceError')" required>
                 <span id="toppingPriceError" class="input-error"></span>
-    
+
                 <button type="submit">Thêm Topping</button>
             </form>
-    
+
             {{-- Form Size --}}
             <form action="{{ route('admin.size.store') }}" method="POST" onsubmit="return validateForm('size')">
                 @csrf
                 <label for="sizeName">Tên Size</label>
                 <input type="text" id="sizeName" name="name" oninput="validateName(this, 'sizeNameError')" required>
                 <span id="sizeNameError" class="input-error"></span>
-    
+
                 <label for="sizePrice">Giá Size</label>
                 <input type="text" id="sizePrice" name="price" oninput="validatePrice(this, 'sizePriceError')" required>
                 <span id="sizePriceError" class="input-error"></span>
-    
+
                 <button type="submit">Thêm Size</button>
             </form>
-    
+
             <button onclick="closeOptionPopup()" class="btn-close-popup">×</button>
         </div>
     </div>
@@ -358,9 +358,9 @@
                 alertify.alert('{{ session('msg') }}');
             @endif
 
-            @if ($errors->any())
+             @if ($errors->any())
                 alertify.alert('Vui lòng nhập đầy đủ các trường!');
-            @endif
+             @endif
         });
     </script>
 
@@ -450,7 +450,7 @@
             }
 
             // ✅ Regex mới: KHÔNG CHO SỐ, chỉ cho chữ (có dấu), khoảng trắng và gạch ngang
-            const regex = /^[\p{L}\s\-]+$/u; //được phép nhập tiếng Việt và dấu gạch ngang - 
+            const regex = /^[\p{L}\s\-]+$/u; //được phép nhập tiếng Việt và dấu gạch ngang -
 
             if (!regex.test(value)) {
                 error.textContent =
@@ -503,7 +503,7 @@
             const value = input.value.trim();
             const regex = /^[\p{L}\s]+$/u;
             const error = document.getElementById(errorId);
-    
+
             if (!regex.test(value)) {
                 error.textContent = 'Tên chỉ được chứa chữ cái và khoảng trắng.';
                 return false;
@@ -512,11 +512,11 @@
                 return true;
             }
         }
-    
+
         function validatePrice(input, errorId) {
             const value = input.value.trim();
             const error = document.getElementById(errorId);
-    
+
             if (!/^\d+$/.test(value)) {
                 error.textContent = 'Giá chỉ được nhập số.';
                 return false;
@@ -528,10 +528,10 @@
                 return true;
             }
         }
-    
+
         function validateForm(type) {
             let valid = true;
-    
+
             if (type === 'topping') {
                 const name = document.getElementById('toppingName');
                 const price = document.getElementById('toppingPrice');
@@ -543,10 +543,10 @@
                 valid &= validateName(name, 'sizeNameError');
                 valid &= validatePrice(price, 'sizePriceError');
             }
-    
+
             return !!valid;
         }
-    
+
         function closeOptionPopup() {
             document.getElementById('optionPopup').style.display = 'none';
         }

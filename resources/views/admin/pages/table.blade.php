@@ -297,7 +297,7 @@
     <div class="content" id="banan">
         <div class="head">
             <div class="title">Quản Lý bàn ăn</div>
-            <button id="toggleForm" class="btn-toggle">Thêm bàn</button>
+            <!--<button id="toggleForm" class="btn-toggle">Thêm bàn</button>-->
         </div>
         <div class="separator_x"></div>
 
@@ -409,7 +409,7 @@
 
     <!-- Modal hiển thị QR -->
     <div id="qrModal" class="modal" style="display: none;">
-        <div class="modal-content" style="width: 350px; border-radius: 10px;">
+        <div class="modal-content" style="width: 280px; border-radius: 10px;">
             <div style="text-align: right;">
                 <button class="close-btn" onclick="closeQRModal()">×</button>
             </div>
@@ -449,8 +449,8 @@
                 })
                 .catch(error => console.error('Lỗi khi cập nhật trạng thái:', error));
         }
-        // Cập nhật mỗi 3000 giây
-        setInterval(updateTableStatuses, 3000);
+        // Cập nhật mỗi 10000 giây
+        setInterval(updateTableStatuses, 10000);
         updateTableStatuses(); // gọi lần đầu khi load
     </script>
 
