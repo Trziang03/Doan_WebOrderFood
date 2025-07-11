@@ -251,7 +251,6 @@
             </div>
         </div>
         <!-- Popup Xóa -->
-<<<<<<< HEAD
         <div class="popup_admin" id="popupOrderDelete" style="display: none;">
             <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng này?</h3>
             <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục *</p>
@@ -279,17 +278,6 @@
             </div>
         </div>
 
-=======
-        <!-- <div class="popup_admin" id="popupxoa" style="display: none;">
-                                                                    <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
-                                                                    <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
-                                                                    <p id="alert"></p>
-                                                                    <div class="button">
-                                                                        <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
-                                                                        <button onclick="cancel('xoa')">Hủy</button>
-                                                                    </div>
-                                                                </div> -->
->>>>>>> hdung
     </div>
 @endsection
 

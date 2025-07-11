@@ -49,13 +49,8 @@
                         src="{{ asset('images/' . $lienKetWebsite->logo) }}" alt="Lỗi hiển thị"></a>
             </div>
             <ul style="padding-left:0">
-<<<<<<< HEAD
-                <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
-                <li><a href="{{ route('user.menu') }}">Menu</a></li>
-=======
                 <li><a href="{{ route('user.blog') }}">Giới thiệu</a></li>
                 <li><a href="{{route('user.menu')}}">Menu</a></li>
->>>>>>> hdung
             </ul>
         </div>
         <div class="navbar_item_second">
@@ -70,7 +65,6 @@
             <nav class="navbar_hidden_mb_tl">
                 <label for="checkbox_hidden"><i class="fas fa-times"></i></label>
                 <ul>
-                    <li><a href="{{ route('user.index',['token' => request()->get('token')]) }}">Trang chủ</a></li>
                     <li><a href="{{ route('user.menu', ['token' => request()->get('token')]) }}">Menu</a></li>
                     <li><a href="{{ route('user.blog', ['token' => request()->get('token')]) }}">Giới Thiệu</a></li>
                     @auth
