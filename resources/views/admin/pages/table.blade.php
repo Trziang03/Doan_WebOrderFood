@@ -297,7 +297,7 @@
     <div class="content" id="banan">
         <div class="head">
             <div class="title">Quản Lý bàn ăn</div>
-            <!--<button id="toggleForm" class="btn-toggle">Thêm bàn</button>-->
+            {{-- <button id="toggleForm" class="btn-toggle">Thêm bàn</button> --}}
         </div>
         <div class="separator_x"></div>
 

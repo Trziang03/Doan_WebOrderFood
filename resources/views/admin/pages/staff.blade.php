@@ -117,7 +117,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($staffs as $staff)
+                @foreach ($staffs as $staff)
                     <tr>
                         <td>{{ $staff->full_name }}</td>
                         <td>{{ $staff->email }}</td>
@@ -129,16 +129,14 @@
                                     class="fa-regular fa-pen-to-square"></i></button>
                         </td>
                         <td style="text-align: center;">
-                            <form action="{{ route('admin.staff.destroy', $staff->id) }}" method="POST"
-                                onsubmit="return confirm('Bạn có chắc chắn muốn xoá nhân viên này không?');"
-                                style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
-                            </form>
+                            <button type="button"
+                                onclick="showDeletePopup({{ $staff->id }}, 
+                            '{{ route('admin.staff.destroy', $staff->id) }}')"
+                                class="btn btn-danger btn-sm">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
                         </td>
+
                     </tr>
                 @endforeach
             </tbody>
@@ -146,29 +144,30 @@
         <div class="popup_admin" id="popupstaff" style="display: none;">
             <h3 style="color: white;">Bạn có thật sự muốn xóa nhân viên này?</h3>
             <p style="color: white;">* Nhân viên bị xóa sẽ không thể khôi phục *</p>
-        
+
             <label style="color:white;">
                 Nhập từ <strong style="color: yellow;">XÓA</strong> để xác nhận:
             </label>
             <input type="text" id="confirmInput" placeholder="Nhập XÓA..." />
-        
+
             <div style="margin-top: 10px;">
                 <input type="checkbox" id="confirmCheckbox" />
                 <label for="confirmCheckbox" style="color: white;">Tôi đồng ý với hành động này</label>
             </div>
-        
+
             <p id="alert" style="color: red;"></p>
-        
+
             <div class="button">
                 <form id="deleteForm" method="POST" action="">
                     @csrf
                     @method('DELETE')
+                    <input type="hidden" name="confirm" id="confirmValue">
                     <button type="submit" id="deleteBtn" disabled>Đồng ý</button>
-                    <button type="button" onclick="cancel('dm')">Hủy</button>
+                    <button type="button" onclick="cancel('staff')">Hủy</button>
                 </form>
             </div>
         </div>
-        
+
     </div>
 
     {{-- Popup --}}
@@ -225,7 +224,8 @@
 
                 <div class="form-grid">
                     <div class="form-col">
-                        <input type="text" name="username" id="edit_username" class="form-control" placeholder="Tài Khoản">
+                        <input type="text" name="username" id="edit_username" class="form-control"
+                            placeholder="Tài Khoản">
                         <input type="text" name="full_name" id="edit_full_name" class="form-control"
                             placeholder="Họ và tên">
                         <select name="gender" id="edit_gender" class="form-control">
@@ -238,7 +238,8 @@
 
                     <div class="form-col">
                         <input type="email" name="email" id="edit_email" class="form-control" placeholder="Email">
-                        <input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Số điện thoại">
+                        <input type="text" name="phone" id="edit_phone" class="form-control"
+                            placeholder="Số điện thoại">
                         <select name="role" id="edit_role" class="form-control">
                             <option value="">-- Vai trò --</option>
                             <option value="QL">Admin</option>
@@ -294,18 +295,18 @@
             document.getElementById('editUserModal').style.display = 'none';
         }
 
-        document.getElementById('editUserForm').addEventListener('submit', function (e) {
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
             e.preventDefault();
             let id = document.getElementById('edit_id').value;
             let form = new FormData(this);
 
             fetch('/admin/staff/' + id + '/update', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: form
-            })
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: form
+                })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -317,54 +318,56 @@
                     }
                 });
         });
-</script>
+    </script>
 
-<script>
-    let staffIdToDelete = null;
+    <script>
+        function showDeletePopup(id, route) {
+            const popup = document.getElementById('popupstaff');
+            const form = document.getElementById('deleteForm');
 
-    function popup(type, id) {
-        if (type === 'delete') {
-            staffIdToDelete = id;
-            document.getElementById('popupstaff').style.display = 'block';
+            // Reset form
             document.getElementById('confirmInput').value = '';
             document.getElementById('confirmCheckbox').checked = false;
             document.getElementById('deleteBtn').disabled = true;
             document.getElementById('alert').innerText = '';
-            
-            // Set form action
-            const deleteForm = document.getElementById('deleteForm');
-            deleteForm.action = `/admin/staffs/${id}`; // cập nhật đúng route xóa
+
+            // Cập nhật action form
+            form.action = route;
+
+            popup.style.display = 'block';
         }
-    }
 
-    function cancel(type) {
-        if (type === 'dm') {
-            document.getElementById('popupstaff').style.display = 'none';
-        }
-    }
-
-    // Bật nút xóa nếu người dùng nhập đúng
-    document.addEventListener('DOMContentLoaded', function () {
-        const input = document.getElementById('confirmInput');
-        const checkbox = document.getElementById('confirmCheckbox');
-        const deleteBtn = document.getElementById('deleteBtn');
-        const alert = document.getElementById('alert');
-
-        function validateDelete() {
-            const isTextValid = input.value.trim().toUpperCase() === 'XÓA';
-            const isChecked = checkbox.checked;
-            deleteBtn.disabled = !(isTextValid && isChecked);
-
-            if (!isTextValid && input.value !== '') {
-                alert.innerText = 'Bạn phải nhập chính xác từ "XÓA"';
-            } else {
-                alert.innerText = '';
+        function cancel(type) {
+            if (type === 'staff') {
+                document.getElementById('popupstaff').style.display = 'none';
             }
         }
 
-        input.addEventListener('input', validateDelete);
-        checkbox.addEventListener('change', validateDelete);
-    });
-</script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('confirmInput');
+            const checkbox = document.getElementById('confirmCheckbox');
+            const deleteBtn = document.getElementById('deleteBtn');
+            const confirmValue = document.getElementById('confirmValue');
+            const alert = document.getElementById('alert');
 
+            function validateDelete() {
+                const inputText = input.value.trim();
+                const isConfirmed = inputText === 'XÓA';
+                const isChecked = checkbox.checked;
+
+                deleteBtn.disabled = !(isConfirmed && isChecked);
+
+                if (!isConfirmed && inputText !== '') {
+                    alert.innerText = 'Bạn phải nhập chính xác từ "XÓA" (có dấu, viết hoa)';
+                } else {
+                    alert.innerText = '';
+                }
+
+                confirmValue.value = inputText;
+            }
+
+            input.addEventListener('input', validateDelete);
+            checkbox.addEventListener('change', validateDelete);
+        });
+    </script>
 @endsection

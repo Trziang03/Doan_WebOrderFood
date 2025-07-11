@@ -1,4 +1,3 @@
-
 @extends('layouts.layouts_admin')
 @section('title', 'Trang quản lý đơn hàng')
 @section('active-order', 'active')
@@ -78,8 +77,7 @@
             <div class="title">Quản Lý Đơn Hàng</div>
             <div class="search">
                 <form action="{{ route('admin.order') }}" method="GET">
-                    <input type="text" name="keyword" placeholder="Tìm mã đơn hoặc bàn..."
-                        value="{{ request('keyword') }}">
+                    <input type="text" name="keyword" placeholder="Tìm mã đơn hoặc bàn..." value="{{ request('keyword') }}">
                     <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
             </div>
@@ -207,17 +205,10 @@
                                     <td style="text-align: center;">
                                         @if ($status['id'] === 5)
                                             {{-- Nút xoá đơn hàng --}}
-                                            <form action="{{ route('admin.order.delete', ['id' => $order->id]) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');"
-                                                style="display: inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn-action">
-                                                    <i class="fa-regular fa-trash-can"
-                                                        style="color: red; font-size: 18px;"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn-action"
+                                                onclick="showDeleteOrderPopup({{ $order->id }}, '{{ route('admin.order.delete', ['id' => $order->id]) }}')">
+                                                <i class="fa-regular fa-trash-can" style="color: red; font-size: 18px;"></i>
+                                            </button>
                                         @elseif ($status['id'] === 4)
                                             {{-- Nút xem chi tiết --}}
                                             <a href="javascript:void(0)" class="btn-action view-order-detail"
@@ -254,15 +245,33 @@
             </div>
         </div>
         <!-- Popup Xóa -->
-        <!-- <div class="popup_admin" id="popupxoa" style="display: none;">
-                            <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
-                            <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
-    <p id="alert"></p>
-                            <div class="button">
-                                <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
-                                <button onclick="cancel('xoa')">Hủy</button>
-                            </div>
-                        </div> -->
+        <div class="popup_admin" id="popupOrderDelete" style="display: none;">
+            <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng này?</h3>
+            <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục *</p>
+
+            <label style="color:white;">
+                Nhập từ <strong style="color: yellow;">XÓA</strong> để xác nhận:
+            </label>
+            <input type="text" id="orderConfirmInput" placeholder="Nhập XÓA..." />
+
+            <div style="margin-top: 10px;">
+                <input type="checkbox" id="orderConfirmCheckbox" />
+                <label for="orderConfirmCheckbox" style="color: white;">Tôi đồng ý với hành động này</label>
+            </div>
+
+            <p id="orderAlert" style="color: red;"></p>
+
+            <div class="button">
+                <form id="orderDeleteForm" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="confirm" id="orderConfirmValue">
+                    <button type="submit" id="orderDeleteBtn" disabled>Đồng ý</button>
+                    <button type="button" onclick="cancel('order')">Hủy</button>
+                </form>
+            </div>
+        </div>
+
     </div>
 @endsection
 
@@ -350,4 +359,46 @@
             });
         });
     </script>
+    <script>
+        function showDeleteOrderPopup(orderId, route) {
+            const popup = document.getElementById('popupOrderDelete');
+            const form = document.getElementById('orderDeleteForm');
+
+            document.getElementById('orderConfirmInput').value = '';
+            document.getElementById('orderConfirmCheckbox').checked = false;
+            document.getElementById('orderDeleteBtn').disabled = true;
+            document.getElementById('orderAlert').innerText = '';
+
+            form.action = route;
+            popup.style.display = 'block';
+        }
+
+        function cancel(type) {
+            if (type === 'order') {
+                document.getElementById('popupOrderDelete').style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('orderConfirmInput');
+            const checkbox = document.getElementById('orderConfirmCheckbox');
+            const deleteBtn = document.getElementById('orderDeleteBtn');
+            const confirmValue = document.getElementById('orderConfirmValue');
+            const alert = document.getElementById('orderAlert');
+
+            function validateDelete() {
+                const inputText = input.value.trim();
+                const isConfirmed = inputText === 'XÓA';
+                const isChecked = checkbox.checked;
+
+                deleteBtn.disabled = !(isConfirmed && isChecked);
+                alert.innerText = (!isConfirmed && inputText !== '') ? 'Bạn phải nhập đúng từ "XÓA"' : '';
+                confirmValue.value = inputText;
+            }
+
+            input.addEventListener('input', validateDelete);
+            checkbox.addEventListener('change', validateDelete);
+        });
+    </script>
+
 @endsection

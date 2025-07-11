@@ -90,14 +90,25 @@ class AdminStaffController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $staff = Staff::findOrFail($id);
+        $confirm = $request->input('confirm');
+
+        // Kiểm tra người dùng có nhập đúng chính xác từ "XÓA" (không đổi hoa thường)
+        if (trim($confirm) !== 'XÓA') {
+            return redirect()->back()->with('error', 'Bạn phải nhập đúng từ "XÓA" để xác nhận.');
+        }
+
+        // Tìm nhân viên theo ID
+        $staff = Staff::find($id);
+        if (!$staff) {
+            return redirect()->back()->with('error', 'Không tìm thấy nhân viên.');
+        }
+
+        // Xóa nhân viên khỏi cơ sở dữ liệu (hard delete)
         $staff->delete();
 
-        return redirect()->back()->with('success', 'Xóa nhân viên thành công!');
+        return redirect()->back()->with('success', 'Đã xóa nhân viên khỏi hệ thống.');
     }
+
 }
-
-
-

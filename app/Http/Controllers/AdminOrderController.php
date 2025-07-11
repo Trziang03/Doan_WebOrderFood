@@ -176,9 +176,18 @@ class AdminOrderController extends Controller
             return response('<b>Lỗi:</b> ' . $e->getMessage(), 500);
         }
     }
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $order = Order::findOrFail($id);
+
+        if ($request->input('confirm') !== 'XÓA') {
+            return redirect()->back()->with('error', 'Bạn phải nhập đúng từ "XÓA" để xác nhận.');
+        }
+
+        $order = Order::find($id);
+        if (!$order) {
+            return redirect()->back()->with('error', 'Không tìm thấy đơn hàng.');
+        }
 
         foreach ($order->orderItems as $item) {
             // Xoá các topping của từng item

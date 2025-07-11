@@ -237,8 +237,9 @@
                                         </li>
                                     </ul>
                                 </div>
+                            </div>
                             @endforeach
-                        </div>
+
                         <div class="page" id="page"></div>
                     @else
                     <div style="color: black; text-align:center; width:100%; margin-top:155px; height: 176px;">
@@ -386,17 +387,17 @@
         // Gợi ý: 5s kiểm tra 1 lần
         setInterval(autoCheckTableStatus, 5000);
     </script> -->
-    <script>
+    {{-- <script>
     function autoCheckTableStatus() {
         fetch('/table/check-status') 
             .then(res => res.json())
             .then(res => {
                 if (res.status === 'blocked') {
-                    // Ẩn nút "Xem đơn hàng"
+                    Ẩn nút "Xem đơn hàng"
                     const container = document.getElementById('order-link-container');
                     if (container) container.innerHTML = '';
 
-                    // Xóa giỏ hàng số lượng
+                    Xóa giỏ hàng số lượng
                     document.getElementById('cart-quantity')?.textContent = '0';
                     document.querySelector('.number_cart_mb_tl')?.textContent = '0';
 
@@ -405,11 +406,11 @@
                     });
                 }
             });
-    }
+        }
 
     autoCheckTableStatus();
     setInterval(autoCheckTableStatus, 10000); // Kiểm tra mỗi 10s
-</script>
+</script> --}}
     <script>
         function searchProduct(min = 0, max = Infinity, itemsPage = 8, btn = null) {
             const active_color_price = document.querySelectorAll('.product_search_list_price_popup button');
