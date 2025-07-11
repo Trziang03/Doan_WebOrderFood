@@ -141,8 +141,9 @@ class AdminOrderController extends Controller
         return compact('dateExact', 'monthYear', 'yearOnly', 'dayMonth', 'monthOnly', 'dayOnly');
     }
 
-
-
+    /**
+     * Phân tích từ khóa ngày tháng để tìm kiếm linh hoạt
+     */
     public function changeStatus($id)
     {
         $order = Order::findOrFail($id);

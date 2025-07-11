@@ -702,13 +702,14 @@ html {
 }
 .product_search_list_price_popup button{
     display: block;
-    width: 100%;
+    width: 70%;
     color: #000;
     border: 1px solid rgb(22, 66, 60);
     margin-bottom: 5px;
     text-align: center;
     transition: all linear 0.3s;
     padding:3px 0;
+    border-radius: 10px;
 }
 .product_search_list_price_popup button:hover {
     background-color: rgb(240, 145, 55);
@@ -850,7 +851,7 @@ html {
     .main_slideshow_right_item_img{
         width: 49%;
     } */
-    .main_branch {
+       .main_branch {
         padding-bottom: 0;
     }
     .main_branch > h3{

@@ -150,6 +150,8 @@ class UserController extends Controller
         // 13. Lấy danh sách sản phẩm
         $layTatCaSanPham = ProductUser::HienThiTatCaSanPham();
 
+        $layTatCaSanPham = Product::with('sizes')->get();
+
         // 14. Trả về giao diện menu
         return view('user.pages.menu', [
             'table' => $table,

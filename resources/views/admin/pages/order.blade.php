@@ -1,3 +1,4 @@
+
 @extends('layouts.layouts_admin')
 @section('title', 'Trang quản lý đơn hàng')
 @section('active-order', 'active')
@@ -77,7 +78,8 @@
             <div class="title">Quản Lý Đơn Hàng</div>
             <div class="search">
                 <form action="{{ route('admin.order') }}" method="GET">
-                    <input type="text" name="keyword" placeholder="Tìm mã đơn hoặc bàn..." value="{{ request('keyword') }}">
+                    <input type="text" name="keyword" placeholder="Tìm mã đơn hoặc bàn..."
+                        value="{{ request('keyword') }}">
                     <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
             </div>
@@ -85,7 +87,7 @@
 
         <div class="separator_x"></div>
 
-        @if(request('keyword'))
+        @if (request('keyword'))
             {{-- HIỂN THỊ KẾT QUẢ TÌM KIẾM --}}
             <div class="table active">
                 <table>
@@ -117,7 +119,8 @@
                                     <td>{{ $order->orderStatus->name }}</td>
                                     <td>{{ $order->updated_at->format('d/m/Y H:i') }}</td>
                                     <td style="text-align: center;">
-                                        <a href="{{ route('admin.order.change-status', ['id' => $order->id]) }}" class="btn-action">
+                                        <a href="{{ route('admin.order.change-status', ['id' => $order->id]) }}"
+                                            class="btn-action">
                                             <i class="fa-solid fa-sync-alt" style="color: #007bff;"></i>
                                         </a>
                                     </td>
@@ -139,7 +142,7 @@
         @else
             {{-- HIỂN THỊ THEO TABS --}}
             @php
-                $activeTab = session('tab') ?? request('tab') ?? 'xacnhan';
+                $activeTab = session('tab') ?? (request('tab') ?? 'xacnhan');
 
                 $statuses = [
                     ['id' => 0, 'name' => 'xacnhan', 'label' => 'Xác nhận'],
@@ -193,7 +196,8 @@
                                                 @if ($item->toppings && $item->toppings->count() > 0)
                                                     <ul style="margin: 0 0 0 15px; padding-left: 0; list-style-type: disc;">
                                                         @foreach ($item->toppings as $topping)
-                                                            <li>{{ $topping->name }} (x{{ $topping->pivot->quantity }})</li>
+                                                            <li>{{ $topping->name }} (x{{ $topping->pivot->quantity }})
+                                                            </li>
                                                         @endforeach
                                                     </ul>
                                                 @endif
@@ -209,18 +213,21 @@
                                     <td style="text-align: center;">
                                         @if ($status['id'] === 5)
                                             {{-- Nút xoá đơn hàng --}}
-                                            <form action="{{ route('admin.order.delete', ['id' => $order->id]) }}" method="POST"
+                                            <form action="{{ route('admin.order.delete', ['id' => $order->id]) }}"
+                                                method="POST"
                                                 onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');"
                                                 style="display: inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn-action">
-                                                    <i class="fa-regular fa-trash-can" style="color: red; font-size: 18px;"></i>
+                                                    <i class="fa-regular fa-trash-can"
+                                                        style="color: red; font-size: 18px;"></i>
                                                 </button>
                                             </form>
                                         @elseif ($status['id'] === 4)
                                             {{-- Nút xem chi tiết --}}
-                                            <a href="javascript:void(0)" class="btn-action view-order-detail" data-id="{{ $order->id }}">
+                                            <a href="javascript:void(0)" class="btn-action view-order-detail"
+                                                data-id="{{ $order->id }}">
                                                 <i class="fa-solid fa-eye" style="color: green;"></i>
                                             </a>
                                         @else
@@ -236,7 +243,7 @@
                         </tbody>
                     </table>
 
-                    @if(isset($ordersByStatus[$status['name']]))
+                    @if (isset($ordersByStatus[$status['name']]))
                         <div class="pagination-wrapper">
                             {{ $ordersByStatus[$status['name']]->appends(request()->query())->links() }}
                         </div>
@@ -257,22 +264,22 @@
 
 @section('script')
     <script>
-        $(document).ready(function () {
-            $('.view-order-detail').click(function () {
+        $(document).ready(function() {
+            $('.view-order-detail').click(function() {
                 var id = $(this).data('id');
                 $('#orderDetailModal').show();
                 $('#orderDetailContent').html('Đang tải...');
-                $.get('/admin/order/detail/' + id, function (data) {
+                $.get('/admin/order/detail/' + id, function(data) {
                     $('#orderDetailContent').html(data);
                 });
             });
 
-            $('.close-modal').click(function () {
+            $('.close-modal').click(function() {
                 $('#orderDetailModal').hide();
             });
 
             // Đóng khi bấm ra ngoài
-            $(window).click(function (e) {
+            $(window).click(function(e) {
                 if ($(e.target).is('#orderDetailModal')) {
                     $('#orderDetailModal').hide();
                 }
@@ -280,7 +287,7 @@
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const activeTab = urlParams.get('tab');
 
@@ -300,7 +307,7 @@
     </script>
     <script>
         document.querySelectorAll('.tabs > div').forEach(tab => {
-            tab.addEventListener('click', function () {
+            tab.addEventListener('click', function() {
                 const target = this.getAttribute('data-target');
                 const url = new URL(window.location.href);
 

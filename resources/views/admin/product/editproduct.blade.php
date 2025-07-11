@@ -78,8 +78,6 @@
                                         </option>
                                         <option value="0" {{ $sanPham->status == 0 ? 'selected' : '' }}>Ẩn</option>
                                     </select>
-
-
                             </div>
                         </div>
 
