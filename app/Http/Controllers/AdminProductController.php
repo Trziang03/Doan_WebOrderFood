@@ -292,4 +292,20 @@ class AdminProductController extends Controller
             'categories' => $categories,
         ]);
     }
+
+    // public function getInfo($id)
+    // {
+    //     $product = Product::with(['sizes', 'toppings'])->find($id);
+
+    //     if (!$product) {
+    //         return response()->json(['success' => false, 'message' => 'Không tìm thấy sản phẩm']);
+    //     }
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'product' => $product,
+    //         'sizes' => $product->sizes,
+    //         'toppings' => $product->toppings
+    //     ]);
+    // }
 }

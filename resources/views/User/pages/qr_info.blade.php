@@ -36,9 +36,8 @@
 
 <div class="container qr-container">
     <div class="qr-card">
-        <h2>Thông tin bàn bạn đã quét</h2>
+        <h2>Thông tin QR</h2>
 
-        <p><strong>Mã bàn:</strong> {{ $table->id }}</p>
         <p><strong>Tên bàn:</strong> {{ $table->name ?? 'Bàn số ' . $table->id }}</p>
 
         <img src="{{ asset('storage/qr-codes/' . $table->qr_code) }}" alt="QR Code">

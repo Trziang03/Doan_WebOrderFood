@@ -66,23 +66,9 @@
         Thông tin đặt món: Bàn số {{ $order->table_id }} | Ngày: {{ $order->created_at->format('d F, Y') }}
     </h5>
 
-    <button class="btn btn-success mt-2 mt-md-0" data-bs-toggle="modal" data-bs-target="#paymentModal">
-        Thanh toán
-    </button>
-
-    @php
-        $canCancel = now()->diffInMinutes($order->created_at) < 3 && $order->order_status_id == 0; // 0 = trạng thái "Xác nhận", cho phép hủy
-    @endphp
-
-    @if($canCancel)
-        <form action="{{ route('payment.cancel', $order->id) }}" method="POST" class="mt-2 mt-md-0">
-            @csrf
-            @method('PUT')
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn hủy đơn hàng?')">
-                Hủy đơn
-            </button>
-        </form>
-    @endif
+    <div id="order-actions">
+    {!! view('User.partials.order_actions', ['order' => $order]) !!}
+    </div>
 </div>
         <div class="row mt-3 gy-3">
             <!-- Order Summary -->
@@ -95,7 +81,7 @@
                         <p><strong>Ngày:</strong> {{ $order->created_at->format('H:i d/m/Y') }}</p>
                         <p><strong>Bàn:</strong> {{ $order->table->name }}</p>
                         <p><strong>Tổng số lượng món:</strong> {{ $order->orderItems->sum('quantity') }}</p>
-                        <p><strong>Trạng thái:</strong> {{ $order->orderStatus->name }}</p>
+                        <p><strong>Trạng thái:</strong> <span id="order-status">{{ $order->orderStatus->name }}</span></p>
                         <h5 class="text-success">Tổng tiền: {{ number_format($order->total_price) }}đ</h5>
                     </div>
                 </div>
@@ -187,17 +173,13 @@
         <!-- Pagination -->
 
     </div>
-
     <!-- Modal chọn phương thức thanh toán -->
 <!-- Modal chọn phương thức thanh toán -->
 <div class="modal fade" id="paymentModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-
-            <form id="paymentForm" action="{{ route('payment.update', $order->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-
+            <form method="POST" action="/payment/{{ $order->id }}">
+            @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Chọn phương thức thanh toán</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -247,6 +229,37 @@
 @endsection
 @section('script')
 <script>
+    const orderId = {{ $order->id }};
+    const statusEl = document.getElementById('order-status');
+    let currentStatus = statusEl.textContent.trim();
+
+    function updateOrderActionsHtml(orderId) {
+        fetch(`/admin/order/${orderId}/actions-html`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('order-actions').innerHTML = html;
+            })
+            .catch(err => {
+                console.error('Lỗi khi cập nhật nút hành động:', err);
+            });
+    }
+
+    setInterval(() => {
+        fetch(`/api/order-status/${orderId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status && data.status !== currentStatus) {
+                    currentStatus = data.status;
+                    statusEl.textContent = data.status;
+                    alertify.success("Trạng thái đơn hàng đã được cập nhật!");
+
+                    updateOrderActionsHtml(orderId); // ← cập nhật lại nút
+                }
+            })
+            .catch(err => console.error("Lỗi khi lấy trạng thái:", err));
+    }, 5000);
+</script>
+<script>
     document.addEventListener("DOMContentLoaded", function () {
         const codRadio = document.getElementById('cod');
         const qrRadio = document.getElementById('qr');
@@ -265,4 +278,5 @@
         });
     });
 </script>
+
 @endsection
