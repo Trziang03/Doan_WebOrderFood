@@ -252,50 +252,10 @@
                 <div id="orderDetailContent">Đang tải...</div>
             </div>
         </div>
-        <!-- Popup Xóa -->
-        <!-- <div class="popup_admin" id="popupxoa" style="display: none;">
-                                                                    <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
-                                                                    <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
-                                                                    <p id="alert"></p>
-                                                                    <div class="button">
-                                                                        <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
-                                                                        <button onclick="cancel('xoa')">Hủy</button>
-                                                                    </div>
-                                                                </div> -->
     </div>
 @endsection
 
 @section('script')
-    <!-- <script>
-                                                function showDeletePopup(full_name, id) {
-                                                let popup = document.getElementById('popupxoa');
-                                                popup.children[0].textContent = `Bạn có thật sự muốn xóa đơn hàng của khách hàng ${full_name} ?`;
-                                                popup.querySelector("button[onclick^='deleteOrder']").dataset.id = id;
-                                                popup.style.display = "block";
-                                                }
-
-                                                function deleteOrder(id) {
-                                                $.ajax({
-                                                type: "POST",
-                                                url: `/admin/order/delete/${id}`,
-                                                data: {
-                                                _token: '{{ csrf_token() }}'
-                                                },
-                                                success: function (data) {
-                                                alert(data);
-                                                location.reload();
-                                                },
-                                                error: function (xhr) {
-                                                alert('Có lỗi xảy ra: ' + xhr.responseText);
-                                                }
-                                                });
-                                                document.getElementById('popupxoa').style.display = "none";
-                                                }
-
-                                                function cancel(type) {
-                                                document.getElementById(`popup${type}`).style.display = "none";
-                                                                                                            }
-                                            </script> -->
     <script>
         $(document).ready(function () {
             $('.view-order-detail').click(function () {
@@ -349,33 +309,27 @@
             });
         });
     </script>
-<script>
-    // B1: Lấy ID đơn hàng hiện tại
-    let latestOrderId = localStorage.getItem('latestOrderId') ?? (document.querySelector('.order-row')?.dataset?.id ?? 0);
-    console.log('ID đơn hiện tại:', latestOrderId);
+    <script>
+        let lastUpdateTime = localStorage.getItem('lastUpdateTime') ?? 0;
+        setInterval(() => {
+            fetch('/api/admin/orders/latest')
+                .then(res => res.json())
+                .then(data => {
+                    if (parseInt(data.updated_at) > parseInt(lastUpdateTime)) {
+                        lastUpdateTime = data.updated_at;
+                        localStorage.setItem('lastUpdateTime', data.updated_at);
 
-    // B2: Đặt vòng lặp kiểm tra mỗi 10 giây
-    setInterval(() => {
-        fetch('/api/admin/orders/latest')
-            .then(res => res.json())
-            .then(data => {
-                console.log('ID đơn mới từ server:', data.id);
+                        alertify.set('notifier', 'delay', 10);
+                        alertify.success(`Cập nhật đơn hàng: ${data.code} (${data.status})`);
 
-                if (parseInt(data.id) > parseInt(latestOrderId)) {
-                    latestOrderId = data.id;
-                    localStorage.setItem('latestOrderId', data.id); // cập nhật lại
-
-                    alertify.set('notifier', 'delay', 10);
-                    alertify.success(`Đơn hàng mới: ${data.code}`);
-
-                    setTimeout(() => {
-                        location.reload();
-                    }, 5000);
-                }
-            })
-            .catch(() => {
-                console.error("Không thể kiểm tra đơn hàng mới.");
-            });
-    }, 10000);
-</script>
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                    }
+                })
+                .catch(() => {
+                    console.error("Không thể kiểm tra đơn hàng mới hoặc cập nhật.");
+                });
+        }, 10000);
+    </script>
 @endsection

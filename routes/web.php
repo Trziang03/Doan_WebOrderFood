@@ -145,13 +145,14 @@ Route::get('/api/order-status/{id}', function ($id) {
 });
 
 Route::get('/api/admin/orders/latest', function () {
-    $latestOrder = Order::latest('created_at')->first();
+    $latestOrder = Order::latest('updated_at')->first();
 
     return response()->json([
         'id' => $latestOrder->id,
         'code' => $latestOrder->order_code,
-        'status' => $latestOrder->orderStatus->name,
-        'created_at' => $latestOrder->created_at->format('H:i:s d/m/Y'),
+        'status' => $latestOrder->orderStatus->name ?? 'Không rõ',
+        'updated_at' => $latestOrder->updated_at->timestamp,
+        'updated_at_text' => $latestOrder->updated_at->format('H:i:s d/m/Y'),
     ]);
 });
 

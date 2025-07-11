@@ -173,7 +173,6 @@
         <!-- Pagination -->
 
     </div>
-    <!-- Modal chọn phương thức thanh toán -->
 <!-- Modal chọn phương thức thanh toán -->
 <div class="modal fade" id="paymentModal" tabindex="-1">
     <div class="modal-dialog">
@@ -253,7 +252,7 @@
                     statusEl.textContent = data.status;
                     alertify.success("Trạng thái đơn hàng đã được cập nhật!");
 
-                    updateOrderActionsHtml(orderId); // ← cập nhật lại nút
+                    updateOrderActionsHtml(orderId); // cập nhật lại nút
                 }
             })
             .catch(err => console.error("Lỗi khi lấy trạng thái:", err));
