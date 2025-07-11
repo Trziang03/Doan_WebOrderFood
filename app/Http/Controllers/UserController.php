@@ -223,12 +223,6 @@ class UserController extends Controller
         return view('user.pages.blog');
     }
 
-    //Trang Liên Hệ
-    public function LienHe()
-    {
-        return view('user.pages.contact');
-    }
-
     //Trang Đăng Ký
     public function DangKy(Request $request)
     {

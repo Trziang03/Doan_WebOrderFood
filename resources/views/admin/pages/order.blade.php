@@ -169,13 +169,16 @@
                                 <th style="width: 25%;">Món ăn</th>
                                 <th style="width: 14%;">Ghi chú</th>
                                 <th style="width: 10%;">Tổng tiền</th>
+                                @if ($status['id'] === 3)
+                                    <th style="width: 10%;">Thanh toán</th>
+                                @endif
                                 <th style="width: 13%;">Thời gian</th>
                                 <th style="width: 8%;">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($ordersByStatus[$status['name']] ?? [] as $order)
-                                <tr>
+                            @foreach ($ordersByStatus[$status['name']] ?? [] as $index => $order)
+                                <tr @if ($index === 0 && $status['id'] === 0) class="order-row" data-id="{{ $order->id }}" @endif>
                                     <td>{{ $order->order_code }}</td>
                                     <td>{{ $order->table->name ?? '-' }}</td>
                                     <td>
@@ -199,6 +202,9 @@
                                     </td>
                                     <td>{{ $order->note }}</td>
                                     <td>{{ number_format($order->total_price) }}đ</td>
+                                    @if ($status['id'] === 3)
+                                        <td>{{ $order->paymentMethod->name_method ?? 'Chưa chọn' }}</td>
+                                    @endif
                                     <td>{{ $order->updated_at->format('d/m/Y H:i') }}</td>
                                     <td style="text-align: center;">
                                         @if ($status['id'] === 5)
@@ -248,48 +254,48 @@
         </div>
         <!-- Popup Xóa -->
         <!-- <div class="popup_admin" id="popupxoa" style="display: none;">
-                                                            <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
-                                                            <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
-                                                            <p id="alert"></p>
-                                                            <div class="button">
-                                                                <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
-                                                                <button onclick="cancel('xoa')">Hủy</button>
-                                                            </div>
-                                                        </div> -->
+                                                                    <h3 style="color: white;">Bạn có thật sự muốn xóa đơn hàng ... ?</h3>
+                                                                    <p style="color: white;">* Đơn hàng bị xóa sẽ không thể khôi phục nữa *</p>
+                                                                    <p id="alert"></p>
+                                                                    <div class="button">
+                                                                        <button onclick="deleteOrder(this.dataset.id)">Đồng ý</button>
+                                                                        <button onclick="cancel('xoa')">Hủy</button>
+                                                                    </div>
+                                                                </div> -->
     </div>
 @endsection
 
 @section('script')
     <!-- <script>
-                                        function showDeletePopup(full_name, id) {
-                                        let popup = document.getElementById('popupxoa');
-                                        popup.children[0].textContent = `Bạn có thật sự muốn xóa đơn hàng của khách hàng ${full_name} ?`;
-                                        popup.querySelector("button[onclick^='deleteOrder']").dataset.id = id;
-                                        popup.style.display = "block";
-                                        }
+                                                function showDeletePopup(full_name, id) {
+                                                let popup = document.getElementById('popupxoa');
+                                                popup.children[0].textContent = `Bạn có thật sự muốn xóa đơn hàng của khách hàng ${full_name} ?`;
+                                                popup.querySelector("button[onclick^='deleteOrder']").dataset.id = id;
+                                                popup.style.display = "block";
+                                                }
 
-                                        function deleteOrder(id) {
-                                        $.ajax({
-                                        type: "POST",
-                                        url: `/admin/order/delete/${id}`,
-                                        data: {
-                                        _token: '{{ csrf_token() }}'
-                                        },
-                                        success: function (data) {
-                                        alert(data);
-                                        location.reload();
-                                        },
-                                        error: function (xhr) {
-                                        alert('Có lỗi xảy ra: ' + xhr.responseText);
-                                        }
-                                        });
-                                        document.getElementById('popupxoa').style.display = "none";
-                                        }
+                                                function deleteOrder(id) {
+                                                $.ajax({
+                                                type: "POST",
+                                                url: `/admin/order/delete/${id}`,
+                                                data: {
+                                                _token: '{{ csrf_token() }}'
+                                                },
+                                                success: function (data) {
+                                                alert(data);
+                                                location.reload();
+                                                },
+                                                error: function (xhr) {
+                                                alert('Có lỗi xảy ra: ' + xhr.responseText);
+                                                }
+                                                });
+                                                document.getElementById('popupxoa').style.display = "none";
+                                                }
 
-                                        function cancel(type) {
-                                        document.getElementById(`popup${type}`).style.display = "none";
-                                                                                                    }
-                                    </script> -->
+                                                function cancel(type) {
+                                                document.getElementById(`popup${type}`).style.display = "none";
+                                                                                                            }
+                                            </script> -->
     <script>
         $(document).ready(function () {
             $('.view-order-detail').click(function () {
@@ -343,4 +349,33 @@
             });
         });
     </script>
+<script>
+    // B1: Lấy ID đơn hàng hiện tại
+    let latestOrderId = localStorage.getItem('latestOrderId') ?? (document.querySelector('.order-row')?.dataset?.id ?? 0);
+    console.log('ID đơn hiện tại:', latestOrderId);
+
+    // B2: Đặt vòng lặp kiểm tra mỗi 10 giây
+    setInterval(() => {
+        fetch('/api/admin/orders/latest')
+            .then(res => res.json())
+            .then(data => {
+                console.log('ID đơn mới từ server:', data.id);
+
+                if (parseInt(data.id) > parseInt(latestOrderId)) {
+                    latestOrderId = data.id;
+                    localStorage.setItem('latestOrderId', data.id); // cập nhật lại
+
+                    alertify.set('notifier', 'delay', 10);
+                    alertify.success(`Đơn hàng mới: ${data.code}`);
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 5000);
+                }
+            })
+            .catch(() => {
+                console.error("Không thể kiểm tra đơn hàng mới.");
+            });
+    }, 10000);
+</script>
 @endsection

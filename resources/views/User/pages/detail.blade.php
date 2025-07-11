@@ -18,7 +18,7 @@
             <ul>
 
                 @if ($seach)
-                    <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
+                    <li><a href="{{ route('user.menu') }}">Trang Menu</a></li>
                     <li><a href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => $seach->slug]) }}">{{ $seach->category }}</a>
                     </li>
                     <!-- Truy xuất đúng tên trường -->
