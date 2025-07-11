@@ -67,7 +67,7 @@ class CartController extends Controller
         $validated = $request->validate([
             'product_id' => 'required|integer',
             'size_id' => 'required|integer',
-            'quantity' => 'required|integer|min:1|max:5',
+            'quantity' => 'required|integer|min:1|max:20',
             'note' => 'nullable|string|max:150',
             'topping_quantities' => 'nullable|array',
         ]);
@@ -550,7 +550,7 @@ class CartController extends Controller
             CartItem::where('table_id', $table_id)->delete();
             session()->forget('cart');
             DB::commit();
-            
+
             if ($order->table_id == session('table_id')) {
                 session(['current_order_code' => $order->order_code]);
             }

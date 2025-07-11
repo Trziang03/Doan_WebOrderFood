@@ -40,7 +40,7 @@ class AdminTableController extends Controller
 
         // Tạo đường dẫn URL với ID và token
         $path = route('user.menu', ['id' => $table->id], false);
-        $fullUrl = 'https://98cd3a6c9c6a.ngrok-free.app' . $path . '&token=' . $token;
+        $fullUrl = 'https://84515a2a948b.ngrok-free.app' . $path . '&token=' . $token;
 
         // Tạo ảnh QR mới
         $builder = new Builder(
@@ -178,6 +178,9 @@ class AdminTableController extends Controller
     public function store(Request $request)
     {
         // 1. Validate
+        $request->merge([
+            'name' => trim($request->name),
+        ]);
         $request->validate([
             'name' => 'required|string|max:255|unique:tables,name',
             'table_status_id' => 'required|exists:table_status,id',
@@ -282,5 +285,20 @@ class AdminTableController extends Controller
     //     $table->save();
 
     //     return redirect()->back()->with('message', 'Cập nhật bàn thành công');
-    // }
+    // 
+    public function checkName(Request $request)
+    {
+        $name = trim($request->query('name'));
+        $excludeId = $request->query('exclude_id');
+
+        $query = Table::where('name', $name);
+
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        $exists = $query->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
 }

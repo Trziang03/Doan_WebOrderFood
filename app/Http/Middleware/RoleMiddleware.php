@@ -19,6 +19,6 @@ class RoleMiddleware
     {
         if(Auth::check() && in_array(Auth::user()->role , $role))
             return $next($request);
-        return redirect()->route('user.index')->with('error', 'Bạn cần phải đăng nhập trước khi thực hiện chức năng này!.');
+        return redirect()->route('user.menu')->with('error', 'Bạn cần phải đăng nhập trước khi thực hiện chức năng này!.');
     }
 }

@@ -8,7 +8,6 @@
     <nav class="container_css navbar navbar-top">
         <div>
             <ul>
-                <li><a href="{{ route('user.blog') }}">Giới thiệu</a></li>
                 <li>
                     @if(session('current_order_code'))
                         <a href="{{ route('user.payment', ['order_code' => session('current_order_code')]) }}">
@@ -45,12 +44,12 @@
     <nav class="container_css navbar navbar-bottom">
         <div class="navbar_item_first">
             <div style="width:190px">
-                <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
+                <a href="{{ route('user.menu') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
                         style="width:100%; height:55px; margin-left:6px"
                         src="{{ asset('images/' . $lienKetWebsite->logo) }}" alt="Lỗi hiển thị"></a>
             </div>
             <ul style="padding-left:0">
-                <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
+                <li><a href="{{ route('user.blog') }}">Giới thiệu</a></li>
                 <li><a href="{{route('user.menu')}}">Menu</a></li>
             </ul>
         </div>
@@ -58,7 +57,7 @@
             <input type="checkbox" hidden id="checkbox_hidden" class="checkbox_input_hidden">
             <label for="checkbox_hidden"><span class="menu-icon"><i class="fas fa-bars"></i></span></label>
             <div style="width:25px" class="logo-mobile-only">
-                <a href="{{ route('user.index') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
+                <a href="{{ route('user.menu') }}" style="font-size: 14px; color: rgb(233, 239, 236);"><img
                         style="max-height: 55px; height: 50px; width: 100px; margin-left: -20px"
                         src="{{ asset('images/' . $lienKetWebsite->logo) }}" alt="Lỗi hiển thị"></a>
             </div>
@@ -66,7 +65,6 @@
             <nav class="navbar_hidden_mb_tl">
                 <label for="checkbox_hidden"><i class="fas fa-times"></i></label>
                 <ul>
-                    <li><a href="{{ route('user.index') }}">Trang chủ</a></li>
                     <li><a href="{{route('user.menu')}}">Menu</a></li>
                     <li><a href="{{ route('user.qr.info') }}">Xem mã QR</a></li>
                     <li><a href="{{ route('user.blog') }}">Giới Thiệu</a></li>

@@ -256,6 +256,45 @@
             </div>
         </div>
     </section>
+    <!-- <div id="productModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span onclick="closeModal()" class="close-btn">&times;</span>
+
+            <h2 id="productName" class="product-name"></h2>
+
+            <div class="product-body">
+
+                <div class="product-image">
+                    <img id="productImage" src="" alt="Ảnh món ăn">
+                </div>
+
+                <div class="product-info">
+
+                    <p><strong>Giá:</strong> <span id="totalPrice" class="product-price">0đ</span></p>
+
+                    <div class="form-group">
+                        <label for="size_id"><strong>Chọn size:</strong></label>
+                        <select id="size_id" onchange="calculateTotal()"></select>
+                    </div>
+
+                    <div class="form-group" id="topping_list">
+                        <label><strong>Chọn topping:</strong></label>
+                    </div>
+
+                    <div class="form-group">
+                        <label><strong>Số lượng:</strong></label>
+                        <div class="quantity-control">
+                            <button onclick="changeQuantity(-1)">-</button>
+                            <input id="quantity" value="1" min="1" max="10" onchange="calculateTotal()">
+                            <button onclick="changeQuantity(1)">+</button>
+                        </div>
+                    </div>
+
+                    <button onclick="buyNow()" class="buy-btn">Thêm vào giỏ hàng</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
 @endsection
 @section('script')
     <script>
@@ -372,48 +411,40 @@
                 });
         }
     </script>
-    <!-- <script>
+    <script>
         function autoCheckTableStatus() {
-            fetch('admin/table/check-status')
+            fetch('/table/check-status')
                 .then(res => res.json())
                 .then(res => {
                     if (res.status === 'blocked') {
-                        // Reset icon giỏ hàng về 0
-                        const desktopCart = document.getElementById('cart-quantity');
-                        if (desktopCart) desktopCart.textContent = '0';
+                        // Ẩn nút "Xem đơn hàng"
+                        const container = document.getElementById('order-link-container');
+                        if (container) container.innerHTML = '';
 
-                        const mobileCart = document.querySelector('.number_cart_mb_tl');
-                        if (mobileCart) mobileCart.textContent = '0';
+                        // Xóa giỏ hàng số lượng
+                        document.getElementById('cart-quantity')?.textContent = '0';
+                        document.querySelector('.number_cart_mb_tl')?.textContent = '0';
 
                         alertify.alert("Thông báo", res.message, function () {
-                            window.location.href = '/404';
+                            window.location.href = '/404'; // Hoặc về trang chủ
                         });
                     }
                 });
         }
-        // Gợi ý: 5s kiểm tra 1 lần
-        setInterval(autoCheckTableStatus, 5000);
-    </script> -->
-    <script>
-    function autoCheckTableStatus() {
-        fetch('/table/check-status') 
-            .then(res => res.json())
-            .then(res => {
-                if (res.status === 'blocked') {
-                    // Ẩn nút "Xem đơn hàng"
-                    const container = document.getElementById('order-link-container');
-                    if (container) container.innerHTML = '';
 
-                    // Xóa giỏ hàng số lượng
-                    document.getElementById('cart-quantity')?.textContent = '0';
-                    document.querySelector('.number_cart_mb_tl')?.textContent = '0';
+        autoCheckTableStatus();
+        setInterval(autoCheckTableStatus, 10000); // Kiểm tra mỗi 10s
+    </script>
+    <!-- <script>
+                let currentProductId = null;
+                let currentSizes = [];
+                let currentToppings = [];
+                let basePrice = 0;
 
-                    alertify.alert("Thông báo", res.message, function () {
-                        window.location.href = '/404'; // Hoặc về trang chủ
-                    });
+                // Format tiền Việt
+                function formatCurrency(value) {
+                    return parseInt(value).toLocaleString('vi-VN') + 'đ';
                 }
-            });
-    }
 
     autoCheckTableStatus();
     setInterval(autoCheckTableStatus, 10000); // Kiểm tra mỗi 10s

@@ -21,9 +21,7 @@ use App\Models\Order;
 
 Route::controller(UserController::class)->group(function () {
     Route::get('/gioithieu', "GioiThieu")->name('user.blog');
-    Route::get('/contact', "LienHe")->name('user.contact');
-    Route::post('/addContact', 'addContact');
-    Route::get('/', "index")->name('user.index');
+    // Route::get('/', "index")->name('user.index');
     Route::get('/menu', "showmenu")->name('user.menu');
     Route::get('/menu/{slug}', "timKiemSanPhamTheoDanhMuc")->name('timkiemsanphamtheodanhmuc');
     Route::get('/tim-kiem', 'timKiemToanBo')->name('user.search.all');
@@ -85,6 +83,7 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/admin/product/filter', [AdminProductController::class, 'filter'])->name('admin.product.filter');
     Route::post('/admin/topping/store', [AdminProductController::class, 'storeTopping'])->name('admin.topping.store');
     Route::post('/admin/size/store', [AdminProductController::class, 'storeSize'])->name('admin.size.store');
+    // Route::get('/product/info/{id}', [AdminProductController::class, 'getInfo']);
 
     Route::resource('/admin/product', AdminProductController::class);
 
@@ -95,6 +94,7 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/table/{id}/generate-qr', [AdminTableController::class, 'generateQR']);
     Route::get('/admin/table/status', [AdminTableController::class, 'getStatuses']);
     Route::get('/table/check-status', [AdminTableController::class, 'checkStatus']);
+    Route::get('/table/check-name', [AdminTableController::class, 'checkName']);
 
 });
 
@@ -110,10 +110,10 @@ Route::middleware(['role:QL'])->group(function () {
 
 //Xác nhận đặt hàng và thanh toán
 Route::controller(OrderController::class)->group(function () {
-    Route::get('/payment/{order_code}','index')->name('user.payment');
-    Route::put('/payment/{id}/cancel',  'cancel')->name('payment.cancel');
+    Route::post('/payment/{id}', 'updatePaymentMethod')->name('payment.update');
+    Route::get('/payment/confirm/{order_code}', 'index')->name('user.payment');
+    Route::post('/payment/{id}/cancel',  'cancel')->name('payment.cancel');
     Route::get('/qr-info', 'showQR')->name('user.qr.info');
-    Route::put('/payment/{id}', 'updatePaymentMethod')->name('payment.update');
 });
 
 //Route profile
@@ -132,3 +132,29 @@ Route::get('/debug-session', function () {
     return session()->all(); // xem toàn bộ session
 });
 
+Route::get('/api/order-status/{id}', function ($id) {
+    $order = Order::with('orderStatus')->find($id);
+
+    if (!$order) {
+        return response()->json(['status' => 'Không tìm thấy đơn hàng'], 404);
+    }
+
+    return response()->json([
+        'status' => $order->orderStatus->name
+    ]);
+});
+
+Route::get('/api/admin/orders/latest', function () {
+    $latestOrder = Order::latest('created_at')->first();
+
+    return response()->json([
+        'id' => $latestOrder->id,
+        'code' => $latestOrder->order_code,
+        'status' => $latestOrder->orderStatus->name,
+        'created_at' => $latestOrder->created_at->format('H:i:s d/m/Y'),
+    ]);
+});
+
+Route::get('/admin/order/{order}/actions-html', function (Order $order) {
+    return view('User.partials.order_actions', ['order' => $order]);
+});

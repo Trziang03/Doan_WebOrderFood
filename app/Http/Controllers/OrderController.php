@@ -16,10 +16,11 @@ class OrderController extends Controller
             ->first();
 
         if (!$order) {
+            \Log::warning("Không tìm thấy đơn hàng với mã: " . $order_code);
             return redirect('/404')->with('error', 'Không tìm thấy đơn hàng.');
         }
 
-        // 🔒 Kiểm tra bảo mật: Đơn hàng này có thuộc về bàn hiện tại không?
+        // Kiểm tra bảo mật: Đơn hàng này có thuộc về bàn hiện tại không?
         $currentTableId = session('table_id');
         if (!$currentTableId || $order->table_id != $currentTableId) {
             return redirect('/404')->with('error', 'Bạn không có quyền xem đơn hàng này.');
@@ -68,7 +69,8 @@ class OrderController extends Controller
 
         $order->save();
 
-        return redirect()->back()->with('success', 'Đã chọn phương thức thanh toán!');
+        return redirect()->route('user.payment', ['order_code' => $order->order_code])
+            ->with('success', 'Đã chọn phương thức thanh toán!');
     }
 
     public function cancel($id)
