@@ -28,7 +28,7 @@
         word-break: break-word;
     }
 
-    <style>.tabs {
+    .tabs {
         display: flex;
         gap: 10px;
         margin-bottom: 10px;
@@ -408,31 +408,36 @@
     </script>
 
 <script>
-    // B1: Lấy ID đơn hàng hiện tại
-    let latestOrderId = localStorage.getItem('latestOrderId') ?? (document.querySelector('.order-row')?.dataset?.id ?? 0);
-    console.log('ID đơn hiện tại:', latestOrderId);
+    document.querySelectorAll('.tabs > div').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            const url = new URL(window.location.href);
 
-    // B2: Đặt vòng lặp kiểm tra mỗi 10 giây
+            url.searchParams.set('tab', target);
+            window.location.href = url.toString();
+        });
+    });
+</script>
+<script>
+    let lastUpdateTime = localStorage.getItem('lastUpdateTime') ?? 0;
     setInterval(() => {
         fetch('/api/admin/orders/latest')
             .then(res => res.json())
             .then(data => {
-                console.log('ID đơn mới từ server:', data.id);
-
-                if (parseInt(data.id) > parseInt(latestOrderId)) {
-                    latestOrderId = data.id;
-                    localStorage.setItem('latestOrderId', data.id); // cập nhật lại
+                if (parseInt(data.updated_at) > parseInt(lastUpdateTime)) {
+                    lastUpdateTime = data.updated_at;
+                    localStorage.setItem('lastUpdateTime', data.updated_at);
 
                     alertify.set('notifier', 'delay', 10);
-                    alertify.success(`Đơn hàng mới: ${data.code}`);
+                    alertify.success(`Cập nhật đơn hàng: ${data.code} (${data.status})`);
 
                     setTimeout(() => {
                         location.reload();
-                    }, 5000);
+                    }, 3000);
                 }
             })
             .catch(() => {
-                console.error("Không thể kiểm tra đơn hàng mới.");
+                console.error("Không thể kiểm tra đơn hàng mới hoặc cập nhật.");
             });
     }, 10000);
 </script>

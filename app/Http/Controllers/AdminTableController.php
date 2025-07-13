@@ -19,7 +19,7 @@ class AdminTableController extends Controller
     public function index()
     {
         $tables = Table::with('status')->get();
-        $statuses = TableStatus::all();
+        $statuses = TableStatus::whereIn('id', [1, 2, 3])->get();
 
         // Gắn URL QR cho từng bàn
         foreach ($tables as $table) {
@@ -40,7 +40,7 @@ class AdminTableController extends Controller
 
         // Tạo đường dẫn URL với ID và token
         $path = route('user.menu', ['id' => $table->id], false);
-        $fullUrl = 'https://17eed2e35f42.ngrok-free.app' . $path . '&token=' . $token;
+        $fullUrl = ' https://364a7addf581.ngrok-free.app' . $path . '&token=' . $token;
 
         // Tạo ảnh QR mới
         $builder = new Builder(
@@ -126,8 +126,7 @@ class AdminTableController extends Controller
     {
         $tables = Table::with('status')->get();
 
-        // Tạo URL có kèm token
-        $url = route('user.menu', ['id' => $table->id]) . ',token=' . $token;
+       
 
         $result = $tables->map(function ($table) {
             return [
@@ -301,4 +300,31 @@ class AdminTableController extends Controller
 
         return response()->json(['exists' => $exists]);
     }
+
+    //ẩn bàn
+   
+    public function hide(Request $request, $id)
+    {
+        // Kiểm tra xác nhận từ người dùng
+        $confirm = $request->input('confirm');
+
+        if (mb_strtoupper($confirm, 'UTF-8') !== 'XÓA') {
+            return response()->json(['message' => 'Bạn phải nhập "XÓA" để xác nhận.'], 400);
+        }
+
+    
+        // Tìm bàn theo ID
+        $table = Table::find($id);
+        if (!$table) {
+            return redirect()->back()->with('error', 'Không tìm thấy bàn.');
+        }
+    
+        // Cập nhật trạng thái ẩn (gán status_id = 4)
+        $table->table_status_id = 4;
+        $table->save();
+    
+        return redirect()->back()->with('success', 'Bàn đã được ẩn thành công.');
+    }
+    
+
 }

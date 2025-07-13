@@ -6,6 +6,9 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Exports\RevenueExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class AdminStaticController extends Controller
 {
@@ -80,4 +83,23 @@ class AdminStaticController extends Controller
 
         return response()->json(['chart_data' => $chart_data]);
     }
+
+    //doanh thu theo ngày
+    public function revenueByDate(Request $request)
+{
+    $selectedDate = $request->input('date') ?? now()->toDateString();
+
+    $orders = Order::whereDate('created_at', $selectedDate)
+        ->where('order_status_id', 4) // Đã thanh toán
+        ->get();
+
+    $total = $orders->sum('total_price');
+
+    return view('admin.pages.statistical', [
+        'orders' => $orders,
+        'total' => $total,
+        'selectedDate' => $selectedDate,
+    ]);
+}
+
 }

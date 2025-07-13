@@ -16,7 +16,7 @@
                 <div class="alert_error_validate" id="password_login_error"></div>
             </div>
             <div class="action">
-                <button type="button" onclick="">Đăng ký</button>
+                <button type="button" onclick="handleRegister()">Đăng ký</button>
                 <button type="button" onclick="Login()">Đăng nhập</button>
             </div>
         </form>

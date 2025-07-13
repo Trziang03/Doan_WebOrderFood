@@ -13,7 +13,7 @@ class AdminCategoryController extends Controller
     public function index(Request $request)
     {
         $query = Category::query();
-        $query->where('status', 1);
+        $categories = Category::all();
         if ($request->has('keyword') && $request->keyword != '') {
             $keyword = strtolower(trim($request->keyword));
 
@@ -43,7 +43,12 @@ class AdminCategoryController extends Controller
     public function storeCategory(Request $request)
     {
         $validate = $request->validate([
-            'name' => 'required|unique:categories,name|max:255','regex:/^[\p{L}0-9\s\-]+$/u',
+            'name' => [
+                'required',
+                'unique:categories,name',
+                'max:255',
+                'regex:/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸỳỵỷỹ0-9\s\-]+$/u'
+            ],
             'description' => 'required|max:255',
             'status' => 'required|in:0,1',
         ], [
@@ -51,8 +56,10 @@ class AdminCategoryController extends Controller
             'name.unique' => 'Tên danh mục đã tồn tại',
             'name.max' => 'Tên danh mục không vượt quá 255 ký tự',
             'name.regex' => 'Tên danh mục chỉ được chứa chữ, số, dấu cách và gạch ngang.',
-            'description' => 'Vui lòng nhập mô tả',
+            'description.required' => 'Vui lòng nhập mô tả',
             'description.max' => 'Mô tả không vượt quá 255 ký tự',
+            'status.required' => 'Vui lòng chọn trạng thái',
+            'status.in' => 'Trạng thái không hợp lệ',
         ]);
 
         $slug = $request->input('slug') ?: Str::slug($request->input('name'));

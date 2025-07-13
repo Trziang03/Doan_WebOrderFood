@@ -18,6 +18,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Models\Order;
 
+use App\Exports\RevenueExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 Route::controller(UserController::class)->group(function () {
     Route::get('/gioithieu', "GioiThieu")->name('user.blog');
@@ -75,6 +78,9 @@ Route::middleware(['role:QL,NV'])->group(function () {
     //Route quản lí thống kê
     Route::get('/admin/statistical', [AdminStaticController::class, 'index'])->name('admin.static');
     Route::get('/admin/statistic', [AdminStaticController::class, 'statistics'])->name('admin.statistic');
+    //doanh thu theo ngày
+    Route::get('/admin/statistical/data', [AdminStaticController::class, 'statistics'])->name('admin.statistical.data');
+
 
     //Route quản lí món ăn
     Route::get('/admin/products', [AdminProductController::class, 'index'])->name('admin.product');
@@ -95,6 +101,8 @@ Route::middleware(['role:QL,NV'])->group(function () {
     Route::get('/admin/table/status', [AdminTableController::class, 'getStatuses']);
     Route::get('/table/check-status', [AdminTableController::class, 'checkStatus']);
     Route::get('/table/check-name', [AdminTableController::class, 'checkName']);
+    Route::post('/admin/tables/hide/{id}', [AdminTableController::class, 'hide'])->name('tables.hide');
+
 
 });
 
@@ -145,16 +153,23 @@ Route::get('/api/order-status/{id}', function ($id) {
 });
 
 Route::get('/api/admin/orders/latest', function () {
-    $latestOrder = Order::latest('created_at')->first();
+    $latestOrder = Order::latest('updated_at')->first();
 
     return response()->json([
         'id' => $latestOrder->id,
         'code' => $latestOrder->order_code,
-        'status' => $latestOrder->orderStatus->name,
-        'created_at' => $latestOrder->created_at->format('H:i:s d/m/Y'),
+        'status' => $latestOrder->orderStatus->name ?? 'Không rõ',
+        'updated_at' => $latestOrder->updated_at->timestamp,
+        'updated_at_text' => $latestOrder->updated_at->format('H:i:s d/m/Y'),
     ]);
 });
 
 Route::get('/admin/order/{order}/actions-html', function (Order $order) {
     return view('User.partials.order_actions', ['order' => $order]);
 });
+
+//xuất file excel
+Route::get('/admin/revenue/export', function (Request $request) {
+    $date = $request->input('date') ?? now()->toDateString();
+    return Excel::download(new RevenueExport($date), 'doanh_thu_' . $date . '.xlsx');
+})->name('admin.revenue.export');

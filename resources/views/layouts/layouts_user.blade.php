@@ -80,7 +80,7 @@
     function Login() {
         $('.alert_error_validate').text('');
         $.ajax({
-            'url': "{{ route('dangnhap') }} ",
+            'url': "{{ route('dangnhap') }}",
             'type': "POST",
             'data': {
                 _token: '{{ csrf_token() }}',

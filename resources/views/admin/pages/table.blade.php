@@ -292,12 +292,40 @@
     .popup-content .btn:hover {
         background-color: #e65100;
     }
+
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .tabs>button {
+        padding: 8px 16px;
+        background-color: #eee;
+        border-radius: 10px;
+        height: 45px;
+        cursor: pointer;
+        font-size: 15px;
+    }
+
+    .tabs .active {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+    }
 </style>
 @section('content')
     <div class="content" id="banan">
         <div class="head">
             <div class="title">Quản Lý bàn ăn</div>
-            <button id="toggleForm" class="btn-toggle">Thêm bàn</button>
+            <div class="tabs">
+                {{-- <button><a style="color: #fff" href="{{ route('admin.table') }}">Bàn đang hoạt động</a></button> --}}
+                {{-- <button onclick="toggleHiddenView()" class="btn-toggle-hidden" id="toggleHiddenBtn">
+                    Xem bàn đã ẩn
+                </button> --}}
+                <button id="toggleForm" class="btn-toggle">Thêm bàn</button>
+
+            </div>
         </div>
         <div class="separator_x"></div>
 
@@ -311,8 +339,8 @@
                     @csrf
                     <div class="form-group-table">
                         <label for="tableNumber">Tên bàn</label>
-                        <input type="text" name="name" id="tableNumber" class="form-control" placeholder="Nhập tên bàn"
-                            required oninput="validateNewTableName()">
+                        <input type="text" name="name" id="tableNumber" class="form-control"
+                            placeholder="Nhập tên bàn" required oninput="validateNewTableName()">
                         <span id="tableNameError" style="color: red; font-size: 12px;"></span>
                     </div>
 
@@ -321,10 +349,10 @@
                         <input type="text" class="form-control" value="Trống" readonly>
                         <input type="hidden" name="table_status_id" value="1">
                         <!-- <select name="table_status_id" id="statusSelect" class="form-control" required>
-                            @foreach ($statuses as $status)
-                                <option value="{{ $status->id }}">{{ $status->name }}</option>
-                            @endforeach
-                        </select> -->
+                                                                                                        @foreach ($statuses as $status)
+    <option value="{{ $status->id }}">{{ $status->name }}</option>
+    @endforeach
+                                                                                                    </select> -->
                     </div>
 
                     <div class="form-buttons">
@@ -342,8 +370,37 @@
         @endphp
 
         <div class="grid-container">
-            {{-- Hiển thị bàn thật --}}
+
+
             @foreach ($tables as $table)
+                @php
+                    $isHidden = $table->table_status_id == 4;
+                @endphp
+
+                <div class="table-box {{ $isHidden ? 'hidden-table' : 'active-table' }}" data-id="{{ $table->id }}">
+                    <div class="table-title">{{ $table->name }}</div>
+                    <div class="table-status">{{ $table->status->name }}</div>
+
+                    @if ($table->qr_image_path)
+                        <div class="table-qr">
+                            <img src="{{ asset('storage/qr-codes/' . $table->qr_code) }}" width="80">
+                        </div>
+                    @endif
+
+                    <div class="table-actions">
+                        <button class="btn-action" onclick='openEditPopup(@json($table))'>
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="showQR({{ $table->id }})">
+                            <i class="fa fa-qrcode"></i>
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+
+
+            {{-- Hiển thị bàn thật --}}
+            {{-- @foreach ($tables as $table)
                 <div class="table-box" data-id="{{ $table->id }}">
                     <div class="table-title">{{ $table->name }}</div>
                     <div class="table-status">{{ $table->status->name }}</div>
@@ -358,7 +415,7 @@
                         <button onclick="showQR({{ $table->id }})"><i class="fa fa-qrcode"></i></button>
                     </div>
                 </div>
-            @endforeach
+            @endforeach --}}
 
             {{-- Thêm ô trống nếu còn thiếu --}}
             @for ($i = 1; $i <= $emptySlots; $i++)
@@ -399,12 +456,53 @@
                 <div class="form-check">
                     <label for="editQR">Kích hoạt bàn</label>
                     <input type="checkbox" id="editQR" name="regen_qr">
+                    {{-- <button type="button"
+                        onclick="showHideTablePopup({{ $table->id }}, '{{ route('tables.hide', ['id' => $table->id]) }}')"
+                        style="    
+                            background-color: red;
+                            color: white;
+                            border: none;
+                            margin-left: 60px;
+                            padding: 10px;
+                            border-radius: 10px;
+                        }">
+                        Ẩn bàn
+                    </button> --}}
+                    
                 </div>
 
                 <label>URL gọi món</label>
-                <p id="editQrUrl" style="font-size: 13px; word-break: break-word; margin-top: 0px;">{{ $table->qr_url }}</p>
+                <p id="editQrUrl" style="font-size: 13px; word-break: break-word; margin-top: 0px;">{{ $table->qr_url }}
+                </p>
 
                 <button type="submit" style="margin-left: 78px; margin-top: 20px;">Lưu thay đổi</button>
+            </form>
+        </div>
+    </div>
+
+    {{-- popup xác nhân ẩn bàn --}}
+    <div class="popup_admin" id="popupTableHide" style="display: none;">
+        <h3 style="color: white;">Bạn có chắc muốn ẩn bàn này?</h3>
+        <p style="color: white;">* Bàn bị ẩn sẽ không hiển thị cho người dùng *</p>
+
+        <label style="color:white;">
+            Nhập từ <strong style="color: yellow;">XÓA</strong> để xác nhận:
+        </label>
+        <input type="text" id="tableConfirmInput" placeholder="Nhập XÓA..." />
+
+        <div style="margin-top: 10px;">
+            <input type="checkbox" id="tableConfirmCheckbox" />
+            <label for="tableConfirmCheckbox" style="color: white;">Tôi đồng ý với hành động này</label>
+        </div>
+
+        <p id="tableAlert" style="color: red;"></p>
+
+        <div class="button">
+            <form id="tableHideForm" method="POST" action="">
+                @csrf
+                <input type="hidden" name="confirm" id="tableConfirmValue">
+                <button type="submit" id="tableHideBtn" disabled>Đồng ý</button>
+                <button type="button" onclick="cancel('table')">Hủy</button>
             </form>
         </div>
     </div>
@@ -457,7 +555,7 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('toggleForm');
             const form = document.getElementById('tableForm');
 
@@ -520,14 +618,14 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // ======= THÊM BÀN =======
             const addInput = document.getElementById('tableNumber');
             const addError = document.getElementById('tableNameError');
             const addForm = document.getElementById('addTableForm');
             let addTimeout = null;
 
-            addInput.addEventListener('input', function () {
+            addInput.addEventListener('input', function() {
                 clearTimeout(addTimeout);
                 const value = addInput.value.trim();
 
@@ -565,7 +663,7 @@
                 }, 500);
             });
 
-            addForm.addEventListener('submit', function (event) {
+            addForm.addEventListener('submit', function(event) {
                 event.preventDefault();
                 const value = addInput.value.trim();
 
@@ -593,7 +691,7 @@
             const excludeId = editInput.dataset.id;
             let editTimeout = null;
 
-            editInput.addEventListener('input', function () {
+            editInput.addEventListener('input', function() {
                 clearTimeout(editTimeout);
                 const value = editInput.value.trim();
 
@@ -619,7 +717,9 @@
                 editError.style.display = 'none';
 
                 editTimeout = setTimeout(() => {
-                    fetch(`/table/check-name?name=${encodeURIComponent(value)}&exclude_id=${excludeId}`)
+                    fetch(
+                            `/table/check-name?name=${encodeURIComponent(value)}&exclude_id=${excludeId}`
+                        )
                         .then(res => res.json())
                         .then(data => {
                             if (data.exists) {
@@ -637,7 +737,7 @@
                 }, 500);
             });
 
-            updateForm.addEventListener('submit', function (event) {
+            updateForm.addEventListener('submit', function(event) {
                 event.preventDefault();
                 const value = editInput.value.trim();
 
@@ -660,12 +760,84 @@
             });
         });
     </script>
+
+    {{-- js tab ẩn bàn --}}
+    <script>
+        let showingHidden = false;
+
+        function toggleHiddenView() {
+            const hiddenTables = document.querySelectorAll('.hidden-table');
+            const activeTables = document.querySelectorAll('.active-table');
+            const toggleBtn = document.getElementById('toggleHiddenBtn');
+
+            if (!showingHidden) {
+                // Hiện bàn ẩn, ẩn bàn thường
+                activeTables.forEach(el => el.style.display = 'none');
+                hiddenTables.forEach(el => el.style.display = 'block');
+                toggleBtn.textContent = 'Xem tất cả bàn';
+            } else {
+                // Hiện lại bàn thường, bàn ẩn vẫn hiện nhưng mờ
+                activeTables.forEach(el => el.style.display = 'block');
+                hiddenTables.forEach(el => el.style.display = 'none');
+                toggleBtn.textContent = 'Xem bàn đã ẩn';
+            }
+
+            showingHidden = !showingHidden;
+        }
+
+        // Ẩn bàn ẩn mặc định khi trang load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.hidden-table').forEach(el => el.style.display = 'none');
+        });
     </script>
 
-    {{-- kiểm tra duplicate name --}}
-    <script></script>
+    {{-- js popup ẩn bản --}}
     <script>
-        document.getElementById("toggleForm").onclick = function () {
+        function showHideTablePopup(tableId, route) {
+            const popup = document.getElementById('popupTableHide');
+            const form = document.getElementById('tableHideForm');
+
+            document.getElementById('tableConfirmInput').value = '';
+            document.getElementById('tableConfirmCheckbox').checked = false;
+            document.getElementById('tableHideBtn').disabled = true;
+            document.getElementById('tableAlert').innerText = '';
+
+            form.action = route;
+            popup.style.display = 'block';
+        }
+
+        function cancel(type) {
+            if (type === 'table') {
+                document.getElementById('popupTableHide').style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('tableConfirmInput');
+            const checkbox = document.getElementById('tableConfirmCheckbox');
+            const hideBtn = document.getElementById('tableHideBtn');
+            const confirmValue = document.getElementById('tableConfirmValue');
+            const alert = document.getElementById('tableAlert');
+
+            function validateHide() {
+                const inputText = input.value.trim();
+                const isConfirmed = inputText === 'XÓA';
+                const isChecked = checkbox.checked;
+
+                hideBtn.disabled = !(isConfirmed && isChecked);
+                alert.innerText = (!isConfirmed && inputText !== '') ? 'Bạn phải nhập đúng từ "XÓA"' : '';
+                confirmValue.value = inputText;
+            }
+
+            input.addEventListener('input', validateHide);
+            checkbox.addEventListener('change', validateHide);
+        });
+    </script>
+
+
+
+    <script>
+        document.getElementById("toggleForm").onclick = function() {
             document.getElementById("addTablePopup").style.display = "flex";
         }
 

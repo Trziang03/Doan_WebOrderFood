@@ -204,7 +204,7 @@
                                     <button onclick="searchProduct(0,10000,undefined,this)">Từ dưới 10K</button>
                                     <button onclick="searchProduct(10000,25000,undefined,this)">Từ 10 đến 25K</button>
                                     <button onclick="searchProduct(25000,35000,undefined,this)">Từ 25 đến 35k</button>
-                                    <button onclick="searchProduct(35000,undefined,undefined,this)">Trên 35K</button>
+                                    {{-- <button onclick="searchProduct(35000,undefined,undefined,this)">Trên 35K</button> --}}
                                 </div>
                             </div>
                         </div>
@@ -239,14 +239,13 @@
                                 </div>
                             </div>
                             @endforeach
-
-                        <div class="page" id="page"></div>
                     @else
                     <div style="color: black; text-align:center; width:100%; margin-top:155px; height: 176px;">
                         <h3>Không tìm thấy món ăn nào</h3>
                     </div>
                 @endif
             </div>
+            <div class="page" id="page"></div>
         </div>
     </section>
     <!-- <div id="productModal" class="modal" style="display: none;">
