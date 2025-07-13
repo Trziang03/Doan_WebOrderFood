@@ -75,43 +75,9 @@
         }
 
         .btn-toggle-filter {
-            background-color: #ffa34d;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            margin: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-panel {
-            position: fixed;
-            top: 0;
-            right: -70%;
-            /* Trượt ra từ bên phải */
-            width: 65%;
-            max-width: 320px;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            /* nền mờ nhẹ */
-            backdrop-filter: blur(10px);
-            z-index: 9999;
-            transition: right 0.3s ease;
-            padding: 20px;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Khi mở */
-        .filter-panel.open {
-            right: 0;
-        }
-
-        .btn-toggle-filter {
-            position: fixed;
             top: 80px;
-            left: 10px;
-            z-index: 10000;
+            right: 10px;
+            left: auto;
             background-color: #ffa34d;
             color: white;
             padding: 10px 12px;
@@ -120,6 +86,30 @@
             font-size: 14px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
+
+
+        .filter-panel {
+            position: fixed;
+            top: 0;
+            left: -70%;
+            /* Trượt ra từ bên trái */
+            width: 60%;
+            max-width: 320px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            /* nền mờ nhẹ */
+            backdrop-filter: blur(50px);
+            z-index: 9999;
+            transition: left 0.3s ease;
+            padding: 20px;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Khi mở */
+        .filter-panel.open {
+            left: 0;
+        }
+
 
 
         .filter-header {
@@ -167,52 +157,50 @@
     <section class="container_css product_searchs">
         <div class="product_search_lists">
             <div class="product_search_list_left">
-                <div>
-                    <div style="text-align: center; margin-bottom: 10px;font-size: 25px;">
-                        <strong>Bàn: {{ $table->name ?? ' ' }}</strong>
+                <div style="text-align: center; margin-bottom: 10px;font-size: 30px;">
+                    <strong style="margin-top: 10px;">Bàn: {{ $table->name ?? ' ' }}</strong>
+                    <div>
+                        <button onclick="toggleFilterPanel()" class="btn-toggle-filter">
+                            <i class="fas fa-filter"></i> Bộ lọc
+                        </button>
                     </div>
-                    <button onclick="toggleFilterPanel()" class="btn-toggle-filter">
-                        <i class="fas fa-filter"></i> Bộ lọc
-                    </button>
                 </div>
-                <div>
-                    <div class="filter-panel" id="filterPanel">
-                        <div class="filter-header">
-                            <span>Bộ lọc</span>
-                            <button onclick="toggleFilterPanel()" class="close-btn">&times;</button>
+                <!-- Bên dưới là nội dung bộ lọc như bạn đang có -->
+                <div class="filter-panel" id="filterPanel">
+                    <div class="filter-header">
+                        <span>Bộ lọc</span>
+                        <button onclick="toggleFilterPanel()" class="close-btn">&times;</button>
+                    </div>
+                    <!-- Bên dưới là nội dung bộ lọc như bạn đang có -->
+                    <div class="filter-body">
+                        <!-- Danh mục, Size, Mức giá ... giữ nguyên như bạn có -->
+                        <div class="product_search product_search_list_category">
+                            <p class="category-toggle">Danh mục <i class="fas fa-sort-down"></i></p>
+                            <div class="product_search_list_category_popup">
+                                <a href="{{ route('user.menu') }}">Tất cả</a>
+                                @foreach ($danhSachDanhMuc as $danhMuc)
+                                    <a
+                                        href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => $danhMuc->slug]) }}">{{ $danhMuc->name }}</a>
+                                @endforeach
+                            </div>
                         </div>
-                        <!-- Bên dưới là nội dung bộ lọc như bạn đang có -->
-                        <div class="filter-body">
-                            <!-- Danh mục, Size, Mức giá ... giữ nguyên như bạn có -->
-                            <div class="product_search product_search_list_category">
-                                <p class="category-toggle">Danh mục <i class="fas fa-sort-down"></i></p>
-                                <div class="product_search_list_category_popup">
-                                    <a href="{{ route('user.menu') }}">Tất cả</a>
-                                    @foreach ($danhSachDanhMuc as $danhMuc)
-                                        <a
-                                            href="{{ route('timkiemsanphamtheodanhmuc', ['slug' => $danhMuc->slug]) }}">{{ $danhMuc->name }}</a>
-                                    @endforeach
-                                </div>
+                        <div class="product_search product_search_list_size">
+                            <p>Kích cỡ</p>
+                            <div class="product_search_list_size_popup">
+                                <button onclick="searchBySize(undefined, this)">Tất cả</button>
+                                <button onclick="searchBySize('S', this)">Size S</button>
+                                <button onclick="searchBySize('M', this)">Size M</button>
+                                <button onclick="searchBySize('L', this)">Size L</button>
                             </div>
-                            <div class="product_search product_search_list_size">
-                                <p>Kích cỡ</p>
-                                <div class="product_search_list_size_popup">
-                                    <button onclick="searchBySize(undefined, this)">Tất cả</button>
-                                    <button onclick="searchBySize('S', this)">Size S</button>
-                                    <button onclick="searchBySize('M', this)">Size M</button>
-                                    <button onclick="searchBySize('L', this)">Size L</button>
-                                </div>
-                            </div>
-                            <div class="product_search product_search_list_price">
-                                <p>Mức giá</p>
-                                <div class="product_search_list_price_popup">
-                                    <button id ="searchall"onclick="searchProduct(undefined,undefined,undefined,this)"
-                                        class="active_price">Tất cả</button>
-                                    <button onclick="searchProduct(0,10000,undefined,this)">Từ dưới 10K</button>
-                                    <button onclick="searchProduct(10000,25000,undefined,this)">Từ 10 đến 25K</button>
-                                    <button onclick="searchProduct(25000,35000,undefined,this)">Từ 25 đến 35k</button>
-                                    <button onclick="searchProduct(35000,undefined,undefined,this)">Trên 35K</button>
-                                </div>
+                        </div>
+                        <div class="product_search product_search_list_price">
+                            <p>Mức giá</p>
+                            <div class="product_search_list_price_popup">
+                                <button id="searchall" onclick="searchProduct(undefined,undefined,undefined,this)"
+                                    class="active_price">Tất cả</button>
+                                <button onclick="searchProduct(0,10000,undefined,this)">Từ dưới 10K</button>
+                                <button onclick="searchProduct(10000,25000,undefined,this)">Từ 10 đến 25K</button>
+                                <button onclick="searchProduct(25000,35000,undefined,this)">Từ 25 đến 35k</button>
                             </div>
                         </div>
                     </div>
@@ -245,64 +233,64 @@
                                         </li>
                                     </ul>
                                 </div>
-                            @endforeach
-                        </div>
-                        <div class="page" id="page"></div>
+                            </div>
+                        @endforeach
                     @else
-                    <div style="color: black; text-align:center; width:100%; margin-top:155px; height: 176px;">
-                        <h3>Không tìm thấy món ăn nào</h3>
-                    </div>
-                @endif
+                        <div style="color: black; text-align:center; width:100%; margin-top:155px; height: 176px;">
+                            <h3>Không tìm thấy món ăn nào</h3>
+                        </div>
+                    @endif
+                </div>
+                <div class="page" id="page"></div>
             </div>
-        </div>
     </section>
     <!-- <div id="productModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span onclick="closeModal()" class="close-btn">&times;</span>
+                            <div class="modal-content">
+                                <span onclick="closeModal()" class="close-btn">&times;</span>
 
-            <h2 id="productName" class="product-name"></h2>
+                                <h2 id="productName" class="product-name"></h2>
 
-            <div class="product-body">
+                                <div class="product-body">
 
-                <div class="product-image">
-                    <img id="productImage" src="" alt="Ảnh món ăn">
-                </div>
+                                    <div class="product-image">
+                                        <img id="productImage" src="" alt="Ảnh món ăn">
+                                    </div>
 
-                <div class="product-info">
+                                    <div class="product-info">
 
-                    <p><strong>Giá:</strong> <span id="totalPrice" class="product-price">0đ</span></p>
+                                        <p><strong>Giá:</strong> <span id="totalPrice" class="product-price">0đ</span></p>
 
-                    <div class="form-group">
-                        <label for="size_id"><strong>Chọn size:</strong></label>
-                        <select id="size_id" onchange="calculateTotal()"></select>
-                    </div>
+                                        <div class="form-group">
+                                            <label for="size_id"><strong>Chọn size:</strong></label>
+                                            <select id="size_id" onchange="calculateTotal()"></select>
+                                        </div>
 
-                    <div class="form-group" id="topping_list">
-                        <label><strong>Chọn topping:</strong></label>
-                    </div>
+                                        <div class="form-group" id="topping_list">
+                                            <label><strong>Chọn topping:</strong></label>
+                                        </div>
 
-                    <div class="form-group">
-                        <label><strong>Số lượng:</strong></label>
-                        <div class="quantity-control">
-                            <button onclick="changeQuantity(-1)">-</button>
-                            <input id="quantity" value="1" min="1" max="10" onchange="calculateTotal()">
-                            <button onclick="changeQuantity(1)">+</button>
-                        </div>
-                    </div>
+                                        <div class="form-group">
+                                            <label><strong>Số lượng:</strong></label>
+                                            <div class="quantity-control">
+                                                <button onclick="changeQuantity(-1)">-</button>
+                                                <input id="quantity" value="1" min="1" max="10" onchange="calculateTotal()">
+                                                <button onclick="changeQuantity(1)">+</button>
+                                            </div>
+                                        </div>
 
-                    <button onclick="buyNow()" class="buy-btn">Thêm vào giỏ hàng</button>
-                </div>
-            </div>
-        </div>
-    </div> -->
+                                        <button onclick="buyNow()" class="buy-btn">Thêm vào giỏ hàng</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
 @endsection
 @section('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const toggleBtn = document.querySelector('.category-toggle');
             const container = document.querySelector('.product_search_list_category');
 
-            toggleBtn.addEventListener('click', function() {
+            toggleBtn.addEventListener('click', function () {
                 container.classList.toggle('active');
             });
         });
@@ -373,9 +361,9 @@
         function buyNowSearch(productId) {
             const data = {
                 product_id: productId,
-                size_id: 1,       // mặc định size là 1
+                size_id: 1, // mặc định size là 1
                 quantity: 1,
-                note: ''          // không cần ghi chú
+                note: '' // không cần ghi chú
                 // Không gửi topping
                 // Không cần gửi table_id nếu lưu trong session
             };
@@ -435,20 +423,12 @@
         autoCheckTableStatus();
         setInterval(autoCheckTableStatus, 10000); // Kiểm tra mỗi 10s
     </script>
-    <!-- <script>
-                let currentProductId = null;
-                let currentSizes = [];
-                let currentToppings = [];
-                let basePrice = 0;
-
-                // Format tiền Việt
-                function formatCurrency(value) {
-                    return parseInt(value).toLocaleString('vi-VN') + 'đ';
-                }
-
-    autoCheckTableStatus();
-    setInterval(autoCheckTableStatus, 10000); // Kiểm tra mỗi 10s
-</script>
+    <script>
+        function toggleFilterPanel() {
+            const panel = document.getElementById('filterPanel');
+            panel.classList.toggle('open');
+        }
+    </script>
     <script>
         function searchProduct(min = 0, max = Infinity, itemsPage = 8, btn = null) {
             const active_color_price = document.querySelectorAll('.product_search_list_price_popup button');
@@ -459,7 +439,7 @@
                 btn.classList.add('active_price');
                 const products = Array.from(kt());
                 const searchProduct = [];
-                products.forEach(function(product) {
+                products.forEach(function (product) {
                     const priceText = product.querySelector('.price').innerHTML;
                     const price = parseInt(priceText.replace(/[^0-9]/g, ''));
                     if (price >= min && price <= max) {
@@ -517,8 +497,6 @@
             }
         }
     </script>
-
-
     <script>
         let selectedSize = undefined;
         let selectedPrice = {
@@ -551,7 +529,7 @@
             // Xóa active class khỏi các nút giá
             document.querySelectorAll('.product_search_list_price_popup button').forEach(btn => btn.classList.remove(
                 'active_price'));
-            products.forEach(function(product) {
+            products.forEach(function (product) {
                 // --- Xử lý giá ---
                 const priceText = product.querySelector('.price').innerHTML;
                 const price = parseInt(priceText.replace(/[^0-9]/g, ''));
@@ -612,18 +590,8 @@
             if (searchProduct.length > 0) {
                 LoadPage(index);
             } else {
-                document.getElementById('page').innerHTML = '<p>Không có sản phẩm nào phù hợp.</p>';
+                document.getElementById('page').innerHTML = <p style="text-align:center; width:100%; margin-top:155px; height: 176px;">Không có sản phẩm nào phù hợp.</p>;
             }
         }
     </script>
-
-
-    <script>
-        function toggleFilterPanel() {
-            const panel = document.getElementById('filterPanel');
-            panel.classList.toggle('open');
-        }
-    </script>
-
-
 @endsection

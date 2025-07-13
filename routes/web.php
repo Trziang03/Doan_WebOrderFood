@@ -111,8 +111,11 @@ Route::middleware(['role:QL'])->group(function () {
 //Xác nhận đặt hàng và thanh toán
 Route::controller(OrderController::class)->group(function () {
     Route::post('/payment/{id}', 'updatePaymentMethod')->name('payment.update');
-    Route::get('/payment/confirm/{order_code}', 'index')->name('user.payment');
+    Route::post('/payment-all',  'payAll')->name('user.payment.all');
+    Route::get('/payments', 'listOrders')->name('user.payment');
+    Route::get('/payment/confirm/{order_code}', 'index')->name('user.payment.detail');
     Route::post('/payment/{id}/cancel',  'cancel')->name('payment.cancel');
+    Route::post('/payment/cancel-all',  'cancelAll')->name('user.cancel.all');
     Route::get('/qr-info', 'showQR')->name('user.qr.info');
 });
 
@@ -131,6 +134,8 @@ Route::view('/404', 'errors.404');
 Route::get('/debug-session', function () {
     return session()->all(); // xem toàn bộ session
 });
+
+Route::get('/order-actions-html', [OrderController::class, 'getOrderActionsHtml']);
 
 Route::get('/api/order-status/{id}', function ($id) {
     $order = Order::with('orderStatus')->find($id);

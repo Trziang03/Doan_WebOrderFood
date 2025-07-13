@@ -19,8 +19,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css" />
     <!-- Bootstrap theme -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css" />
-    {{--
-    <link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon"> --}}
+
+    <link rel="shortcut icon" href="{{ asset('images/favicon.svg') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ secure_asset('bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/layout_user.css') }}">
