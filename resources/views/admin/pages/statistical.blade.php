@@ -12,10 +12,12 @@
             </form>
         </div>
         <div class="separator_x"></div>
+        <h2 style="text-align: center;">Thống kê doanh thu</h2>
+
         <div>
             <label for="statistic-type">Chọn thời gian:</label>
             <select id="statistic-type">
-                <option value="7ngay">7 ngày qua</option>
+                <option value="7ngay">Tuần qua</option>
                 <option value="thangnay">Tháng này</option>
                 <option value="thangtruoc">Tháng trước</option>
                 <option value="365ngay">365 ngày</option>
@@ -25,7 +27,6 @@
         <canvas id="dailyRevenueChart" width="400" height="200"></canvas>
         
         <div class="chart">
-            <h2 style="text-align: center;">Thống kê doanh thu</h2>
             <canvas id="sumChart" width="400" height="200"></canvas>
 
             <h2 style="text-align: center;">Thống kê lượt mua</h2>
@@ -107,13 +108,8 @@
                 fetch(`/admin/statistical/data?statistic_type=${type}`)
                     .then(response => response.json())
                     .then(data => {
-                        //const labels = data.chart_data.map(item => item.created_at);
+                        const labels = data.chart_data.map(item => item.created_at);
                         const revenue = data.chart_data.map(item => item.total_price);
-                        const labels = [
-                                        'Chủ nhật','Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu',
-                                        'thứ bảy',
-                                        
-                                    ];
 
                         // Nếu chart đã tồn tại thì hủy để vẽ lại
                         if (revenueChart) {
@@ -121,7 +117,7 @@
                         }
 
                         revenueChart = new Chart(ctx, {
-                            type: 'bar',
+                            type: 'line',
                             data: {
                                 labels: labels,
                                 datasets: [{
