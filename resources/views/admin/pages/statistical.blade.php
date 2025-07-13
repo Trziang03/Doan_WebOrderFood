@@ -10,11 +10,16 @@
                     <i class="fa-regular fa-file-excel"></i> Xuất file
                 </button>
             </form>
-                    </div>
+        </div>
+        <div class="separator_x"></div>
+
+                    <h2 style="text-align: center;">Thống kê doanh thu</h2>
+
+
         <div>
             <label for="statistic-type">Chọn thời gian:</label>
             <select id="statistic-type">
-                <option value="7ngay">7 ngày qua</option>
+                <option value="7ngay">Tuần qua</option>
                 <option value="thangnay">Tháng này</option>
                 <option value="thangtruoc">Tháng trước</option>
                 <option value="365ngay">365 ngày</option>
@@ -23,9 +28,7 @@
         
         <canvas id="dailyRevenueChart" width="400" height="200"></canvas>
         
-        <div class="separator_x"></div>
         <div class="chart">
-            <h2 style="text-align: center;">Thống kê doanh thu</h2>
             <canvas id="sumChart" width="400" height="200"></canvas>
 
             <h2 style="text-align: center;">Thống kê lượt mua</h2>
@@ -116,7 +119,7 @@
                         }
 
                         revenueChart = new Chart(ctx, {
-                            type: 'line',
+                            type: 'bar',
                             data: {
                                 labels: labels,
                                 datasets: [{

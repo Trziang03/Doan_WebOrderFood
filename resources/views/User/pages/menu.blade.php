@@ -425,7 +425,7 @@
         }
         // Gợi ý: 5s kiểm tra 1 lần
         setInterval(autoCheckTableStatus, 5000);
-    </script> -->
+    </script>
     {{-- <script>
     function autoCheckTableStatus() {
         fetch('/table/check-status') 
