@@ -49,40 +49,75 @@ class AdminStaticController extends Controller
             ->get();
     }
 
+    // public function statistics(Request $request)
+    // {
+    //     $type = $request->statistic_type;
+    //     $now = Carbon::now('Asia/Ho_Chi_Minh');
+
+    //     $dateRanges = [
+    //         '7ngay' => $now->copy()->subDays(7)->toDateString(),
+    //         'thangnay' => $now->copy()->startOfMonth()->toDateString(),
+    //         'thangtruoc' => $now->copy()->subMonth()->startOfMonth()->toDateString(),
+    //         '365ngay' => $now->copy()->subDays(365)->toDateString()
+    //     ];
+
+    //     $fromDate = $dateRanges[$type] ?? $dateRanges['365ngay'];
+
+    //     $orders = self::listData($fromDate);
+
+    //     $chart_data = [];
+    //     $total_profit = 0;
+    //     $total_orders = 0;
+
+    //     foreach ($orders as $order) {
+    //         $chart_data[] = [
+    //             'created_at' => $order->created_at,
+    //             'total_quantity_revenue' => $order->total_quantity_revenue,
+    //             'total_price' => $order->total_price,
+    //             'total_quantity_product' => $order->total_quantity_product,
+    //         ];
+
+    //         $total_profit += $order->total_price;
+    //         $total_orders += $order->total_quantity_revenue;
+    //     }
+
+    //     return response()->json(['chart_data' => $chart_data]);
+    // }
+
+
     public function statistics(Request $request)
-    {
-        $type = $request->statistic_type;
-        $now = Carbon::now('Asia/Ho_Chi_Minh');
+{
+    $type = $request->statistic_type;
+    $now = Carbon::now('Asia/Ho_Chi_Minh');
 
-        $dateRanges = [
-            '7ngay' => $now->copy()->subDays(7)->toDateString(),
-            'thangnay' => $now->copy()->startOfMonth()->toDateString(),
-            'thangtruoc' => $now->copy()->subMonth()->startOfMonth()->toDateString(),
-            '365ngay' => $now->copy()->subDays(365)->toDateString()
+    $dateRanges = [
+        '7ngay' => $now->copy()->subDays(7)->toDateString(),
+        'thangnay' => $now->copy()->startOfMonth()->toDateString(),
+        'thangtruoc' => $now->copy()->subMonth()->startOfMonth()->toDateString(),
+        '365ngay' => $now->copy()->subDays(365)->toDateString()
+    ];
+
+    $fromDate = $dateRanges[$type] ?? $dateRanges['365ngay'];
+
+    $orders = DB::table('orders')
+        ->selectRaw('DATE(created_at) as created_at, SUM(total_price) as total_price')
+        ->where('order_status_id', 4) // đã thanh toán
+        ->whereDate('created_at', '>=', $fromDate)
+        ->groupByRaw('DATE(created_at)')
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    // Ép kiểu
+    $chart_data = [];
+    foreach ($orders as $order) {
+        $chart_data[] = [
+            'created_at' => $order->created_at,
+            'total_price' => (float) $order->total_price,
         ];
-
-        $fromDate = $dateRanges[$type] ?? $dateRanges['365ngay'];
-
-        $orders = self::listData($fromDate);
-
-        $chart_data = [];
-        $total_profit = 0;
-        $total_orders = 0;
-
-        foreach ($orders as $order) {
-            $chart_data[] = [
-                'created_at' => $order->created_at,
-                'total_quantity_revenue' => $order->total_quantity_revenue,
-                'total_price' => $order->total_price,
-                'total_quantity_product' => $order->total_quantity_product,
-            ];
-
-            $total_profit += $order->total_price;
-            $total_orders += $order->total_quantity_revenue;
-        }
-
-        return response()->json(['chart_data' => $chart_data]);
     }
+
+    return response()->json(['chart_data' => $chart_data]);
+}
 
     //doanh thu theo ngày
     public function revenueByDate(Request $request)

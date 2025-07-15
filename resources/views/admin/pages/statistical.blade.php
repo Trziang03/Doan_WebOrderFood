@@ -2,37 +2,52 @@
 @section('title', 'Trang quản lý thống kê')
 @section('active-static', 'active')
 @section('content')
+
     <div class="content" id="thongke">
-        <div class="head">
+        <div class="head d-flex align-items-center justify-content-between"
+            style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
             <div class="title">Quản Lý Thống Kê</div>
-            <form method="GET" action="{{ route('admin.revenue.export') }}">
-                <button type="submit">
-                    <i class="fa-regular fa-file-excel"></i> Xuất file
-                </button>
-            </form>
+
+            <div class="d-flex align-items-center gap-2" style="display: flex; align-items: center; gap: 15px;">
+
+                <!-- Bộ lọc thời gian -->
+                <select id="statistic-type" name="statistic_type"
+                    style="padding: 10px 16px; border-radius: 6px; border: 1px solid #ccc;
+                           font-size: 16px; width: 180px;">
+                    <option value="7ngay">Tuần qua</option>
+                    <option value="thangnay">Tháng này</option>
+                    <option value="365ngay">365 ngày</option>
+                </select>
+
+                <!-- Nút xuất file -->
+                <form method="GET" action="{{ route('admin.revenue.export') }}">
+                    <button type="submit"
+                        style="padding: 10px 20px; background-color: green; color: white;
+                               border: none; border-radius: 6px; cursor: pointer;
+                               font-size: 16px; width: 160px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <i class="fa-regular fa-file-excel"></i> Xuất file
+                    </button>
+                </form>
+            </div>
         </div>
+
+
         <div class="separator_x"></div>
         <h2 style="text-align: center;">Thống kê doanh thu</h2>
 
-        <div>
-            <label for="statistic-type">Chọn thời gian:</label>
-            <select id="statistic-type">
-                <option value="7ngay">Tuần qua</option>
-                <option value="thangnay">Tháng này</option>
-                <option value="thangtruoc">Tháng trước</option>
-                <option value="365ngay">365 ngày</option>
-            </select>
-        </div>
-        
-        <canvas id="dailyRevenueChart" width="400" height="200"></canvas>
-        
+
+
+
+        <canvas id="dailyRevenueChart" height="150"></canvas>
+
+
         <div class="chart">
             <canvas id="sumChart" width="400" height="200"></canvas>
 
             <h2 style="text-align: center;">Thống kê lượt mua</h2>
             <canvas id="countChart" width="400" height="200"></canvas>
         </div>
-        
+
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             const sum = @json($sum);
@@ -45,7 +60,7 @@
             ];
 
 
-            
+
             const sumCtx = document.getElementById('sumChart').getContext('2d');
             new Chart(sumCtx, {
                 type: 'bar',
@@ -108,18 +123,10 @@
                 fetch(`/admin/statistical/data?statistic_type=${type}`)
                     .then(response => response.json())
                     .then(data => {
-                        //const labels = data.chart_data.map(item => item.created_at);
-                        const revenue = data.chart_data.map(item => item.total_price);
-                        const labels = [
-                                        'Chủ nhật','Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu',
-                                        'thứ bảy',
-                                        
-                                    ];
+                        const labels = data.chart_data.map(item => item.created_at);
+                        const revenue = data.chart_data.map(item => Number(item.total_price));
 
-                        // Nếu chart đã tồn tại thì hủy để vẽ lại
-                        if (revenueChart) {
-                            revenueChart.destroy();
-                        }
+                        if (revenueChart) revenueChart.destroy();
 
                         revenueChart = new Chart(ctx, {
                             type: 'bar',
@@ -128,10 +135,9 @@
                                 datasets: [{
                                     label: 'Doanh thu theo ngày (VNĐ)',
                                     data: revenue,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
                                     borderColor: 'rgba(75, 192, 192, 1)',
-                                    borderWidth: 2,
-                                    tension: 0.3
+                                    borderWidth: 1
                                 }]
                             },
                             options: {
@@ -140,9 +146,7 @@
                                     y: {
                                         beginAtZero: true,
                                         ticks: {
-                                            callback: function(value) {
-                                                return value.toLocaleString('vi-VN') + ' đ';
-                                            }
+                                            callback: value => value.toLocaleString('vi-VN') + ' đ'
                                         }
                                     }
                                 }
@@ -151,13 +155,12 @@
                     });
             }
 
-            // Gọi khi load trang
             fetchChartData('7ngay');
 
-            // Gọi khi chọn loại thời gian khác
             document.getElementById('statistic-type').addEventListener('change', function() {
                 fetchChartData(this.value);
             });
         </script>
+
 
     @endsection
