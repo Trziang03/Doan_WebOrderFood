@@ -25,7 +25,6 @@
             <div class="footer_bottom">
                 <section id="lienhe" class="intro">
                     <h2>Liên Hệ Với Gidu Food</h2>
-                    <p>📍 Địa chỉ: 65 Huỳnh Thúc Kháng, P.Sài Gòn, Tp.HCM</p>
                     <p>📞 Hotline: 0909 123 456</p>
                     <p>📧 Email: gidufood@gmail.com</p>
                     <p>Copyright ©2025 - GiDuFood</p>

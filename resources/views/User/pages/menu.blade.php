@@ -190,10 +190,11 @@
                             <div class="product_search product_search_list_size">
                                 <p>Kích cỡ</p>
                                 <div class="product_search_list_size_popup">
-                                    <button onclick="searchBySize(undefined, this)">Tất cả</button>
                                     <button onclick="searchBySize('S', this)">Size S</button>
                                     <button onclick="searchBySize('M', this)">Size M</button>
                                     <button onclick="searchBySize('L', this)">Size L</button>
+                                    <button onclick="searchBySize('XL', this)">Size XL</button>
+
                                 </div>
                             </div>
                             <div class="product_search product_search_list_price">

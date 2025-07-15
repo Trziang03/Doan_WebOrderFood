@@ -194,7 +194,7 @@ input {
     text-align: center;
     padding: 8px;
     width: 100px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border-radius: 4px;
     display: block;
     margin-top: 10px;
@@ -803,7 +803,7 @@ table tr td {
     /* Giới hạn chiều rộng tối đa */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     position: relative;
-    max-height: 60vh;
+    max-height: 70vh;
     /* Giới hạn chiều cao tối đa */
     overflow-y: auto;
     /* Cho phép cuộn dọc nếu nội dung vượt quá */

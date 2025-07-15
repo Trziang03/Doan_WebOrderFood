@@ -21,7 +21,7 @@ class RevenueExport implements FromCollection, WithHeadings
     {
         return Order::whereDate('created_at', $this->fromDate)
             ->where('order_status_id', 4)
-            ->select('id', 'total_price', 'created_at')
+            ->select('id','order_code', 'total_price', 'created_at')
             ->get()
             ->map(function ($order) {
                 return [

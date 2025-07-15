@@ -1,10 +1,51 @@
 @extends('layouts.layouts_user')
 @section('title', 'Trang giỏ hàng')
+<style>
+    .cart-bottom-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .pagination {
+        margin-left: 150px;
+        align-items: center;
+    }
+
+    .pagination .page-item {
+        margin-left: 5px;
+    }
+
+    .pagination .page-link {
+        border-radius: 5px;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #f09137;
+        color: white;
+        border-color: #f09137;
+    }
+
+    .btn-submit-mobile {
+        background-color: rgb(240, 145, 55);
+        border: none;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 5px;
+        font-size: 16px;
+        width: 100%;
+    }
+</style>
 @section('content')
     <div class="shopping_cart container_css" id="shopping_cart">
         @if ($cartItems->isEmpty())
             <h3 style="height:183px; text-align:center; margin-top:140px">Chưa có món ăn nào <br>
-            <a href="{{ route('user.menu') }}" style="display:inline-block; margin-top:10px;">Đặt món ngay ?</a></h3>
+                <a href="{{ route('user.menu') }}" style="display:inline-block; margin-top:10px;">Đặt món ngay ?</a>
+            </h3>
         @else
             <div class="shopping_cart_main" id="cart-main">
                 <div class="shopping_cart_items" id="list-product">
@@ -55,10 +96,12 @@
                                     style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; margin-top: auto; margin-bottom: 10px; width: 100%;">
 
                                     {{-- Cột bên trái: Giá --}}
-                                    <span style="font-weight: bold; font-size: 20px;">Giá: {{ number_format($totalPrice) }} <sup>đ</sup></span>
+                                    <span style="font-weight: bold; font-size: 20px;">Giá: {{ number_format($totalPrice) }}
+                                        <sup>đ</sup></span>
 
                                     {{-- Cột bên phải: Nút tăng giảm --}}
-                                    <div style="display: flex; align-items: center; gap: 10px; background-color: #F7F7F7; border-radius: 15px;">
+                                    <div
+                                        style="display: flex; align-items: center; gap: 10px; background-color: #F7F7F7; border-radius: 15px;">
                                         <button class="btn-decrease" data-id="{{ $item->id }}"
                                             style="border: none; background: none;"><i class="fas fa-minus"></i></button>
                                         <input class="amount" disabled type="text" value="{{ $item->quantity }}"
@@ -73,39 +116,40 @@
                     @endforeach
                 </div>
                 <div class="shopping_cart_bottom" id="cart-bottom">
+                    <!-- Xóa tất cả -->
                     <div class="shopping_cart_bottom_left">
                         <button id="btn-delete-all">Xóa tất cả</button>
                     </div>
 
-                    <div class="shopping_cart_bottom_right_voucher">
-                        <div class="shopping_cart_bottom_price">
-                            <h4>Tổng cộng:</h4>
-                            <p id="item-total">
-                                {{ number_format(
-                $cartItems->sum(function ($item) {
+                    <!-- Phân trang -->
+                    <div class="cart-bottom-item pagination">
+                        {{ $cartItems->links() }}
+                    </div>
+
+                    <!-- Tổng cộng -->
+                    <div class="cart-bottom-item" style="margin-right:-35px">
+                        <h4 style="margin: 0; font-size: 25px;">Tổng:</h4>
+                        <p id="item-total" style="font-weight: bold; font-size: 30px;">
+                            {{ number_format(
+                $allCartItems->sum(function ($item) {
                     $sizePrice = $item->size ? $item->size->price : 0;
                     $productPrice = $item->product->price + $sizePrice;
-
                     $toppingTotal = $item->toppings->sum(function ($t) {
                         return $t->topping->price * $t->quantity;
                     });
                     return ($productPrice + $toppingTotal) * $item->quantity;
                 })
             ) }} <sup>đ</sup>
-                            </p>
-                            <form action="/cart/submit" method="POST">
+                        </p>
+                    </div>
+                    <!-- Gửi đơn hàng -->
+                    <div class="cart-bottom-item">
+                        <form action="/cart/submit" method="POST">
                             @csrf
-                                <button type="submit" class="btn" style="background-color: rgb(240, 145, 55);
-                                                        width: 100%;
-                                                        border: none;
-                                                        background-color: rgb(240, 145, 55);
-                                                        color: white;
-                                                        padding: 10px;
-                                                        border-radius: 5px;
-                                                        transition: all linear 0.3s;
-                                                        margin-left: 28px">Gửi đơn hàng</button>
-                            </form>
-                        </div>
+                            <button type="submit" class="btn-submit-mobile">
+                                Gửi đơn hàng
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -125,16 +169,28 @@
             // Xóa một item
             $('.btn-delete-item').click(function () {
                 const id = $(this).data('id');
+                const currentPage = getCurrentPageFromUrl();
+
                 $.ajax({
-                    url: `/cart/delete-item/${id}`,
+                    url: `/cart/delete-item/${id}?page=${currentPage}`,
                     type: 'DELETE',
                     success: res => {
                         if (res.success) {
                             alertify.success(res.message);
+
+                            // Nếu cần quay về trang đầu hoặc trang trước (khi xóa hết item ở trang hiện tại)
+                            if (res.page !== null) {
+                                window.location.href = `/shopping-cart?page=${res.page}`;
+                                return;
+                            }
+
+                            // Xóa item khỏi giao diện (vẫn giữ lại nếu không cần reload)
                             $(`#cart-item-${id}`).remove();
                             updateAfterChange(res.cart);
                             checkIfEmpty();
-                        } else alertify.error(res.message);
+                        } else {
+                            alertify.error(res.message);
+                        }
                     },
                     error: () => alertify.error("Xóa không thành công!")
                 });
@@ -193,6 +249,11 @@
                 });
             });
 
+            function getCurrentPageFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('page') || 1;
+            }
+
             // Cập nhật số lượng + tổng tiền của từng item
             function updateItem(id, item) {
                 // Tổng tiền mỗi sản phẩm
@@ -227,65 +288,5 @@
                 return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             }
         });
-    </script>
-    <script>
-        // Phân trang
-        document.addEventListener("DOMContentLoaded", () => {
-            kt(); // Khởi tạo danh sách sản phẩm
-            Page();
-        });
-
-        function kt() {
-            const products = document.querySelectorAll('.shopping_cart_item');
-            return products;
-        }
-
-        function Page(itemsPage = 4) {
-            const products = Array.from(kt());
-
-            const countPage = Math.ceil(products.length / itemsPage);
-            let index = 1;
-
-            function LoadPage(page) {
-                const container = document.querySelector("#list-product");
-                if (!container) return;
-                container.innerHTML = "";
-                const begin = (page - 1) * itemsPage;
-                const end = begin + itemsPage;
-                products.slice(begin, end).forEach(product => {
-                    container.appendChild(product);
-                });
-                LoadPageButton(countPage, page);
-            }
-
-            function LoadPageButton(countPage, index) {
-                const page = document.getElementById('page');
-                page.innerHTML = '';
-                // Nút "Pre"
-                const pre = document.createElement('button');
-                pre.innerHTML = "Pre";
-                pre.disabled = index === 1;
-                pre.addEventListener('click', () => LoadPage(index - 1));
-                page.appendChild(pre);
-                // Nút số trang
-                for (let i = 1; i <= countPage; i++) {
-                    const button = document.createElement('button');
-                    button.innerHTML = i;
-                    button.className = i === index ? 'active' : '';
-                    button.addEventListener('click', () => LoadPage(i));
-                    page.appendChild(button);
-                }
-                // Nút "Next"
-                const next = document.createElement('button');
-                next.innerHTML = "Next";
-                next.disabled = index === countPage;
-                next.addEventListener('click', () => LoadPage(index + 1));
-                page.appendChild(next);
-            }
-
-            if (products.length > itemsPage) {
-                LoadPage(index);
-            }
-        }
     </script>
 @endsection

@@ -1164,7 +1164,7 @@ footer {
 
     .search-form input[type="search"] {
         font-size: 16px;
-        padding: 10px 8px;
+        padding: 10px 1px !important;
     }
 
     .search-form .search-btn {
@@ -1177,6 +1177,13 @@ footer {
 @media only screen and (max-width: 768px) {
 
 
+    .footer_top_left_items .footer_top_item{
+        text-align: center;
+    }
+
+    .footer_top .footer_top_left_items{
+        display: block;
+    }
 
     .search-btn {
         border-radius: 50%;
